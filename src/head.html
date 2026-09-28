@@ -1,0 +1,355 @@
+<title>玻璃方舟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=ZCOOL+XiaoWei&display=swap" media="print" onload="this.media='all'">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#080c0a; --panel:rgba(11,16,13,.8); --panel-2:rgba(22,30,26,.94);
+  --line:rgba(205,228,212,.12); --line-2:rgba(205,228,212,.24);
+  --ink:#e6ece3; --muted:#98a89c; --faint:#66786d;
+  --lamp:#f0b25a; --lamp-ink:#1d1509; --water:#82c7d7; --leaf:#a4d18b; --warn:#e9b451; --bad:#e7755d;
+  --display:"ZCOOL XiaoWei","Songti SC","STSong","Noto Serif SC",serif;
+  --body:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.5 var(--body);overflow:hidden;-webkit-font-smoothing:antialiased}
+#app{position:fixed;inset:0;overflow:hidden;background:var(--bg)}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none;cursor:grab}
+#c.paint{cursor:crosshair}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 55%,rgba(0,0,0,.45) 100%)}
+.hud{position:absolute;pointer-events:none;z-index:2}
+.hud .live,.hud.live{pointer-events:auto}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;-webkit-backdrop-filter:blur(14px) saturate(1.15);backdrop-filter:blur(14px) saturate(1.15);box-shadow:0 12px 32px rgba(0,0,0,.35)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--lamp);outline-offset:2px}
+
+.top{top:calc(12px + env(safe-area-inset-top,0px));left:16px;right:16px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.brand h1{font:400 30px/1 var(--display);margin:0;letter-spacing:.08em;text-shadow:0 2px 20px rgba(0,0,0,.6);white-space:nowrap}
+.brand .clock{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font:500 12px/1.4 var(--mono);color:var(--muted);margin-top:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--ink);font-family:var(--body);font-size:12px;background:rgba(8,12,10,.5)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--lamp)}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.chip{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:12px;min-height:38px;box-sizing:border-box}
+.chip b{font:600 16px/1 var(--mono);color:var(--lamp);font-variant-numeric:tabular-nums}
+.chip span{font:12px var(--mono);color:var(--muted)}
+.chip.score b{color:var(--leaf)}
+.seg{display:flex;padding:3px;gap:2px;border-radius:12px}
+.seg button{min-width:34px;height:30px;border-radius:9px;font:600 12px var(--mono);color:var(--muted);padding:0 6px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#101512}
+.iconbtn{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:var(--muted)}
+.iconbtn[aria-pressed="true"]{color:var(--lamp)}
+.iconbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.mobileonly{display:none}
+
+.side{top:calc(74px + env(safe-area-inset-top,0px));width:292px;max-height:calc(100% - 190px);display:flex;flex-direction:column;overflow:hidden}
+.side.left{left:16px}.side.right{right:16px}
+.tabs{display:flex;gap:2px;padding:6px 6px 0;border-bottom:1px solid var(--line)}
+.tabs button{flex:1;padding:8px 6px 9px;font:400 15px/1 var(--display);letter-spacing:.12em;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--lamp)}
+.tabs button small{font:11px var(--mono);letter-spacing:0;color:var(--faint);margin-left:4px}
+.tabbody{padding:12px 14px 14px;overflow:auto;scrollbar-width:thin;flex:1}
+.gas{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.gas .g{padding:8px 10px;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line)}
+.gas .k{font-size:11px;color:var(--muted);letter-spacing:.06em}
+.gas .v{font:600 19px/1.2 var(--mono);font-variant-numeric:tabular-nums}
+.gas .v small{font-size:11px;color:var(--muted);font-weight:400;margin-left:2px}
+.gas .d{font:11px var(--mono);color:var(--faint)}
+#spark{width:100%;height:42px;display:block;margin:2px 0 8px}
+.flow{display:flex;justify-content:space-between;font:11px var(--mono);color:var(--muted);margin-bottom:10px;gap:6px;flex-wrap:wrap}
+.flow b{font-weight:600}.up{color:var(--leaf)}.dn{color:var(--bad)}
+table.zones{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:8px}
+table.zones th{font-weight:400;color:var(--faint);font-size:11px;text-align:left;padding:0 0 4px}
+table.zones td{padding:4px 0;border-top:1px solid var(--line);vertical-align:middle}
+td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px}
+.bar{position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,.07);width:54px;overflow:hidden}
+.bar b{position:absolute;inset:0 auto 0 0;border-radius:3px;background:var(--water)}
+.bar.h b{background:#b9dde4}
+.num{font:11px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.alerts{display:flex;flex-direction:column;gap:6px;margin:4px 0 4px}
+.alert{font-size:12px;line-height:1.45;padding:7px 9px 7px 10px;border-radius:8px;background:rgba(233,180,81,.08);border-left:3px solid var(--warn)}
+.alert.bad{background:rgba(231,117,93,.09);border-left-color:var(--bad)}
+.alert.ok{background:rgba(164,209,139,.07);border-left-color:var(--leaf)}
+.subh{font-size:11px;color:var(--faint);letter-spacing:.12em;margin:12px 0 6px}
+
+.sp{display:grid;grid-template-columns:10px 1fr auto;gap:2px 8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+.sp:first-child{border-top:0}
+.sp i{width:9px;height:9px;border-radius:50%}
+.sp b{font-weight:600;font-size:13px}
+.sp .cnt{font:600 13px var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.sp .meta{grid-column:2/4;font-size:11.5px;color:var(--muted);line-height:1.5}
+.sp .meta em{font-style:normal;color:var(--ink)}
+.sp.locked{opacity:.55}
+.sp .lvl{font:10px var(--mono);color:var(--faint);border:1px solid var(--line);border-radius:4px;padding:0 4px;margin-left:6px}
+
+.contract{padding:10px 0;border-top:1px solid var(--line)}
+.contract:first-child{border-top:0;padding-top:2px}
+.contract .t{display:flex;justify-content:space-between;gap:8px;font-size:12.5px}
+.contract .t em{font:600 11px var(--mono);font-style:normal;color:var(--lamp);white-space:nowrap}
+.contract .pb{height:5px;border-radius:3px;background:rgba(255,255,255,.07);margin-top:6px;overflow:hidden}
+.contract .pb b{display:block;height:100%;background:var(--leaf);border-radius:3px}
+.contract .s{font:11px var(--mono);color:var(--faint);margin-top:4px}
+.log{list-style:none;margin:0;padding:0}
+.log li{display:grid;grid-template-columns:44px 1fr auto;gap:8px;align-items:start;padding:6px 0;border-top:1px dashed var(--line);font-size:12px;line-height:1.45}
+.log li:first-child{border-top:0}
+.log time{font:11px var(--mono);color:var(--faint);padding-top:1px}
+.log .go{font-size:11px;color:var(--lamp);padding:1px 6px;border:1px solid rgba(240,178,90,.35);border-radius:6px}
+.log .k-hunt{color:#f0a48a}.log .k-life{color:var(--leaf)}.log .k-warn{color:var(--warn)}
+
+.dock{left:16px;right:16px;bottom:calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:8px}
+.toolbar{display:flex;gap:2px;padding:5px;border-radius:16px;max-width:100%;overflow-x:auto;scrollbar-width:none}
+.toolbar::-webkit-scrollbar{display:none}
+.tool{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:58px;padding:8px 6px 6px;border-radius:12px;color:var(--muted);font-size:11.5px;transition:background .15s,color .15s}
+.tool svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tool:hover{color:var(--ink);background:rgba(255,255,255,.04)}
+.tool[aria-pressed="true"]{background:var(--lamp);color:var(--lamp-ink)}
+.tool.act[aria-pressed="true"]{background:rgba(240,178,90,.16);color:var(--lamp)}
+.sep{width:1px;background:var(--line);margin:8px 3px;flex:0 0 auto}
+.palette{display:flex;gap:6px;padding:8px;border-radius:14px;max-width:min(980px,100%);overflow-x:auto;scrollbar-width:thin}
+.item{flex:0 0 auto;display:grid;grid-template-columns:10px auto;column-gap:8px;align-items:center;text-align:left;padding:7px 12px 7px 10px;border-radius:10px;border:1px solid var(--line);min-width:104px;background:rgba(255,255,255,.02)}
+.item i{grid-row:span 2;width:10px;height:26px;border-radius:3px}
+.item b{font-weight:600;font-size:12.5px;white-space:nowrap}
+.item small{color:var(--muted);font-size:11px;white-space:nowrap}
+.item small .c{font-family:var(--mono);color:var(--lamp)}
+.item[aria-pressed="true"]{border-color:var(--lamp);background:rgba(240,178,90,.1)}
+.item[disabled]{opacity:.45;cursor:not-allowed}
+.hint{font-size:12px;color:var(--muted);padding:5px 12px;border-radius:99px;background:rgba(8,12,10,.65);border:1px solid var(--line);transition:opacity .6s;text-align:center}
+
+.inspect{left:16px;bottom:calc(168px + env(safe-area-inset-bottom,0px));width:300px;padding:14px;max-height:calc(100% - 260px);overflow:auto;scrollbar-width:thin}
+.inspect h3{margin:0;font:400 21px/1.1 var(--display);letter-spacing:.06em;display:flex;align-items:center;gap:8px}
+.inspect h3 i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.inspect h3 .rn{margin-left:auto;font:11px var(--body);color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+.tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:99px;border:1px solid var(--line-2);color:var(--muted);margin:6px 4px 0 0}
+.state{margin:10px 0 8px;font-size:12.5px;line-height:1.5}
+.state b{color:var(--lamp);font-weight:600}
+.kv{display:grid;grid-template-columns:52px 1fr 38px;gap:6px 8px;margin:8px 0;font-size:12px;align-items:center}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-variant-numeric:tabular-nums}
+.meter{height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.meter b{display:block;height:100%;background:var(--leaf);border-radius:3px}
+.stats3{display:flex;gap:12px;font:11px var(--mono);color:var(--muted);margin:6px 0 8px}
+.stats3 b{color:var(--ink);font-weight:600}
+.diary{list-style:none;margin:0 0 10px;padding:0;font-size:11.5px;color:var(--muted);line-height:1.55;border-left:2px solid var(--line);padding-left:8px}
+.fact{font-size:12px;color:var(--muted);line-height:1.6;margin:0 0 10px}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.btn{padding:6px 10px;border-radius:9px;border:1px solid var(--line-2);font-size:12px}
+.btn.pri{background:var(--ink);color:#101512;border-color:var(--ink)}
+.segm{display:flex;border:1px solid var(--line-2);border-radius:9px;overflow:hidden;margin:4px 0 10px}
+.segm button{flex:1;padding:6px 4px;font-size:12px;color:var(--muted)}
+.segm button[aria-pressed="true"]{background:var(--ink);color:#101512}
+.rename{display:flex;gap:6px;margin-top:8px}
+.rename input{flex:1;min-width:0;background:rgba(255,255,255,.06);border:1px solid var(--line-2);border-radius:8px;color:var(--ink);padding:5px 8px;font:inherit}
+
+.settings{top:calc(62px + env(safe-area-inset-top,0px));right:16px;width:270px;padding:14px;z-index:4}
+.settings h4{margin:0 0 8px;font:400 15px var(--display);letter-spacing:.1em}
+.settings p{font-size:11.5px;color:var(--muted);margin:6px 0 12px;line-height:1.5}
+.settings input[type=range]{width:100%}
+
+.toasts{top:calc(74px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:min(440px,calc(100% - 32px))}
+.toast{padding:8px 14px;border-radius:10px;font-size:12.5px;background:var(--panel-2);border:1px solid var(--line-2);box-shadow:0 8px 24px rgba(0,0,0,.4);animation:tin .35s ease-out}
+.toast b{color:var(--lamp);font-weight:600}
+@keyframes tin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.flabel{position:absolute;left:0;top:0;pointer-events:none;z-index:1;transform:translate(-50%,-100%);white-space:nowrap;text-align:center}
+.flabel .nm{font:400 15px/1.1 var(--display);letter-spacing:.08em;color:#fff;text-shadow:0 1px 8px rgba(0,0,0,.9)}
+.flabel .st{font-size:11px;color:#f3e3c3;text-shadow:0 1px 6px rgba(0,0,0,.9);margin-top:2px}
+.zlabel{position:absolute;left:0;top:0;font:400 16px/1 var(--display);letter-spacing:.35em;color:rgba(236,242,232,.8);text-shadow:0 1px 10px rgba(0,0,0,.85);white-space:nowrap;pointer-events:none;transition:opacity .4s;z-index:1}
+.director{position:absolute;left:50%;top:calc(118px + env(safe-area-inset-top,0px));transform:translateX(-50%);font:400 14px var(--display);letter-spacing:.2em;color:#f3e3c3;text-shadow:0 1px 8px #000;pointer-events:none;z-index:2;opacity:0;transition:opacity .5s}
+.loading{position:absolute;inset:0;display:grid;place-items:center;background:var(--bg);z-index:9;transition:opacity .8s;text-align:center}
+.loading .lt{font:400 40px var(--display);letter-spacing:.3em;color:var(--ink);margin-bottom:12px}
+.loading #loadMsg{font:12px var(--mono);color:var(--muted);max-width:80vw;line-height:1.6}
+.loading.gone{opacity:0;pointer-events:none}
+.errbar{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);z-index:8;background:#3a1612;border:1px solid #a33;color:#fdd;padding:8px 12px;border-radius:10px;font-size:12px;max-width:90vw}
+
+
+.home{position:absolute;inset:0;z-index:10;overflow:auto;background:#050807;transition:opacity .8s}
+.home.gone{opacity:0;pointer-events:none}
+#homeBg{position:fixed;inset:0;width:100%;height:100%;display:block}
+.home-inner{position:relative;min-height:100%;box-sizing:border-box;max-width:1120px;margin:0 auto;padding:calc(48px + env(safe-area-inset-top,0px)) 24px calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:32px}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.32em;color:rgba(230,236,227,.55)}
+.home-title{font:400 clamp(56px,11vw,120px)/1 var(--display);letter-spacing:.14em;margin:14px 0 12px;color:#f1f4ec;text-shadow:0 6px 40px rgba(0,0,0,.6)}
+.home-sub{max-width:34em;font-size:15px;line-height:1.75;color:rgba(230,236,227,.72);margin:0}
+.modes{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px}
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mode{position:relative;display:flex;flex-direction:column;text-align:left;border-radius:16px;overflow:hidden;background:rgba(10,15,12,.62);border:1px solid rgba(220,235,225,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .25s,border-color .25s,box-shadow .25s;color:var(--ink)}
+.mode:hover,.mode:focus-visible{transform:translateY(-3px);border-color:rgba(240,178,90,.7);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.mode .illus{display:block;width:100%;height:74px}
+.mode.feature .illus{flex:1 1 auto;min-height:170px;height:auto}
+.mode[data-mode=ocean]{grid-column:1/-1}.mode[data-mode=ocean] .illus{height:96px}
+.mode.feature .illus{background:radial-gradient(circle at 22% 30%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 35% 52%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 58% 22%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 66% 44%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 80% 34%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 46% 66%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 14% 58%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 88% 60%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 72% 14%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(ellipse at 70% 110%,rgba(90,140,90,.25),transparent 60%),linear-gradient(#081410,#0f2218)}
+.mode-body{padding:12px 14px 14px}
+.mode.feature .mode-body{padding:18px 20px 20px}
+.mode-name{font:400 20px/1.2 var(--display);letter-spacing:.1em}
+.mode.feature .mode-name{font-size:30px}
+.mode-desc{font-size:12.5px;line-height:1.6;color:var(--muted);margin-top:6px}
+.mode.feature .mode-desc{font-size:14px}
+.mode-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.mode-tags span{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid rgba(240,178,90,.4);color:var(--lamp)}
+.new{font:600 11px var(--body);font-style:normal;color:#07202c;background:#8fdcf0;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:3px;letter-spacing:0}
+.home-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:auto}
+.home-foot .qual{display:flex;align-items:center;gap:10px}
+.home-foot .segm{margin:0;min-width:160px}
+.home-foot .keys{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em}
+@media (max-width:760px){.modes{grid-template-columns:1fr}.mode.feature .illus{height:120px}.home-inner{padding-top:calc(28px + env(safe-area-inset-top,0px));gap:22px}}
+@media (max-width:860px){
+  .brand h1{font-size:22px}
+  .mobileonly{display:grid}
+  .side{display:none;left:12px!important;right:12px!important;width:auto;top:calc(64px + env(safe-area-inset-top,0px));max-height:58%}
+  .side.open{display:flex}
+  .inspect{right:12px;left:12px;width:auto;bottom:auto;top:calc(118px + env(safe-area-inset-top,0px));max-height:48%}
+  .hint{display:none}
+  .tool{min-width:50px;font-size:10.5px}
+  .chip span{display:none}
+  .settings{right:12px;left:12px;width:auto}
+}
+@media (max-width:520px){ .seg button{min-width:28px} .brand .clock .pill:last-child{display:none} }
+@media (prefers-reduced-motion:reduce){ .toast{animation:none} }
+.tut{margin:0 0 12px;padding:12px 12px 8px;border-radius:12px;background:rgba(240,178,90,.07);border:1px solid rgba(240,178,90,.22)}
+.tut-h{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.08em;color:var(--lamp);margin-bottom:6px}
+.tut-i{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:4px 0;color:var(--ink,#e6ece3)}
+.tut-i i{width:12px;height:12px;border-radius:50%;border:1.5px solid rgba(230,236,227,.45);flex:none}
+.tut-i span{flex:1}.tut-i em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--lamp)}
+.tut-i.ok{color:var(--muted)}.tut-i.ok span{text-decoration:line-through}.tut-i.ok i{background:#a4d18b;border-color:#a4d18b}
+#glassBtn .slash{opacity:0;transition:opacity .2s}#glassBtn[aria-pressed="true"] .slash{opacity:1}
+.zen-exit{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:calc(14px + env(safe-area-inset-left,0px));z-index:6;display:none;align-items:center;gap:8px;height:38px;padding:0 14px 0 10px;border-radius:12px;border:1px solid rgba(220,235,225,.18);background:rgba(10,15,12,.55);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#e6ece3;font:500 13px/1 inherit;cursor:pointer;opacity:.75;transition:opacity .2s,border-color .2s}
+.zen-exit:hover,.zen-exit:focus-visible{opacity:1;border-color:rgba(240,178,90,.7)}
+.zen-exit svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+body.zen .zen-exit{display:inline-flex}
+[hidden]{display:none!important}
+body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{display:none!important}
+.bootfail{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:50;max-width:min(560px,calc(100vw - 32px));padding:14px 18px;border-radius:14px;background:rgba(40,16,12,.92);border:1px solid rgba(231,117,93,.6);color:#f3e6e1;font-size:13.5px;line-height:1.7;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.bootfail b{display:block;font-size:15px;margin-bottom:4px;color:#ffb8a6}.bootfail code{font-family:var(--mono);background:rgba(255,255,255,.08);padding:1px 6px;border-radius:5px}
+</style>
+
+<div id="app">
+  <canvas id="c" aria-label="生态缸三维视图" tabindex="0"></canvas>
+  <div class="vignette"></div>
+  <div id="labels"></div>
+  <button class="zen-exit" id="zenExit" aria-label="退出沉浸模式"><svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>退出沉浸</button>
+  <div class="director" id="directorCap"></div>
+
+  <div class="hud top">
+    <div class="brand">
+      <h1>玻璃方舟</h1>
+      <div class="clock"><span id="clock">第 1 天 · 07:12</span><span class="pill" id="phase"><i></i>白昼</span><span class="pill" id="weather">晴</span></div>
+    </div>
+    <div class="controls live">
+      <div class="chip panel" title="孢子：由观赏值持续产出，用来买植物和动物"><b id="coins">150</b><span>孢子 <em id="income" style="font-style:normal">+0/天</em></span></div>
+      <div class="chip panel score" title="观赏值：物种多样性、生态平衡和精彩瞬间综合打分"><b id="score">0</b><span>观赏值</span></div>
+      <div class="seg panel" role="group" aria-label="时间流速">
+        <button data-speed="0" aria-pressed="false" aria-label="暂停">Ⅱ</button>
+        <button data-speed="1" aria-pressed="true">1×</button>
+        <button data-speed="3" aria-pressed="false">3×</button>
+        <button data-speed="8" aria-pressed="false">8×</button>
+      </div>
+      <button class="iconbtn panel" id="dirBtn" aria-pressed="false" title="导演模式：镜头自动追踪捕猎、羽化、孵化等精彩瞬间" aria-label="导演模式"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg></button>
+      <button class="iconbtn panel" id="soundBtn" aria-pressed="false" aria-label="声音"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></button>
+      <button class="iconbtn panel" id="glassBtn" aria-pressed="false" title="隐藏玻璃和缸架（G）" aria-label="隐藏玻璃"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8l3-3M8 13l8-8M13 19l6-6" opacity=".7"/><path d="M3 21 21 3" class="slash"/></svg></button>
+      <button class="iconbtn panel" id="zenBtn" aria-pressed="false" title="沉浸模式：隐藏界面，只留下方工具栏（H）" aria-label="沉浸模式"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button class="iconbtn panel" id="setBtn" aria-pressed="false" aria-label="设置"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M5.2 18.8l2.1-2.1M16.7 7.3l2.1-2.1"/></svg></button>
+      <button class="iconbtn panel mobileonly" id="leftToggle" aria-label="委托与日志"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></button>
+      <button class="iconbtn panel mobileonly" id="rightToggle" aria-label="缸况与物种"><svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg></button>
+    </div>
+  </div>
+
+  <aside class="hud panel side left live" id="left">
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="contracts" aria-selected="true">委托<small id="ctCount"></small></button>
+      <button role="tab" data-tab="log" aria-selected="false">生态日志</button>
+    </div>
+    <div class="tabbody" id="tab-contracts"></div>
+    <div class="tabbody" id="tab-log" hidden><ul class="log" id="logList"></ul></div>
+  </aside>
+
+  <aside class="hud panel side right live" id="right">
+    <div class="tabs" role="tablist">
+      <button role="tab" data-tab="env" aria-selected="true">缸况</button>
+      <button role="tab" data-tab="species" aria-selected="false">食物网<small id="spCount"></small></button>
+    </div>
+    <div class="tabbody" id="tab-env">
+      <div class="gas">
+        <div class="g"><div class="k">氧气 O₂</div><div class="v" id="o2">20.9<small>%</small></div><div class="d" id="o2d">±0.00 /时</div></div>
+        <div class="g"><div class="k">二氧化碳 CO₂</div><div class="v" id="co2">480<small>ppm</small></div><div class="d" id="co2d">±0 /时</div></div>
+      </div>
+      <canvas id="spark" width="560" height="84" aria-label="近几天的氧气曲线"></canvas>
+      <div class="flow"><span>光合 <b class="up" id="pOut">+0</b></span><span>呼吸 <b class="dn" id="rOut">−0</b></span><span>光照 <b id="lightOut">0%</b></span></div>
+      <table class="zones"><thead><tr><th>区域</th><th>土壤</th><th>空气</th><th style="text-align:right">温度</th></tr></thead><tbody id="zoneRows"></tbody></table>
+      <div class="alerts" id="alerts"></div>
+    </div>
+    <div class="tabbody" id="tab-species" hidden></div>
+  </aside>
+
+  <div class="hud toasts" id="toasts" aria-live="polite"></div>
+  <aside class="hud panel inspect live" id="inspect" hidden></aside>
+  <aside class="hud panel settings live" id="settings" hidden>
+    <h4>画质</h4>
+    <div class="segm" id="qualSeg"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div>
+    <p>手机默认“低”：关闭实时阴影和后期，草的密度降到三成。高画质开启泛光、景深和高分辨率阴影。</p>
+    <h4>玻璃水汽</h4>
+    <div class="segm" id="condSeg"><button data-c="0">关</button><button data-c="1">少量</button><button data-c="2">真实</button></div>
+    <p>湿润的缸壁会结水珠。“少量”只在玻璃上沿和边角结露，不挡视线。</p>
+    <h4>音量</h4>
+    <input type="range" id="vol" min="0" max="100" value="70" aria-label="音量">
+    <p>声音来自具体的动物：雨蛙在水边鸣叫，蟋蟀在夜里的草丛里叫。镜头离得越近越响。</p>
+    <h4>键盘</h4>
+    <p>G 隐藏玻璃 · H 沉浸模式 · W S 朝视线方向前进后退（可以一直飞进缸里）· A D 横移 · Q E 旋转 · R F 缩放 · Shift 加速 · 空格暂停 · 1–8 切换工具 · Esc 取消</p>
+    <button class="btn" id="homeBtn" style="width:100%">返回首页</button>
+  </aside>
+
+  <div class="hud dock">
+    <div class="hint" id="hint">拖动旋转 · 滚轮/双指缩放 · 右键或双指拖动平移 · 点击生物查看并跟随</div>
+    <div class="panel palette live" id="palette" hidden></div>
+    <nav class="panel toolbar live" id="toolbar" aria-label="工具">
+      <button class="tool" data-tool="observe" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>观察</button>
+      <button class="tool" data-tool="rain" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M7 14.5a4 4 0 0 1-.6-7.95A5.8 5.8 0 0 1 17.6 7.2 3.7 3.7 0 0 1 17.5 14.5z"/><path d="M8.5 17.5 7.5 20M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5"/></svg>降雨</button>
+      <button class="tool" data-tool="plant" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4.2 3-6.5 7.5-6.5 0 4.2-3 6.5-7.5 6.5z"/><path d="M12 14.5c0-3.2-2.4-5.2-6.2-5.2 0 3.2 2.4 5.2 6.2 5.2z"/></svg>种植</button>
+      <button class="tool" data-tool="animal" aria-pressed="false"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="13.5" rx="4" ry="5.8"/><path d="M12 7.7V6M9.2 3.8l1.6 2.3M14.8 3.8l-1.6 2.3M8 11.5H4.2M8 15.5H4.6M16 11.5h3.8M16 15.5h3.4"/></svg>投放</button>
+      <button class="tool" data-tool="feed" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M5 11h14l-1.4 7.6a2 2 0 0 1-2 1.6H8.4a2 2 0 0 1-2-1.6z"/><circle cx="9" cy="7" r="1.3"/><circle cx="12.8" cy="5.3" r="1.3"/><circle cx="15.6" cy="8" r="1.3"/></svg>喂食</button>
+      <button class="tool" data-tool="move" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M8 13V6a1.5 1.5 0 0 1 3 0v5M11 11V4.5a1.5 1.5 0 0 1 3 0V11M14 11V6a1.5 1.5 0 0 1 3 0v7c0 4-2.5 7-6 7-2.6 0-4-1.3-5.5-3.5L3.8 13.8a1.4 1.4 0 0 1 2.3-1.6L8 14"/></svg>搬运</button>
+      <button class="tool" data-tool="shovel" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6M17.5 6.5 10 14"/><path d="M10 14l-2.2-2.2a1.5 1.5 0 0 0-2.1 0L3.5 14c-1 1-1 4.5 1.5 6.5 2 2.5 5.5 2.5 6.5 1.5l2.2-2.2a1.5 1.5 0 0 0 0-2.1z"/></svg>铲除</button>
+      <button class="tool" data-tool="decor" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M3 19h18"/><path d="M5 19c0-3 1.8-5.5 4.5-5.5S14 16 14 19"/><path d="M11.5 14.5c.6-3.4 2.8-6 5.5-6 2.5 0 4 2.6 4 5.5V19"/><circle cx="7" cy="7" r="2.2"/></svg>布景</button>
+      <span class="sep"></span>
+      <button class="tool act" id="ventBtn" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><path d="M12 10.4C12 6 14 3.5 16.5 4.5S17 10 12 10.4zM13.6 12c4.4 0 6.9 2 5.9 4.5S14 17 13.6 12zM12 13.6c0 4.4-2 6.9-4.5 5.9S7 14 12 13.6zM10.4 12C6 12 3.5 10 4.5 7.5S10 7 10.4 12z"/></svg>通风</button>
+      <button class="tool act" id="lampBtn" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M3 5h18l-2.2 4H5.2z"/><path d="M8 12.5l-1.6 3.2M12 12.5v4M16 12.5l1.6 3.2"/></svg>补光灯</button>
+      <button class="tool act" id="pumpBtn" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M5 4v6a4 4 0 0 0 4 4h6"/><path d="M13 11l3 3-3 3"/><path d="M18 20c-1.7 0-3-1.2-3-2.7 0-1.8 3-4.8 3-4.8s3 3 3 4.8c0 1.5-1.3 2.7-3 2.7z"/></svg>水泵</button>
+    </nav>
+  </div>
+
+  <div class="home" id="home">
+    <canvas id="homeBg"></canvas>
+    <div class="home-inner">
+      <header class="home-head">
+        <div class="eyebrow">GLASS ARK · 微缩生态模拟</div>
+        <h1 class="home-title">玻璃方舟</h1>
+        <p class="home-sub">在一只玻璃缸里造一个会自己运转的世界。光合作用、食物链、出生与死亡，都在你眼前发生。</p>
+      </header>
+      <section class="modes" aria-label="选择生态缸">
+        <button class="mode feature" data-mode="mixed">
+          <svg class="illus" viewBox="0 0 400 120" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><defs><linearGradient id="gm" x1="0" x2="1"><stop offset="0" stop-color="#c9a66e"/><stop offset=".3" stop-color="#7f9a43"/><stop offset=".62" stop-color="#4f8a7a"/><stop offset="1" stop-color="#2f6b2f"/></linearGradient></defs><path d="M0 84 Q40 60 80 78 T160 74 T240 88 T320 64 T400 70 V120 H0z" fill="url(#gm)"/><path d="M0 96 Q60 84 120 94 T240 100 T400 90 V120 H0z" fill="#0a120d" opacity=".55"/><ellipse cx="236" cy="96" rx="44" ry="7" fill="#9fd0da" opacity=".7"/><path d="M40 78v-26M40 60h-8v-10M40 66h8v-12" stroke="#5b8a4a" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M340 72c0-30 6-44 10-52M350 36c-14-6-26-2-32 6M350 36c14-8 26-6 32 2M350 28c-6-12-2-22 6-26" stroke="#2c5a2a" stroke-width="4" fill="none" stroke-linecap="round"/><g fill="#e8c95a"><circle cx="150" cy="70" r="3"/><circle cx="170" cy="66" r="3"/><circle cx="130" cy="72" r="2.5"/></g></svg>
+          <div class="mode-body"><div class="mode-name">混合生态缸</div><div class="mode-desc">沙漠、草甸、溪沼、雨林连成一片，瀑布从岩壁落下。11 种动物，四级食物链。</div><div class="mode-tags"><span>推荐</span><span>四种气候</span><span>瀑布溪流</span></div></div>
+        </button>
+        <div class="mode-grid">
+          <button class="mode" data-mode="desert"><svg class="illus" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="80" fill="#3a2414"/><circle cx="160" cy="22" r="11" fill="#f5c27a"/><path d="M0 60 Q50 40 100 56 T200 50 V80 H0z" fill="#c9a26e"/><path d="M0 70 Q70 58 140 68 T200 66 V80 H0z" fill="#a9824f"/><path d="M52 58V34M52 44h-7v-8M52 48h7v-10" stroke="#5b8a4a" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div class="mode-body"><div class="mode-name">沙漠缸</div><div class="mode-desc">沙丘、仙人掌和晒太阳的沙蜥。</div></div></button>
+          <button class="mode" data-mode="meadow"><svg class="illus" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="80" fill="#1d2a12"/><path d="M0 58 Q60 44 120 54 T200 50 V80 H0z" fill="#6f8c3c"/><g stroke="#a4c160" stroke-width="2" stroke-linecap="round"><path d="M20 62l-4-16M28 62l3-18M36 62l-2-14M150 60l-3-16M158 60l4-18M166 60l1-12"/></g><g fill="#f3efe4"><circle cx="80" cy="50" r="4"/><circle cx="100" cy="46" r="4"/></g><g fill="#e2629c"><circle cx="122" cy="48" r="4"/></g></svg><div class="mode-body"><div class="mode-name">草甸缸</div><div class="mode-desc">野花与蟋蟀，蝴蝶完成变态发育。</div></div></button>
+          <button class="mode" data-mode="marsh"><svg class="illus" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="80" fill="#0f2220"/><path d="M0 56 Q50 48 100 52 T200 50 V80 H0z" fill="#55602f"/><ellipse cx="100" cy="64" rx="70" ry="10" fill="#6fb0b8" opacity=".7"/><g stroke="#8a9a50" stroke-width="3" stroke-linecap="round"><path d="M30 60V26M38 60V32M170 58V28"/></g><g fill="#5a3a22"><rect x="27" y="24" width="6" height="12" rx="3"/><rect x="167" y="26" width="6" height="12" rx="3"/></g><circle cx="120" cy="62" r="5" fill="#4f8a45"/></svg><div class="mode-body"><div class="mode-name">溪沼缸</div><div class="mode-desc">大水塘、香蒲和合唱的雨蛙。</div></div></button>
+          <button class="mode" data-mode="jungle"><svg class="illus" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="80" fill="#0c2010"/><path d="M0 58 Q60 46 120 56 T200 52 V80 H0z" fill="#3b2d1f"/><path d="M150 60V20" stroke="#5a4533" stroke-width="7"/><path d="M150 22c-24-10-40 0-46 8M150 22c24-12 40-2 46 8M150 20c-6-12 0-18 8-20" stroke="#2f6b28" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M40 60c-6-16-20-20-28-18M40 60c4-18 18-22 26-18" stroke="#3f7a37" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="92" y="0" width="6" height="40" fill="#cfe3ea" opacity=".6"/></svg><div class="mode-body"><div class="mode-name">雨林缸</div><div class="mode-desc">瀑布、雾气、蕨类和夜里的萤火虫。</div></div></button>
+          <button class="mode ocean" data-mode="ocean"><svg class="illus" viewBox="0 0 480 96" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs><linearGradient id="go" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f8ab2"/><stop offset="1" stop-color="#06304a"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfeaff" stop-opacity=".35"/><stop offset="1" stop-color="#bfeaff" stop-opacity="0"/></linearGradient></defs><rect width="480" height="96" fill="url(#go)"/><path d="M120 0l30 0-40 96h-24zM250 0h18l-20 96h-14zM360 0h26l-30 96h-20z" fill="url(#gr)"/><path d="M0 80 Q90 70 180 78 T360 74 T480 76 V96 H0z" fill="#d9c79c"/><path d="M300 78c4-14 24-22 44-18s30 10 34 18z" fill="#8a6a7a"/><g stroke="#e0a0c0" stroke-width="3" stroke-linecap="round" fill="none"><path d="M318 64l-4-12M326 60l2-12M334 60l6-10M342 62l8-8"/></g><path d="M40 82c-6-26 6-40 0-66M52 82c8-24-4-40 8-60M64 82c-4-18 6-28 2-44" stroke="#3f8a4a" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="#e86a4a"><circle cx="410" cy="72" r="8"/><circle cx="422" cy="64" r="6"/><circle cx="398" cy="66" r="5"/></g><path d="M424 76h14M427 76l-3 5M435 76l3 5" stroke="#c0503a" stroke-width="2.5" fill="none"/><path d="M200 40q14-9 28 0q-14 9-28 0z" fill="#f08a2a"/><path d="M200 40l-8-6v12z" fill="#f08a2a"/><path d="M211 35v10M219 35v10" stroke="#fff" stroke-width="2.4"/><g fill="#3a7bd5"><path d="M140 26q7-4 14 0q-7 4-14 0zM134 26l-4-3v6z"/><path d="M160 20q6-3 12 0q-6 3-12 0zM155 20l-3-2.5v5z"/><path d="M152 32q6-3 12 0q-6 3-12 0zM147 32l-3-2.5v5z"/></g><path d="M268 16c-8 0-12 6-12 10h24c0-4-4-10-12-10z" fill="#e8f2ff" opacity=".55"/><path d="M260 26c-1 8 2 14 0 20M268 26c1 8-2 14 0 22M276 26c-1 8 2 12 0 18" stroke="#e8f2ff" stroke-width="1.2" opacity=".5" fill="none"/><g fill="none" stroke="#cfefff" opacity=".7"><circle cx="90" cy="30" r="3"/><circle cx="95" cy="18" r="2"/><circle cx="88" cy="8" r="1.5"/></g></svg><div class="mode-body"><div class="mode-name">海洋缸 <em class="new">新</em></div><div class="mode-desc">珊瑚礁、小丑鱼、螃蟹和伏击的海鳗。</div></div></button>
+        </div>
+      </section>
+      <footer class="home-foot">
+        <div class="qual"><span>画质</span><div class="segm" id="homeQual"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div></div>
+        <div class="keys">W A S D 飞行 · Q E 旋转 · 滚轮缩放 · 点击生物跟随</div>
+      </footer>
+    </div>
+  </div>
+  <div class="loading gone" id="loading"><div><div class="lt">玻璃方舟</div><div id="loadMsg">正在加载三维引擎…</div></div></div>
+</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"}}</script>
+<div class="bootfail" id="bootfail" hidden></div>
+<script>
+(function(){
+  function show(html){var b=document.getElementById('bootfail');if(!b)return;b.innerHTML=html;b.hidden=false;}
+  if(location.protocol==='file:'){show('<b>需要通过本地服务器打开</b>浏览器出于安全限制，不允许直接双击 HTML 加载 JS 模块。<br>Windows 双击 <code>start.bat</code>，Mac / Linux 运行 <code>./start.sh</code>，或者用 VS Code 的 Live Server、JetBrains 的“在浏览器中打开”。');return;}
+  setTimeout(function(){if(!window.__arkBooted)show('<b>游戏引擎没有加载成功</b>three.js 没能下载或运行。请确认 <code>vendor/</code> 文件夹和 index.html 放在一起，并按 F12 打开控制台查看报错。');},20000);
+})();
+</script>
