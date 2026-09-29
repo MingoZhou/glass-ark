@@ -2,7 +2,9 @@
 
 # Glass Ark · 玻璃方舟
 
-**Build a self-sustaining world inside a glass tank.**  
+[English](README_EN.md) · [中文](README.md)
+
+**Build a self-sustaining world inside a glass tank.**
 Photosynthesis, food chains, birth and death — all unfold before your eyes.
 
 *一款基于 three.js 的浏览器端生态缸上帝模拟器——在玻璃缸里养出一个活生生的微型世界。*
