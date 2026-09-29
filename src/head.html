@@ -236,16 +236,16 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
       <div class="chip panel" title="孢子：由观赏值持续产出，用来买植物和动物"><b id="coins">150</b><span>孢子 <em id="income" style="font-style:normal">+0/天</em></span></div>
       <div class="chip panel score" title="观赏值：物种多样性、生态平衡和精彩瞬间综合打分"><b id="score">0</b><span>观赏值</span></div>
       <div class="seg panel" role="group" aria-label="时间流速">
-        <button data-speed="0" aria-pressed="false" aria-label="暂停">Ⅱ</button>
-        <button data-speed="1" aria-pressed="true">1×</button>
-        <button data-speed="3" aria-pressed="false">3×</button>
-        <button data-speed="8" aria-pressed="false">8×</button>
+        <button data-speed="0" aria-pressed="false" title="暂停：时间停止，动物不动" aria-label="暂停">Ⅱ</button>
+        <button data-speed="1" aria-pressed="true" title="1 倍速：正常速度">1×</button>
+        <button data-speed="3" aria-pressed="false" title="3 倍速：快进，适合看一天过去">3×</button>
+        <button data-speed="8" aria-pressed="false" title="8 倍速：极速快进">8×</button>
       </div>
       <button class="iconbtn panel" id="dirBtn" aria-pressed="false" title="导演模式：镜头自动追踪捕猎、羽化、孵化等精彩瞬间" aria-label="导演模式"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg></button>
-      <button class="iconbtn panel" id="soundBtn" aria-pressed="false" aria-label="声音"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></button>
-      <button class="iconbtn panel" id="glassBtn" aria-pressed="false" title="隐藏玻璃和缸架（G）" aria-label="隐藏玻璃"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8l3-3M8 13l8-8M13 19l6-6" opacity=".7"/><path d="M3 21 21 3" class="slash"/></svg></button>
-      <button class="iconbtn panel" id="zenBtn" aria-pressed="false" title="沉浸模式：隐藏界面，只留下方工具栏（H）" aria-label="沉浸模式"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
-      <button class="iconbtn panel" id="setBtn" aria-pressed="false" aria-label="设置"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M5.2 18.8l2.1-2.1M16.7 7.3l2.1-2.1"/></svg></button>
+      <button class="iconbtn panel" id="soundBtn" aria-pressed="false" title="声音开关：雨声、蛙鸣、蟋蟀振翅" aria-label="声音"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></button>
+      <button class="iconbtn panel" id="glassBtn" aria-pressed="false" title="隐藏玻璃和缸架（G）：去掉遮挡，看缸内更清楚" aria-label="隐藏玻璃"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8l3-3M8 13l8-8M13 19l6-6" opacity=".7"/><path d="M3 21 21 3" class="slash"/></svg></button>
+      <button class="iconbtn panel" id="zenBtn" aria-pressed="false" title="沉浸模式：隐藏所有界面，只留下方工具栏（H），适合挂机观赏" aria-label="沉浸模式"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button class="iconbtn panel" id="setBtn" aria-pressed="false" title="设置：画质（低/中/高）、冷凝水效果" aria-label="设置"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M5.2 18.8l2.1-2.1M16.7 7.3l2.1-2.1"/></svg></button>
       <button class="iconbtn panel mobileonly" id="leftToggle" aria-label="委托与日志"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></button>
       <button class="iconbtn panel mobileonly" id="rightToggle" aria-label="缸况与物种"><svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg></button>
     </div>
@@ -308,9 +308,9 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
       <button class="tool" data-tool="shovel" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M14.5 3.5l6 6M17.5 6.5 10 14"/><path d="M10 14l-2.2-2.2a1.5 1.5 0 0 0-2.1 0L3.5 14c-1 1-1 4.5 1.5 6.5 2 2.5 5.5 2.5 6.5 1.5l2.2-2.2a1.5 1.5 0 0 0 0-2.1z"/></svg>铲除</button>
       <button class="tool" data-tool="decor" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M3 19h18"/><path d="M5 19c0-3 1.8-5.5 4.5-5.5S14 16 14 19"/><path d="M11.5 14.5c.6-3.4 2.8-6 5.5-6 2.5 0 4 2.6 4 5.5V19"/><circle cx="7" cy="7" r="2.2"/></svg>布景</button>
       <span class="sep"></span>
-      <button class="tool act" id="ventBtn" aria-pressed="false"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><path d="M12 10.4C12 6 14 3.5 16.5 4.5S17 10 12 10.4zM13.6 12c4.4 0 6.9 2 5.9 4.5S14 17 13.6 12zM12 13.6c0 4.4-2 6.9-4.5 5.9S7 14 12 13.6zM10.4 12C6 12 3.5 10 4.5 7.5S10 7 10.4 12z"/></svg>通风</button>
-      <button class="tool act" id="lampBtn" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M3 5h18l-2.2 4H5.2z"/><path d="M8 12.5l-1.6 3.2M12 12.5v4M16 12.5l1.6 3.2"/></svg>补光灯</button>
-      <button class="tool act" id="pumpBtn" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M5 4v6a4 4 0 0 0 4 4h6"/><path d="M13 11l3 3-3 3"/><path d="M18 20c-1.7 0-3-1.2-3-2.7 0-1.8 3-4.8 3-4.8s3 3 3 4.8c0 1.5-1.3 2.7-3 2.7z"/></svg>水泵</button>
+      <button class="tool act" id="ventBtn" aria-pressed="false" title="通风：打开顶盖，让气体与室内交换，降低湿度和 CO₂（海洋缸：换水，重置盐度和营养盐）"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><path d="M12 10.4C12 6 14 3.5 16.5 4.5S17 10 12 10.4zM13.6 12c4.4 0 6.9 2 5.9 4.5S14 17 13.6 12zM12 13.6c0 4.4-2 6.9-4.5 5.9S7 14 12 13.6zM10.4 12C6 12 3.5 10 4.5 7.5S10 7 10.4 12z"/></svg>通风</button>
+      <button class="tool act" id="lampBtn" aria-pressed="false" title="补光灯：夜里也能光合作用，沙蜥和蝴蝶不再休息。每天约 −14 孢子"><svg viewBox="0 0 24 24"><path d="M3 5h18l-2.2 4H5.2z"/><path d="M8 12.5l-1.6 3.2M12 12.5v4M16 12.5l1.6 3.2"/></svg>补光灯</button>
+      <button class="tool act" id="pumpBtn" aria-pressed="true" title="水泵：瀑布和溪流恢复，雨林和溪沼更湿润，藻类减少。每天约 −5 孢子（海洋缸：造浪泵，水流带来氧气）"><svg viewBox="0 0 24 24"><path d="M5 4v6a4 4 0 0 0 4 4h6"/><path d="M13 11l3 3-3 3"/><path d="M18 20c-1.7 0-3-1.2-3-2.7 0-1.8 3-4.8 3-4.8s3 3 3 4.8c0 1.5-1.3 2.7-3 2.7z"/></svg>水泵</button>
     </nav>
   </div>
 
