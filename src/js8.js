@@ -34,8 +34,8 @@ function predNames(sp){return SPK.filter(k=>SPEC[k].diet&&SPEC[k].diet[sp]).map(
 
 /* ---- tabs & panels ---- */
 $$('.tabs button').forEach(b=>b.addEventListener('click',()=>{const box=b.closest('.side');box.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));box.querySelectorAll('.tabbody').forEach(x=>x.hidden=x.id!=='tab-'+b.dataset.tab);if(b.dataset.tab==='log')logDirty=true;if(b.dataset.tab==='species')renderSpecies();}));
-$('#leftToggle').addEventListener('click',()=>{$('#left').classList.toggle('open');$('#right').classList.remove('open');});
-$('#rightToggle').addEventListener('click',()=>{$('#right').classList.toggle('open');$('#left').classList.remove('open');});
+$('#leftToggle').addEventListener('click',()=>setPanel('left'));
+$('#rightToggle').addEventListener('click',()=>setPanel('right'));
 function setTool(t){tool=t;moveSel=null;$$('.tool[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===t?'true':'false'));canvas.classList.toggle('paint',t!=='observe');renderPalette();cursor.visible=false;
   const hints={observe:'点击生物查看、跟随 · 点击地面查看区域',rain:'在缸内按住并拖动，云跟着指针下雨',plant:'绿色圈=适合，黄色=湿度不合适，红色=不能种',animal:'点击地面投放',feed:'饲料会被蚂蚁、蟋蟀和鼠妇吃掉',move:'先点一只动物，再点放下的位置',shovel:'点击铲掉一株植物或布景（返还部分孢子）· 按住拖动可以连续铲',decor:'选一种布景，点击地面摆放 · 用铲除工具可以移走'};if(OCEAN){hints.rain='在水面按住拖动，补充淡水、降低盐度';hints.feed='浮游饵料喂鱼和珊瑚，剩下的沉底给螃蟹和虾';}$('#hint').textContent=hints[t]||'';$('#hint').style.opacity=1;}
 $$('.tool[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
@@ -149,7 +149,7 @@ function updateVisuals(rdt,gdt){const th=(env.time-0.25)*Math.PI*2,sh=Math.sin(t
   foam.forEach((f,i)=>{f.ph+=rdt*(1.5+i*0.2);const s=env.pump?0.6+0.25*Math.sin(f.ph):0;f.s.scale.setScalar(s*1.4);f.s.material.opacity=env.pump?0.45+0.15*Math.sin(f.ph*1.3):0;f.s.position.set(POOL.x+Math.sin(i*2.1)*0.35,SY0+0.1+i*0.03,-HD+1.25+Math.cos(i*1.7)*0.25);});
   for(const r of ripples){if(r.t>=1)continue;r.t+=rdt*1.3;const s=r.s*(0.2+r.t*1.6);r.m.scale.set(s,s,s);r.m.material.opacity=(1-r.t)*0.55;if(r.t>=1)r.m.visible=false;}
   U.uTime.value+=rdt;U.uWind.value+=((1+rain.intensity*1.6+(env.vent>0?2.4:0))-U.uWind.value)*Math.min(1,rdt*2);
-  updateRain(rdt);decorFX(rdt);if(OCEAN)oceanVisuals(rdt,dl);
+  updateRain(rdt);decorFX(rdt);if(OCEAN)oceanVisuals(rdt,dl);else if(jungleRays)jungleVisuals(dl);
   if(snd.fallGain)snd.fallGain.gain.setTargetAtTime(snd.on?(MODE.stream&&env.pump?0.1:0)+(OCEAN?(env.pump?0.07:0.03):0)+Math.min(0.08,DECOR.filter(d=>d.fount).length*0.03*(env.pump?1:0)):0,snd.ctx.currentTime,0.4);
   for(const m of mist){if(m.off)continue;let target;if(m.zi<0)target=env.pump?0.28:0;else{const z=env.zones[m.zi];target=smooth(0.7,0.99,z.h)*0.15*(env.vent>0?0.2:1)+(isNight()?0.05:0);if(m.x0==null)m.x0=m.x;m.x+=m.v*rdt;if(Math.abs(m.x-m.x0)>3.5)m.v*=-1;}
     m.s.material.opacity+=(target-m.s.material.opacity)*Math.min(1,rdt);m.s.position.set(m.x,heightAt(m.x,m.z)+m.y,m.z);}
@@ -187,8 +187,8 @@ function updateLabels(){const w=canvas.clientWidth,h=canvas.clientHeight;const s
   flabel.style.display='none';}
 
 /* ---- ocean visuals & mode UI ---- */
-const TUT=[{k:'cam',t:'用 W A S D 或拖动鼠标移动镜头',r:10},{k:'follow',t:'点一只动物，让镜头跟着它',r:10},{k:'plant',t:'用“种植”种下一株植物',r:15},{k:'decor',t:'用“布景”摆一件布景',r:15},{k:'fast',t:'把时间调到 3× 看一天过去',r:10}];
-function tutDone(k){const t=TUT.find(x=>x.k===k);if(!t||t.done)return;t.done=true;env.coins+=t.r;toast(`上手任务完成：${t.t}　<b>+${t.r} 孢子</b>`);if(TUT.every(x=>x.done))setTimeout(()=>toast('上手任务全部完成。右边“委托”会持续给你新目标'),1500);ctDirty=true;if(!$('#tab-contracts').hidden)renderContracts();}
+const TUT=[{k:'cam',t:IS_MOBILE?'单指拖动，转动镜头看看':'用 W A S D 或拖动鼠标移动镜头',r:10},{k:'follow',t:'点一只动物，让镜头跟着它',r:10},{k:'plant',t:'用“种植”种下一株植物',r:15},{k:'decor',t:'用“布景”摆一件布景',r:15},{k:'fast',t:'把时间调到 3× 看一天过去',r:10}];
+function tutDone(k){const t=TUT.find(x=>x.k===k);if(!t||t.done)return;t.done=true;env.coins+=t.r;toast(`上手任务完成：${t.t}　<b>+${t.r} 孢子</b>`);if(TUT.every(x=>x.done))setTimeout(()=>toast('上手任务全部完成。右边“委托”会持续给你新目标'),1500);ctDirty=true;if(!$('#tab-contracts').hidden)renderContracts();renderTutHint();}
 let glassHidden=false,zen=false;const GLASSY=[];
 tank.traverse(o=>{if(!o.isMesh||!o.material)return;const m=o.material;if(m===glassMat||m===sheenMat||o===lid||(m.map&&m.map===TX.streak)||(m.color&&m.color.getHex()===0x151816&&o.position.y>BOT+0.5)||o.position.y>TOP+0.1)GLASSY.push(o);});
 function setGlass(h){glassHidden=h;GLASSY.forEach(o=>o.visible=!h);HEATROCKS.forEach(r=>r.parts&&r.parts.slice(1).forEach(o=>o.visible=!h));condT=1;$('#glassBtn').setAttribute('aria-pressed',h);try{localStorage.setItem('ark-glass',h?1:0);}catch(e){}}
@@ -201,14 +201,16 @@ let uwT=9;let condLevel=1;try{const v=localStorage.getItem('ark-cond');if(v!=nul
 function renderCond(){$$('#condSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.c===condLevel));}$$('#condSeg button').forEach(b=>b.addEventListener('click',()=>{condLevel=+b.dataset.c;try{localStorage.setItem('ark-cond',condLevel);}catch(e){}renderCond();condT=1;}));renderCond();
 const PZO={seagrass:[0,1],kelp:[0,1],staghorn:[2,3],brain:[2,3],table:[3],fan:[2,3],anemone:[2,3]};
 const OC_DAY=new Col(0x0e4f6a),OC_NIGHT=new Col(0x020c16),OC_VOL=new Col(0x0f5a76),OC_GREEN=new Col(0x2f6a48);
+function jungleVisuals(dl){const t=U.uTime.value,hum=env.zones[3].h,k=dl*(0.03+0.05*smooth(0.6,0.95,hum));
+  for(const r of jungleRays){r.m.rotation.set(0,Math.atan2(camera.position.x-r.m.position.x,camera.position.z-r.m.position.z),r.tilt);r.m.material.opacity=k*(0.55+0.45*Math.sin(t*0.25+r.ph));}}
 function oceanVisuals(rdt,dl){const F=oceanFX;if(!F)return;const t=U.uTime.value;
   CAUS.value=clamp(dl*(env.pump?1:0.75)+(env.lamp&&dl<0.5?0.35:0),0,1);
-  const lit=0.12+0.88*dl+(env.lamp?0.15:0),gr=smooth(0.3,0.9,env.algae);UW.col.value.set(lerp(0.01,0.03,gr)*lit,lerp(0.062,0.09,gr)*lit,lerp(0.1,0.05,gr)*lit);UW.sigV.value.set(0.07,0.028+gr*0.01,0.02+gr*0.03);
+  const lit=0.12+0.88*dl+(env.lamp?0.15:0),gr=smooth(0.3,0.9,env.algae);UW.col.value.set(lerp(0.006,0.03,gr)*lit,lerp(0.062,0.09,gr)*lit,lerp(0.165,0.05,gr)*lit);UW.sigV.value.set(0.062,0.025+gr*0.01,0.012+gr*0.03);
   uwT+=rdt;if(uwT>2){uwT=0;uwSweep(agentGroup);uwSweep(tank);}
   F.vol.material.color.copy(OC_VOL).lerp(OC_GREEN,smooth(0.3,0.9,env.algae));F.vol.material.opacity=0.14+0.1*env.algae;
   F.sn.offset.x+=rdt*(env.pump?0.03:0.008);F.sn.offset.y+=rdt*(env.pump?0.02:0.005);
   for(const r of F.rays){r.m.rotation.set(0,Math.atan2(camera.position.x-r.m.position.x,camera.position.z-r.m.position.z),r.tilt);r.m.material.opacity=dl*0.09*(0.6+0.4*Math.sin(t*0.4+r.ph));}
-  CMO.jelly.emissiveIntensity=isNight()?0.7:0.04;U.uWind.value=(env.pump?1.4:0.5)+Math.sin(t*0.3)*0.25;}
+  const jn=1-smooth(0.15,0.45,dl);CMO.jelly.emissiveIntensity=0.04+1.6*jn;CMO.jglow.opacity=0.75*jn*(0.75+0.25*Math.sin(t*1.7));CMO.gonad.emissiveIntensity=0.9*jn;U.uWind.value=(env.pump?1.4:0.5)+Math.sin(t*0.3)*0.25;}
 function relabel(sel,txt){const b=$(sel);if(!b)return;const n=[...b.childNodes].reverse().find(n=>n.nodeType===3&&n.textContent.trim());if(n)n.textContent=txt;}
 if(OCEAN){relabel('[data-tool="rain"]','补淡水');relabel('#ventBtn','换水');relabel('#pumpBtn','造浪泵');
   $('#o2').previousElementSibling.textContent='溶解氧 DO';$('#co2').previousElementSibling.textContent='酸碱度 pH';const th=document.querySelector('.zones thead');if(th)th.innerHTML='<tr><th>水质</th><th colspan="2"></th><th style="text-align:right">数值</th></tr>';
@@ -218,10 +220,12 @@ if(!MODE.stream&&!OCEAN)$('#pumpBtn').style.display='none';
 
 /* =================== loop =================== */
 let last=performance.now(),uiT=0,panelT=0,scoreT=0;
+function renderFrame(dt){const p=usePost();HDR_CLAMP.value=p?1:65504;HDR_ALPHA.value=p?GLASS_POST_ALPHA:1;if(p)composer.render(dt);else renderer.render(scene,camera);}
+let GLASS_POST_ALPHA=0.35;  // calibrated: mean brightness with post on matches rendering without post
 function frame(now){requestAnimationFrame(frame);if(window.__freeze){last=now;return;}const rdt=Math.min(0.05,(now-last)/1000);last=now;const gdt=rdt*env.speed;
   if(gdt>0){const n=Math.ceil(gdt/0.1),st=gdt/n;for(let i=0;i<n;i++)simStep(st);o2T+=gdt;if(o2T>3){o2T=0;O2H.push(env.o2);if(O2H.length>240)O2H.shift();}}
-  updateVisuals(rdt,gdt);applyCam(rdt);directorTick();updateLabels();sndListener();
-  if(usePost())composer.render(rdt);else renderer.render(scene,camera);
+  updateVisuals(rdt,gdt);introTick(rdt);applyCam(rdt);directorTick();updateLabels();sndListener();
+  renderFrame(rdt);
   scoreT+=rdt;if(scoreT>1){scoreT=0;computeScore();checkContracts();refreshLocks();}
   uiT+=rdt;if(uiT>0.3){uiT=0;updateHUD();if(selected&&!$('#inspect').hidden&&!inspHover)renderInspect();if(logDirty&&!$('#tab-log').hidden){renderLog();logDirty=false;}}
   panelT+=rdt;if(panelT>1){panelT=0;if(!$('#tab-env').hidden)renderEnv();if(!$('#tab-contracts').hidden)renderContracts();if(!$('#tab-species').hidden)renderSpecies();}}
@@ -231,5 +235,4 @@ setMsg('就绪');
 initPost().then(()=>{});
 requestAnimationFrame(frame);
 setTimeout(()=>{LOADED=true;$('#loading').classList.add('gone');},300);
-setTimeout(()=>{$('#hint').style.opacity=0;},12000);
-logEvent('info',`${MODE.name}启动。W A S D 移动镜头，试试打开“导演模式”`,null,0);
+logEvent('info',`${MODE.name}启动。导演模式已开启，${IS_MOBILE?'双指拖动':'按 W A S D 或右键拖动'}可随时接管镜头`,null,0);

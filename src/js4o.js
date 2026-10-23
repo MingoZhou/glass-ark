@@ -4,7 +4,7 @@ const CMO={};
 if(OCEAN){const fm=(tex)=>new THREE.MeshPhysicalMaterial({map:tex,roughness:0.28,clearcoat:0.9,clearcoatRoughness:0.2,side:THREE.DoubleSide});
   CMO.damsel=fm(TX.damsel);CMO.clown=fm(TX.clown);CMO.grouper=fm(TX.grouper);CMO.moray=new THREE.MeshPhysicalMaterial({map:TX.moray,roughness:0.35,clearcoat:1,side:THREE.DoubleSide});TX.moray.wrapS=TX.moray.wrapT=THREE.RepeatWrapping;
   CMO.fin=c=>new THREE.MeshStandardMaterial({map:TX.fin,color:c,transparent:true,opacity:0.82,side:THREE.DoubleSide,depthWrite:false,roughness:0.4});
-  CMO.jelly=new THREE.MeshPhysicalMaterial({color:0xd8ecf8,transparent:true,opacity:0.4,roughness:0.12,clearcoat:1,side:THREE.DoubleSide,depthWrite:false,emissive:0x3a8aff,emissiveIntensity:0});
+  CMO.jglow=new THREE.SpriteMaterial({map:TX.soft,color:0x5aa8ff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0});CMO.jelly=new THREE.MeshPhysicalMaterial({color:0xd8ecf8,transparent:true,opacity:0.4,roughness:0.12,clearcoat:1,side:THREE.DoubleSide,depthWrite:false,emissive:0x3a8aff,emissiveIntensity:0});
   CMO.gonad=new THREE.MeshStandardMaterial({color:0xf0a0c8,transparent:true,opacity:0.8,emissive:0xff66cc,emissiveIntensity:0,depthWrite:false});
   CMO.line=new THREE.LineBasicMaterial({color:0xe8f4ff,transparent:true,opacity:0.5,depthWrite:false});}
 const FISH={damsel:{L:0.22,R:0.045,FY:1.5,FZ:0.5,mat:'damsel',fin:0x3a7fff,tail:0xffd02a},clown:{L:0.2,R:0.046,FY:1.35,FZ:0.58,mat:'clown',fin:0xf07a1c,tail:0xf07a1c},grouper:{L:0.85,R:0.125,FY:1.15,FZ:0.72,mat:'grouper',fin:0xb8342a,tail:0xb8342a}};
@@ -50,6 +50,7 @@ function buildUrchin(){const P=[sph(0.06,0x3a1a3a,[0,0.05,0],[1,0.8,1],14,10)];c
   const root=new THREE.Group();root.add(mm(P,CM.chitin));return{root};}
 function buildJelly(){const root=new THREE.Group();const pts=[];for(let i=0;i<=14;i++){const t=i/14,a=t*Math.PI/2;pts.push(new V2(Math.max(0.002,0.2*Math.sin(a)*(1+0.08*(1-t))),0.13*Math.cos(a)));}
   const bell=new THREE.Mesh(new THREE.LatheGeometry(pts,32),CMO.jelly);bell.renderOrder=6;root.add(bell);
+  const halo=new THREE.Sprite(CMO.jglow);halo.scale.setScalar(0.6);halo.position.y=0.05;halo.renderOrder=11;root.add(halo);
   for(let k=0;k<4;k++){const t=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.008,6,16,Math.PI*1.6),CMO.gonad);t.rotation.set(Math.PI/2,0,k*Math.PI/2);t.position.set(Math.cos(k*Math.PI/2)*0.05,0.07,Math.sin(k*Math.PI/2)*0.05);bell.add(t);}
   const M=new Mesher();for(let k=0;k<4;k++){const a=k/4*6.283+0.4;blade(M,Math.cos(a)*0.02,Math.sin(a)*0.02,0.28,0.15,0.03,a,new Col(0xf0e0f0),new Col(0xd8c8e8),6,1,0);}const arms=new THREE.Mesh(M.geo(),CMO.jelly);arms.rotation.x=Math.PI;root.add(arms);
   const NT=48,tpos=new Float32Array(NT*3*2*3);const tg=new THREE.BufferGeometry();tg.setAttribute('position',new THREE.BufferAttribute(tpos,3));const tent=new THREE.LineSegments(tg,CMO.line);tent.frustumCulled=false;root.add(tent);

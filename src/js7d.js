@@ -7,10 +7,11 @@ const _kd=new V3(),_kb=new V3();
 function clampTarget(){const t=cam.tT;t.x=clamp(t.x,-HW+0.25,HW-0.25);t.z=clamp(t.z,-HD+0.35,HD-0.25);t.y=clamp(t.y,heightAt(t.x,t.z)+0.12,TOP-0.3);}
 function camKeys(dt){if(!keys.size)return;const fast=keys.has('shift')?2.8:1;dt=Math.min(dt,0.05);
   let mx=0,mz=0;if(keys.has('w')||keys.has('arrowup'))mz+=1;if(keys.has('s')||keys.has('arrowdown'))mz-=1;if(keys.has('a')||keys.has('arrowleft'))mx-=1;if(keys.has('d')||keys.has('arrowright'))mx+=1;
-  if(mx||mz){tutDone('cam');if(cam.follow)stopFollow();if(cam.fmode==='eye'||cam.fmode==='chase')cam.fmode='orbit';const sp=(1.2+cam.r*0.32)*fast*dt;
+  if(mx||mz){tutDone('cam');directorOff();if(cam.follow)stopFollow();if(cam.fmode==='eye'||cam.fmode==='chase')cam.fmode='orbit';const sp=(1.2+cam.r*0.32)*fast*dt;
     if(mz){camera.getWorldDirection(_kd);_kb.copy(cam.tT);cam.tT.addScaledVector(_kd,sp*mz);clampTarget();const moved=_kb.sub(cam.tT).multiplyScalar(-1).dot(_kd)*mz;const rest=sp-moved;
       if(rest>1e-4){const r0=cam.tR;cam.tR=clamp(cam.tR-rest*mz,0.8,80);const used=Math.abs(r0-cam.tR);if(rest-used>1e-4&&mz>0){_kd.y=0;if(_kd.lengthSq()>1e-6){_kd.normalize();cam.tT.addScaledVector(_kd,rest-used);clampTarget();}}}}
     if(mx){cam.tT.x+=Math.cos(cam.theta)*sp*mx;cam.tT.z+=-Math.sin(cam.theta)*sp*mx;clampTarget();}}
+  if(keys.has('q')||keys.has('e')||keys.has('r')||keys.has('f'))directorHold();
   if(keys.has('q'))cam.tTheta+=1.5*dt*fast;if(keys.has('e'))cam.tTheta-=1.5*dt*fast;
   if(keys.has('r'))cam.tR=clamp(cam.tR*Math.exp(-1.3*dt*fast),0.6,80);if(keys.has('f'))cam.tR=clamp(cam.tR*Math.exp(1.3*dt*fast),0.6,80);}
 

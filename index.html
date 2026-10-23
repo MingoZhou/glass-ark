@@ -48,8 +48,31 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--lamp);outline-o
 .iconbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .mobileonly{display:none}
 
-.side{top:calc(74px + env(safe-area-inset-top,0px));width:292px;max-height:calc(100% - 190px);display:flex;flex-direction:column;overflow:hidden}
+.side{top:calc(74px + env(safe-area-inset-top,0px));width:292px;max-height:calc(100% - 190px);display:none;flex-direction:column;overflow:hidden}
+.side.open{display:flex}
 .side.left{left:16px}.side.right{right:16px}
+/* onboarding chip under the clock: the next 上手任务, visible while the panels are closed */
+.tut-chip{display:flex;align-items:center;gap:8px;margin-top:8px;max-width:340px;padding:5px 10px 5px 8px;border-radius:99px;border:1px solid rgba(240,178,90,.35);background:rgba(8,12,10,.62);color:var(--ink);font:400 12.5px/1.3 var(--body);text-align:left;cursor:pointer;transition:border-color .2s,background .2s}
+.tut-chip:hover{border-color:rgba(240,178,90,.7);background:rgba(20,24,18,.8)}
+.tut-chip b{font-weight:600;color:var(--lamp);white-space:nowrap}
+.tut-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tut-chip em{font-style:normal;color:var(--lamp);font:600 11.5px var(--mono);white-space:nowrap}
+.tut-chip[hidden],body.left-open .tut-chip{display:none}
+@media (min-width:861px){body.left-open .inspect{left:324px}}
+/* opening shot */
+.hud,#labels{transition:opacity .8s}
+.intro-cap,.intro-skip{position:absolute;z-index:3;opacity:0;pointer-events:none;transition:opacity 1.1s}
+.intro-cap{left:50%;transform:translateX(-50%);width:min(760px,calc(100% - 32px));bottom:calc(14% + env(safe-area-inset-bottom,0px));padding:34px 24px;text-align:center;color:#f3e9d2;text-shadow:0 2px 18px rgba(0,0,0,.8);background:radial-gradient(closest-side,rgba(4,7,6,.55),rgba(4,7,6,.32) 55%,rgba(4,7,6,0))}
+.intro-cap .t{font:400 clamp(32px,5.2vw,60px)/1.1 var(--display);letter-spacing:.32em;margin-right:-.32em}
+.intro-cap .s{margin-top:12px;font:400 clamp(13px,1.5vw,17px)/1.5 var(--body);letter-spacing:.2em;color:#ddd6c4}
+.intro-skip{right:calc(20px + env(safe-area-inset-right,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));padding:8px 18px;border-radius:99px;background:rgba(8,12,10,.55);border:1px solid var(--line-2);color:var(--ink);font:400 13px var(--body);letter-spacing:.12em;cursor:pointer}
+.intro-skip:hover{background:rgba(20,26,22,.8)}
+body.intro .intro-cap{opacity:1}
+body.intro .intro-cap.off{opacity:0}
+body.intro .intro-skip{opacity:.85;pointer-events:auto}
+body.intro .hud,body.intro #labels,body.intro .zen-exit{opacity:0!important}
+body.intro .hud,body.intro .hud *,body.intro .zen-exit{pointer-events:none!important}
+@media (prefers-reduced-motion:reduce){.intro-cap,.intro-skip,.hud,#labels{transition:none}}
 .tabs{display:flex;gap:2px;padding:6px 6px 0;border-bottom:1px solid var(--line)}
 .tabs button{flex:1;padding:8px 6px 9px;font:400 15px/1 var(--display);letter-spacing:.12em;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--lamp)}
@@ -166,35 +189,95 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .errbar{position:absolute;left:50%;bottom:120px;transform:translateX(-50%);z-index:8;background:#3a1612;border:1px solid #a33;color:#fdd;padding:8px 12px;border-radius:10px;font-size:12px;max-width:90vw}
 
 
-.home{position:absolute;inset:0;z-index:10;overflow:auto;background:#050807;transition:opacity .8s}
+/* ---- home: "a shelf of tanks at night". Hero tank on the desk, then one specimen card per tank ---- */
+.home{position:absolute;inset:0;z-index:10;overflow:auto;overflow-x:hidden;background:var(--bg);transition:opacity .8s;scrollbar-width:thin}
 .home.gone{opacity:0;pointer-events:none}
-#homeBg{position:fixed;inset:0;width:100%;height:100%;display:block}
-.home-inner{position:relative;min-height:100%;box-sizing:border-box;max-width:1120px;margin:0 auto;padding:calc(48px + env(safe-area-inset-top,0px)) 24px calc(28px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:32px}
-.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.32em;color:rgba(230,236,227,.55)}
-.home-title{font:400 clamp(56px,11vw,120px)/1 var(--display);letter-spacing:.14em;margin:14px 0 12px;color:#f1f4ec;text-shadow:0 6px 40px rgba(0,0,0,.6)}
-.home-sub{max-width:34em;font-size:15px;line-height:1.75;color:rgba(230,236,227,.72);margin:0}
-.modes{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px}
-.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.mode{position:relative;display:flex;flex-direction:column;text-align:left;border-radius:16px;overflow:hidden;background:rgba(10,15,12,.62);border:1px solid rgba(220,235,225,.14);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);transition:transform .25s,border-color .25s,box-shadow .25s;color:var(--ink)}
-.mode:hover,.mode:focus-visible{transform:translateY(-3px);border-color:rgba(240,178,90,.7);box-shadow:0 18px 40px rgba(0,0,0,.45)}
-.mode .illus{display:block;width:100%;height:74px}
-.mode.feature .illus{flex:1 1 auto;min-height:170px;height:auto}
-.mode[data-mode=ocean]{grid-column:1/-1}.mode[data-mode=ocean] .illus{height:96px}
-.mode.feature .illus{background:radial-gradient(circle at 22% 30%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 35% 52%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 58% 22%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 66% 44%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 80% 34%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 46% 66%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 14% 58%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 88% 60%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(circle at 72% 14%,rgba(236,226,140,.85) 0 1.5px,rgba(236,226,140,.18) 3px,transparent 9px),radial-gradient(ellipse at 70% 110%,rgba(90,140,90,.25),transparent 60%),linear-gradient(#081410,#0f2218)}
-.mode-body{padding:12px 14px 14px}
-.mode.feature .mode-body{padding:18px 20px 20px}
-.mode-name{font:400 20px/1.2 var(--display);letter-spacing:.1em}
-.mode.feature .mode-name{font-size:30px}
-.mode-desc{font-size:12.5px;line-height:1.6;color:var(--muted);margin-top:6px}
-.mode.feature .mode-desc{font-size:14px}
-.mode-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
-.mode-tags span{font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid rgba(240,178,90,.4);color:var(--lamp)}
-.new{font:600 11px var(--body);font-style:normal;color:#07202c;background:#8fdcf0;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:3px;letter-spacing:0}
-.home-foot{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:auto}
+.hero{position:relative;min-height:clamp(560px,92vh,940px);display:flex;align-items:center;overflow:hidden;isolation:isolate}
+.hero-art,.hero-art img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hero-art img{object-fit:cover;object-position:72% 50%;z-index:-2}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(8,12,10,.96) 0%,rgba(8,12,10,.82) 26%,rgba(8,12,10,.25) 52%,rgba(8,12,10,0) 70%),linear-gradient(0deg,var(--bg) 0%,rgba(8,12,10,0) 22%)}
+#homeBg{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:-1;pointer-events:none}
+.hero-copy{position:relative;box-sizing:border-box;width:100%;max-width:1240px;margin:0 auto;padding:calc(56px + env(safe-area-inset-top,0px)) max(24px,env(safe-area-inset-right,0px)) 96px max(24px,env(safe-area-inset-left,0px))}
+.hero-copy>*{max-width:30rem}
+.eyebrow{font:500 12px/1 var(--mono);letter-spacing:.32em;color:rgba(230,236,227,.6)}
+.home-title{font:400 clamp(64px,9.5vw,136px)/1 var(--display);letter-spacing:.12em;margin:18px 0 18px -.04em;color:#f3f1e8;text-shadow:0 6px 40px rgba(0,0,0,.65);white-space:nowrap}
+.home-sub{font-size:16px;line-height:1.8;color:rgba(230,236,227,.78);margin:0;text-wrap:pretty}
+.hero-cta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:32px}
+.cta{display:inline-flex;align-items:center;gap:12px;padding:14px 22px 14px 24px;border-radius:14px;background:var(--lamp);color:var(--lamp-ink);font:600 16px/1 var(--body);letter-spacing:.06em;box-shadow:0 10px 30px rgba(240,178,90,.25);transition:transform .2s,box-shadow .2s}
+.cta svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.cta:hover,.cta:focus-visible{transform:translateY(-2px);box-shadow:0 14px 36px rgba(240,178,90,.35)}.cta:hover svg{transform:translateX(3px)}
+.cta-alt{font-size:14px;color:rgba(230,236,227,.72);border-bottom:1px solid rgba(230,236,227,.25);padding-bottom:2px}
+.cta-alt:hover{color:var(--ink);border-color:var(--lamp)}
+.hero-facts{display:flex;gap:22px;flex-wrap:wrap;margin-top:40px;font:500 11.5px/1.5 var(--mono);letter-spacing:.08em;color:rgba(230,236,227,.55)}
+.hero-facts b{display:block;font:400 22px/1.2 var(--display);letter-spacing:.06em;color:var(--ink)}
+.shelf{box-sizing:border-box;max-width:1240px;margin:0 auto;padding:8px max(24px,env(safe-area-inset-right,0px)) 0 max(24px,env(safe-area-inset-left,0px))}
+.shelf-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.shelf-head h2{font:400 26px/1.2 var(--display);letter-spacing:.14em;margin:0;color:var(--ink)}
+.shelf-head p{margin:0;font-size:13px;color:var(--muted)}
+.modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.mode{position:relative;display:flex;flex-direction:column;text-align:left;border-radius:18px;overflow:hidden;background:var(--panel);border:1px solid var(--line);color:var(--ink);transition:transform .25s,border-color .25s,box-shadow .25s}
+.mode:hover,.mode:focus-visible{transform:translateY(-4px);border-color:rgba(240,178,90,.55);box-shadow:0 22px 48px rgba(0,0,0,.5)}
+.mode-img{position:relative;aspect-ratio:3/2;max-width:100%;overflow:hidden;background:#0b0f0c}
+.mode-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s}
+.mode:hover .mode-img img{transform:scale(1.04)}
+.mode-body{display:flex;flex-direction:column;gap:6px;padding:16px 18px 18px;flex:1}
+.mode-name{display:flex;align-items:center;gap:8px;font:400 23px/1.2 var(--display);letter-spacing:.12em}
+.mode-no{margin-left:auto;font:500 11px var(--mono);letter-spacing:.12em;color:var(--faint)}
+.mode-desc{font-size:13.5px;line-height:1.65;color:var(--muted)}
+.mode-spec{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:auto;padding-top:12px;border-top:1px dashed var(--line-2);font:500 11.5px/1.4 var(--mono);color:#cdbf9f;font-variant-numeric:tabular-nums}
+.mode-save{position:absolute;left:12px;top:12px;padding:4px 10px;border-radius:99px;background:rgba(8,12,10,.78);border:1px solid rgba(240,178,90,.5);color:var(--lamp);font:600 11.5px/1.3 var(--body);letter-spacing:.04em}
+.new{font:600 11px var(--body);font-style:normal;color:#07202c;background:#8fdcf0;border-radius:6px;padding:1px 6px;letter-spacing:0}
+.home-foot{box-sizing:border-box;max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12px;padding:36px max(24px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px))}
 .home-foot .qual{display:flex;align-items:center;gap:10px}
 .home-foot .segm{margin:0;min-width:160px}
+.home-foot .keys-touch{display:none}@media (hover:none) and (pointer:coarse){.home-foot .keys-desk{display:none}.home-foot .keys-touch{display:block}}
 .home-foot .keys{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em}
-@media (max-width:760px){.modes{grid-template-columns:1fr}.mode.feature .illus{height:120px}.home-inner{padding-top:calc(28px + env(safe-area-inset-top,0px));gap:22px}}
+
+/* ---- save manager ---- */
+.save-open{margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:99px;border:1px solid var(--line-2);background:rgba(8,12,10,.5);color:var(--ink);font:400 13px var(--body);letter-spacing:.06em;cursor:pointer}
+.save-open:hover,.save-open:focus-visible{border-color:rgba(240,178,90,.6);color:var(--lamp)}
+.save-open svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+@media (max-width:760px){.save-open{margin-left:0}}
+.saves{box-sizing:border-box;width:min(560px,calc(100vw - 32px));max-height:calc(100dvh - 48px);overflow:auto;padding:22px 22px 18px;border-radius:18px;border:1px solid var(--line-2);background:#0e1411;color:var(--ink);font:13px/1.5 var(--body)}
+.saves::backdrop{background:rgba(2,4,3,.7);backdrop-filter:blur(3px)}
+.saves-head{display:flex;align-items:center;justify-content:space-between}
+.saves-head h3{margin:0;font:400 24px/1.2 var(--display);letter-spacing:.14em}
+.saves-x{width:34px;height:34px;border-radius:99px;border:1px solid var(--line);background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer}
+.saves-x:hover{color:var(--ink)}
+.saves-note{margin:8px 0 14px;color:var(--muted)}
+.saves-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.saves-list li{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.02)}
+.saves-list li.empty{opacity:.55}
+.saves-list img{width:72px;height:48px;object-fit:cover;border-radius:7px;flex:none}
+.saves-list .si{flex:1;min-width:0}
+.saves-list .sn{font:400 16px/1.25 var(--display);letter-spacing:.08em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.saves-list .sm{color:var(--muted);font-size:12px}
+.saves-list input{box-sizing:border-box;width:100%;padding:5px 8px;border-radius:7px;border:1px solid rgba(240,178,90,.6);background:#070a08;color:var(--ink);font:14px var(--body)}
+.saves-list .sa{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.saves-list .sa button{padding:5px 10px;border-radius:8px;border:1px solid var(--line);background:none;color:var(--ink);font:12.5px var(--body);cursor:pointer}
+.saves-list .sa button:hover{border-color:var(--line-2)}
+.saves-list .sa button.danger{color:#f0a090;border-color:rgba(240,140,120,.35)}
+.saves-list .sa button.danger.armed{background:#b8463a;color:#fff;border-color:#b8463a}
+@media (max-width:520px){.saves-list li{flex-wrap:wrap}.saves-list .sa{width:100%;justify-content:flex-start}}
+.saves-foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.saves-foot .btn{flex:1}
+.saves-msg{margin:10px 0 0;min-height:1.5em;color:var(--lamp)}
+.home-foot .gh{display:inline-flex;align-items:center;gap:7px;color:var(--muted);text-decoration:none;font-size:12.5px;padding:6px 10px;border-radius:99px;border:1px solid var(--line)}
+.home-foot .gh:hover,.home-foot .gh:focus-visible{color:var(--ink);border-color:var(--line-2)}
+.home-foot .gh svg{width:16px;height:16px;fill:currentColor}
+@media (max-width:1020px){.modes{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){
+  .hero{min-height:100svh;align-items:flex-start}
+  .hero-art img{object-position:50% 100%}
+  .hero::before{background:linear-gradient(180deg,rgba(8,12,10,.9) 0%,rgba(8,12,10,.55) 34%,rgba(8,12,10,0) 52%),linear-gradient(0deg,var(--bg) 0%,rgba(8,12,10,0) 14%)}
+  .hero-copy{padding-top:calc(36px + env(safe-area-inset-top,0px));padding-bottom:40px}
+  .home-title{font-size:clamp(52px,17vw,76px);margin:12px 0 12px}
+  .home-sub{font-size:14.5px}
+  .hero-cta{margin-top:22px}.hero-facts{display:none}
+  .modes{grid-template-columns:1fr;gap:16px}
+}
+@media (prefers-reduced-motion:reduce){.mode,.mode-img img,.cta,.cta svg{transition:none}}
 @media (max-width:860px){
   .brand h1{font-size:22px}
   .mobileonly{display:grid}
@@ -231,11 +314,14 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
   <div id="labels"></div>
   <button class="zen-exit" id="zenExit" aria-label="退出沉浸模式"><svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>退出沉浸</button>
   <div class="director" id="directorCap"></div>
+  <div class="intro-cap" id="introCap" aria-live="polite"><div class="t" id="introTitle"></div><div class="s" id="introLine"></div></div>
+  <button class="intro-skip" id="introSkip">跳过 ›</button>
 
   <div class="hud top">
     <div class="brand">
       <h1>玻璃方舟</h1>
       <div class="clock"><span id="clock">第 1 天 · 07:12</span><span class="pill" id="phase"><i></i>白昼</span><span class="pill" id="weather">晴</span></div>
+      <button class="tut-chip live" id="tutHint" hidden title="打开委托面板"></button>
     </div>
     <div class="controls live">
       <div class="chip panel" title="孢子：由观赏值持续产出，用来买植物和动物"><b id="coins">150</b><span>孢子 <em id="income" style="font-style:normal">+0/天</em></span></div>
@@ -250,9 +336,9 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
       <button class="iconbtn panel" id="soundBtn" aria-pressed="false" title="声音开关：雨声、蛙鸣、蟋蟀振翅" aria-label="声音"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></button>
       <button class="iconbtn panel" id="glassBtn" aria-pressed="false" title="隐藏玻璃和缸架（G）：去掉遮挡，看缸内更清楚" aria-label="隐藏玻璃"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8l3-3M8 13l8-8M13 19l6-6" opacity=".7"/><path d="M3 21 21 3" class="slash"/></svg></button>
       <button class="iconbtn panel" id="zenBtn" aria-pressed="false" title="沉浸模式：隐藏所有界面，只留下方工具栏（H），适合挂机观赏" aria-label="沉浸模式"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
-      <button class="iconbtn panel" id="setBtn" aria-pressed="false" title="设置：画质（低/中/高）、冷凝水效果" aria-label="设置"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.2 5.2l2.1 2.1M16.7 16.7l2.1 2.1M5.2 18.8l2.1-2.1M16.7 7.3l2.1-2.1"/></svg></button>
-      <button class="iconbtn panel mobileonly" id="leftToggle" aria-label="委托与日志"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></button>
-      <button class="iconbtn panel mobileonly" id="rightToggle" aria-label="缸况与物种"><svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg></button>
+      <button class="iconbtn panel" id="setBtn" aria-pressed="false" title="设置：画质（低/中/高）、冷凝水效果" aria-label="设置"><svg viewBox="0 0 24 24"><path d="M4 7h8M17 7h3M4 17h3M12 17h8"/><circle cx="14.5" cy="7" r="2.2"/><circle cx="9.5" cy="17" r="2.2"/></svg></button>
+      <button class="iconbtn panel" id="leftToggle" aria-pressed="false" title="委托与生态日志" aria-label="委托与日志"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></button>
+      <button class="iconbtn panel" id="rightToggle" aria-pressed="false" title="缸况与食物网" aria-label="缸况与物种"><svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg></button>
     </div>
   </div>
 
@@ -297,7 +383,10 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
     <p>声音来自具体的动物：雨蛙在水边鸣叫，蟋蟀在夜里的草丛里叫。镜头离得越近越响。</p>
     <h4>键盘</h4>
     <p>G 隐藏玻璃 · H 沉浸模式 · W S 朝视线方向前进后退（可以一直飞进缸里）· A D 横移 · Q E 旋转 · R F 缩放 · Shift 加速 · 空格暂停 · 1–8 切换工具 · Esc 取消</p>
-    <button class="btn" id="homeBtn" style="width:100%">返回首页</button>
+    <h4>存档</h4>
+    <p>每只缸单独自动保存：每 30 秒一次，切到后台或返回首页时也会保存。存档只在这台设备的这个浏览器里。</p>
+    <button class="btn" id="homeBtn" style="width:100%">保存并返回首页</button>
+    <button class="btn" id="resetBtn" style="width:100%;margin-top:8px">重新开始这只缸</button>
   </aside>
 
   <div class="hud dock">
@@ -320,31 +409,58 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
   </div>
 
   <div class="home" id="home">
-    <canvas id="homeBg"></canvas>
-    <div class="home-inner">
-      <header class="home-head">
+    <header class="hero">
+      <picture class="hero-art"><source media="(max-width:760px)" srcset="assets/home/hero-tall.webp"><img src="assets/home/hero-wide.webp" alt="夜里书桌上的一只玻璃生态缸：沙漠、草甸、睡莲水塘和雨林瀑布连成一片" width="1536" height="1024" fetchpriority="high"></picture>
+      <canvas id="homeBg" aria-hidden="true"></canvas>
+      <div class="hero-copy">
         <div class="eyebrow">GLASS ARK · 微缩生态模拟</div>
         <h1 class="home-title">玻璃方舟</h1>
         <p class="home-sub">在一只玻璃缸里造一个会自己运转的世界。光合作用、食物链、出生与死亡，都在你眼前发生。</p>
-      </header>
-      <section class="modes" aria-label="选择生态缸">
-        <button class="mode feature" data-mode="mixed">
-          <svg class="illus" viewBox="0 0 400 120" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><defs><linearGradient id="gm" x1="0" x2="1"><stop offset="0" stop-color="#c9a66e"/><stop offset=".3" stop-color="#7f9a43"/><stop offset=".62" stop-color="#4f8a7a"/><stop offset="1" stop-color="#2f6b2f"/></linearGradient></defs><path d="M0 84 Q40 60 80 78 T160 74 T240 88 T320 64 T400 70 V120 H0z" fill="url(#gm)"/><path d="M0 96 Q60 84 120 94 T240 100 T400 90 V120 H0z" fill="#0a120d" opacity=".55"/><ellipse cx="236" cy="96" rx="44" ry="7" fill="#9fd0da" opacity=".7"/><path d="M40 78v-26M40 60h-8v-10M40 66h8v-12" stroke="#5b8a4a" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M340 72c0-30 6-44 10-52M350 36c-14-6-26-2-32 6M350 36c14-8 26-6 32 2M350 28c-6-12-2-22 6-26" stroke="#2c5a2a" stroke-width="4" fill="none" stroke-linecap="round"/><g fill="#e8c95a"><circle cx="150" cy="70" r="3"/><circle cx="170" cy="66" r="3"/><circle cx="130" cy="72" r="2.5"/></g></svg>
-          <div class="mode-body"><div class="mode-name">混合生态缸</div><div class="mode-desc">沙漠、草甸、溪沼、雨林连成一片，瀑布从岩壁落下。11 种动物，四级食物链。</div><div class="mode-tags"><span>推荐</span><span>四种气候</span><span>瀑布溪流</span></div></div>
+        <div class="hero-cta"><button class="cta" data-mode="mixed"><span id="ctaLabel">打开混合生态缸</span><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><a class="cta-alt" href="#shelf">或者先挑一只缸</a></div>
+        <div class="hero-facts"><span><b>6</b>种生态缸</span><span><b>20</b>种动物</span><span><b>4</b>级食物链</span></div>
+      </div>
+    </header>
+    <section class="shelf" id="shelf" aria-label="选择生态缸">
+      <div class="shelf-head"><h2>选一只缸</h2><p>每只缸的进度会自动保存在这台设备上</p><button class="save-open" id="saveOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>存档管理</button></div>
+      <div class="modes">
+        <button class="mode" data-mode="mixed">
+          <span class="mode-img"><img src="assets/home/card-mixed.webp" alt="玻璃缸里四种气候连成一片：沙漠、开花的草甸、睡莲水塘和带瀑布的雨林" width="960" height="640" loading="lazy" decoding="async"></span>
+          <span class="mode-body"><span class="mode-name">混合生态缸<span class="mode-no">No.01</span></span><span class="mode-desc">沙漠、草甸、溪沼、雨林连成一片，瀑布从岩壁落下。四级食物链，最适合第一次玩。</span><span class="mode-spec">22–30°C · 4 个气候区 · 11 种动物</span></span>
         </button>
-        <div class="mode-grid">
-          <button class="mode" data-mode="desert"><svg class="illus" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="80" fill="#3a2414"/><circle cx="160" cy="22" r="11" fill="#f5c27a"/><path d="M0 60 Q50 40 100 56 T200 50 V80 H0z" fill="#c9a26e"/><path d="M0 70 Q70 58 140 68 T200 66 V80 H0z" fill="#a9824f"/><path d="M52 58V34M52 44h-7v-8M52 48h7v-10" stroke="#5b8a4a" stroke-width="4" fill="none" stroke-linecap="round"/></svg><div class="mode-body"><div class="mode-name">沙漠缸</div><div class="mode-desc">沙丘、仙人掌和晒太阳的沙蜥。</div></div></button>
-          <button class="mode" data-mode="meadow"><svg class="illus" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="80" fill="#1d2a12"/><path d="M0 58 Q60 44 120 54 T200 50 V80 H0z" fill="#6f8c3c"/><g stroke="#a4c160" stroke-width="2" stroke-linecap="round"><path d="M20 62l-4-16M28 62l3-18M36 62l-2-14M150 60l-3-16M158 60l4-18M166 60l1-12"/></g><g fill="#f3efe4"><circle cx="80" cy="50" r="4"/><circle cx="100" cy="46" r="4"/></g><g fill="#e2629c"><circle cx="122" cy="48" r="4"/></g></svg><div class="mode-body"><div class="mode-name">草甸缸</div><div class="mode-desc">野花与蟋蟀，蝴蝶完成变态发育。</div></div></button>
-          <button class="mode" data-mode="marsh"><svg class="illus" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="80" fill="#0f2220"/><path d="M0 56 Q50 48 100 52 T200 50 V80 H0z" fill="#55602f"/><ellipse cx="100" cy="64" rx="70" ry="10" fill="#6fb0b8" opacity=".7"/><g stroke="#8a9a50" stroke-width="3" stroke-linecap="round"><path d="M30 60V26M38 60V32M170 58V28"/></g><g fill="#5a3a22"><rect x="27" y="24" width="6" height="12" rx="3"/><rect x="167" y="26" width="6" height="12" rx="3"/></g><circle cx="120" cy="62" r="5" fill="#4f8a45"/></svg><div class="mode-body"><div class="mode-name">溪沼缸</div><div class="mode-desc">大水塘、香蒲和合唱的雨蛙。</div></div></button>
-          <button class="mode" data-mode="jungle"><svg class="illus" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true"><rect width="200" height="80" fill="#0c2010"/><path d="M0 58 Q60 46 120 56 T200 52 V80 H0z" fill="#3b2d1f"/><path d="M150 60V20" stroke="#5a4533" stroke-width="7"/><path d="M150 22c-24-10-40 0-46 8M150 22c24-12 40-2 46 8M150 20c-6-12 0-18 8-20" stroke="#2f6b28" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M40 60c-6-16-20-20-28-18M40 60c4-18 18-22 26-18" stroke="#3f7a37" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="92" y="0" width="6" height="40" fill="#cfe3ea" opacity=".6"/></svg><div class="mode-body"><div class="mode-name">雨林缸</div><div class="mode-desc">瀑布、雾气、蕨类和夜里的萤火虫。</div></div></button>
-          <button class="mode ocean" data-mode="ocean"><svg class="illus" viewBox="0 0 480 96" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs><linearGradient id="go" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1f8ab2"/><stop offset="1" stop-color="#06304a"/></linearGradient><linearGradient id="gr" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfeaff" stop-opacity=".35"/><stop offset="1" stop-color="#bfeaff" stop-opacity="0"/></linearGradient></defs><rect width="480" height="96" fill="url(#go)"/><path d="M120 0l30 0-40 96h-24zM250 0h18l-20 96h-14zM360 0h26l-30 96h-20z" fill="url(#gr)"/><path d="M0 80 Q90 70 180 78 T360 74 T480 76 V96 H0z" fill="#d9c79c"/><path d="M300 78c4-14 24-22 44-18s30 10 34 18z" fill="#8a6a7a"/><g stroke="#e0a0c0" stroke-width="3" stroke-linecap="round" fill="none"><path d="M318 64l-4-12M326 60l2-12M334 60l6-10M342 62l8-8"/></g><path d="M40 82c-6-26 6-40 0-66M52 82c8-24-4-40 8-60M64 82c-4-18 6-28 2-44" stroke="#3f8a4a" stroke-width="5" fill="none" stroke-linecap="round"/><g fill="#e86a4a"><circle cx="410" cy="72" r="8"/><circle cx="422" cy="64" r="6"/><circle cx="398" cy="66" r="5"/></g><path d="M424 76h14M427 76l-3 5M435 76l3 5" stroke="#c0503a" stroke-width="2.5" fill="none"/><path d="M200 40q14-9 28 0q-14 9-28 0z" fill="#f08a2a"/><path d="M200 40l-8-6v12z" fill="#f08a2a"/><path d="M211 35v10M219 35v10" stroke="#fff" stroke-width="2.4"/><g fill="#3a7bd5"><path d="M140 26q7-4 14 0q-7 4-14 0zM134 26l-4-3v6z"/><path d="M160 20q6-3 12 0q-6 3-12 0zM155 20l-3-2.5v5z"/><path d="M152 32q6-3 12 0q-6 3-12 0zM147 32l-3-2.5v5z"/></g><path d="M268 16c-8 0-12 6-12 10h24c0-4-4-10-12-10z" fill="#e8f2ff" opacity=".55"/><path d="M260 26c-1 8 2 14 0 20M268 26c1 8-2 14 0 22M276 26c-1 8 2 12 0 18" stroke="#e8f2ff" stroke-width="1.2" opacity=".5" fill="none"/><g fill="none" stroke="#cfefff" opacity=".7"><circle cx="90" cy="30" r="3"/><circle cx="95" cy="18" r="2"/><circle cx="88" cy="8" r="1.5"/></g></svg><div class="mode-body"><div class="mode-name">海洋缸 <em class="new">新</em></div><div class="mode-desc">珊瑚礁、小丑鱼、螃蟹和伏击的海鳗。</div></div></button>
-        </div>
-      </section>
-      <footer class="home-foot">
-        <div class="qual"><span>画质</span><div class="segm" id="homeQual"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div></div>
-        <div class="keys">W A S D 飞行 · Q E 旋转 · 滚轮缩放 · 点击生物跟随</div>
-      </footer>
-    </div>
+        <button class="mode" data-mode="desert">
+          <span class="mode-img"><img src="assets/home/card-desert.webp" alt="沙漠缸：沙丘、仙人掌、红色岩石，一只沙蜥趴在加热灯下的岩石上" width="960" height="640" loading="lazy" decoding="async"></span>
+          <span class="mode-body"><span class="mode-name">沙漠缸<span class="mode-no">No.02</span></span><span class="mode-desc">沙丘、仙人掌和晒太阳的沙蜥。清晨沙蜥会爬上加热岩晒背。</span><span class="mode-spec">30°C · 湿度 22% · 7 种动物</span></span>
+        </button>
+        <button class="mode" data-mode="meadow">
+          <span class="mode-img"><img src="assets/home/card-meadow.webp" alt="草甸缸：野花、狗尾草和小水塘，几只蝴蝶在飞，叶子上有毛毛虫和蛹" width="960" height="640" loading="lazy" decoding="async"></span>
+          <span class="mode-body"><span class="mode-name">草甸缸<span class="mode-no">No.03</span></span><span class="mode-desc">野花与蟋蟀。毛毛虫在寄主植物上长大，化蛹，再羽化成蝴蝶。</span><span class="mode-spec">24°C · 湿度 48% · 10 种动物</span></span>
+        </button>
+        <button class="mode" data-mode="marsh">
+          <span class="mode-img"><img src="assets/home/card-marsh.webp" alt="溪沼缸：睡莲水塘、香蒲和小溪，几只雨蛙，水里漂着卵块" width="960" height="640" loading="lazy" decoding="async"></span>
+          <span class="mode-body"><span class="mode-name">溪沼缸<span class="mode-no">No.04</span></span><span class="mode-desc">大水塘、香蒲和合唱的雨蛙。卵块孵出蝌蚪，蝌蚪长出四肢爬上岸。</span><span class="mode-spec">22°C · 湿度 74% · 10 种动物</span></span>
+        </button>
+        <button class="mode" data-mode="jungle">
+          <span class="mode-img"><img src="assets/home/card-jungle.webp" alt="雨林缸：夜晚的雨林，瀑布、龟背竹、凤梨和蘑菇，萤火虫在发光" width="960" height="640" loading="lazy" decoding="async"></span>
+          <span class="mode-body"><span class="mode-name">雨林缸<span class="mode-no">No.05</span></span><span class="mode-desc">瀑布、雾气、蕨类和夜里的萤火虫。雨林最湿润，蘑菇从腐殖质里长出来。</span><span class="mode-spec">25°C · 湿度 82% · 11 种动物</span></span>
+        </button>
+        <button class="mode" data-mode="ocean">
+          <span class="mode-img"><img src="assets/home/card-ocean.webp" alt="海洋缸：珊瑚礁、海葵里的小丑鱼、蓝色鱼群、水母、螃蟹和海星" width="960" height="640" loading="lazy" decoding="async"></span>
+          <span class="mode-body"><span class="mode-name">海洋缸 <em class="new">新</em><span class="mode-no">No.06</span></span><span class="mode-desc">珊瑚礁、小丑鱼、螃蟹和伏击的海鳗。要管水温、盐度和营养盐。</span><span class="mode-spec">25°C · 盐度 35‰ · 9 种动物</span></span>
+        </button>
+      </div>
+    </section>
+    <dialog class="saves" id="saves" aria-labelledby="savesTitle">
+      <div class="saves-head"><h3 id="savesTitle">存档管理</h3><button class="saves-x" id="savesClose" type="button" aria-label="关闭">×</button></div>
+      <p class="saves-note">每只缸一个存档，自动保存在这台设备的浏览器里。导出成文件可以备份，或者换设备、换浏览器后再导入。</p>
+      <ul class="saves-list" id="savesList"></ul>
+      <div class="saves-foot"><button class="btn" id="saveImport" type="button">导入存档…</button><button class="btn" id="saveExportAll" type="button">导出全部</button><input type="file" id="saveFile" accept=".json,application/json" hidden></div>
+      <p class="saves-msg" id="savesMsg" role="status" aria-live="polite"></p>
+    </dialog>
+    <footer class="home-foot">
+      <div class="qual"><span>画质</span><div class="segm" id="homeQual"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div></div>
+      <a class="gh" href="https://github.com/MingoZhou/glass-ark" target="_blank" rel="noopener" aria-label="在 GitHub 上查看玻璃方舟的源代码" title="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
+      <div class="keys keys-desk">W A S D 飞行 · Q E 旋转 · 滚轮缩放 · 点击生物跟随</div><div class="keys keys-touch">单指转动 · 双指缩放平移 · 点击生物跟随</div>
+    </footer>
   </div>
   <div class="loading gone" id="loading"><div><div class="lt">玻璃方舟</div><div id="loadMsg">正在加载三维引擎…</div></div></div>
 </div>
@@ -539,7 +655,7 @@ function buildTextures(){
 /* ---------- ocean + extra textures ---------- */
 function buildOceanTextures(){
   TX.kelp=ctex(96,512,(g,w,h)=>{g.clearRect(0,0,w,h);const cx=w/2;const p=new Path2D();p.moveTo(cx,h);for(let y=h;y>=0;y-=4){const t=1-y/h,hw=w*0.46*Math.pow(Math.sin(Math.PI*Math.min(1,t*1.1+0.04)),0.6)*(0.85+0.15*Math.sin(y*0.35));p.lineTo(cx-hw,y);}for(let y=0;y<=h;y+=4){const t=1-y/h,hw=w*0.46*Math.pow(Math.sin(Math.PI*Math.min(1,t*1.1+0.04)),0.6)*(0.85+0.15*Math.sin(y*0.35+1));p.lineTo(cx+hw,y);}p.closePath();
-    g.save();g.clip(p);const gr=g.createLinearGradient(0,h,0,0);gr.addColorStop(0,'#5a4a1c');gr.addColorStop(1,'#a8913a');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let y=0;y<h;y+=6){g.strokeStyle=`rgba(40,30,10,${rand(0.08,0.2)})`;g.beginPath();g.moveTo(0,y);g.quadraticCurveTo(cx,y+rand(-4,4),w,y);g.stroke();}
+    g.save();g.clip(p);const gr=g.createLinearGradient(0,h,0,0);gr.addColorStop(0,'#7a6226');gr.addColorStop(1,'#d6b852');g.fillStyle=gr;g.fillRect(0,0,w,h);for(let y=0;y<h;y+=6){g.strokeStyle=`rgba(40,30,10,${rand(0.08,0.2)})`;g.beginPath();g.moveTo(0,y);g.quadraticCurveTo(cx,y+rand(-4,4),w,y);g.stroke();}
     g.strokeStyle='rgba(230,210,120,0.35)';g.lineWidth=2;g.beginPath();g.moveTo(cx,h);g.lineTo(cx,0);g.stroke();speckle(g,w,h,1500,0.08,0.08);g.restore();});
   TX.fan=ctex(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);const br=(x,y,a,l,wd,d)=>{if(d>7||l<3)return;const x2=x+Math.cos(a)*l,y2=y-Math.sin(a)*l;g.strokeStyle=`rgba(${200+d*6},${60+d*8},${90+d*6},1)`;g.lineWidth=wd;g.beginPath();g.moveTo(x,y);g.lineTo(x2,y2);g.stroke();br(x2,y2,a+rand(0.2,0.5),l*rand(0.72,0.85),wd*0.78,d+1);br(x2,y2,a-rand(0.2,0.5),l*rand(0.72,0.85),wd*0.78,d+1);};
     br(w/2,h,Math.PI/2,50,7,0);g.strokeStyle='rgba(220,90,120,0.55)';g.lineWidth=1;for(let i=0;i<260;i++){const a=rand(0.25,2.9),r=rand(30,120);const x=w/2+Math.cos(a)*r,y=h-Math.sin(a)*r;g.beginPath();g.moveTo(x,y);g.lineTo(x+rand(-10,10),y+rand(-10,10));g.stroke();}});
@@ -564,35 +680,23 @@ const MODES={
 };
 let MK='mixed',MODE=MODES.mixed,OCEAN=false;
 function runHome(){return new Promise(resolve=>{
-  const home=$('#home'),cv=$('#homeBg'),g=cv.getContext('2d');let W2=1,H2=1;const dpr=Math.min(2,window.devicePixelRatio||1);
-  const hx=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
-  const PAL={mixed:['#10201a','#04070a','#0b1710',[255,236,190],[210,255,140],0],desert:['#3c2616','#0c0705','#1d1209',[255,210,150],[255,222,170],0],meadow:['#1f2c13','#070a05','#0f190a',[255,242,190],[255,250,210],0],
-    marsh:['#10261f','#040a0a','#0a1814',[200,240,230],[210,255,150],0],jungle:['#0d2412','#030805','#06130a',[220,255,200],[200,255,160],0],ocean:['#0c4a6a','#02111e','#042232',[170,230,255],[220,245,255],1]};
-  const conv=p=>({top:hx(p[0]),bot:hx(p[1]),fg:hx(p[2]),ray:p[3],part:p[4],oc:p[5]});
-  let cur=conv(PAL.mixed),tgt=conv(PAL.mixed);
-  const parts=Array.from({length:110},()=>({x:Math.random(),y:Math.random(),s:rand(0.6,1.8),ph:rand(0,6.28),v:rand(0.3,1)}));
-  const blades=Array.from({length:120},(_,i)=>({x:i/120+rand(-0.006,0.006),h:rand(0.06,0.24),ph:rand(0,6.28),w:rand(1.5,4)}));
-  const kelp=Array.from({length:18},()=>({x:rand(0,1),h:rand(0.3,0.78),ph:rand(0,6.28),w:rand(8,16)}));
-  const rs=()=>{W2=innerWidth;H2=innerHeight;cv.width=W2*dpr;cv.height=H2*dpr;g.setTransform(dpr,0,0,dpr,0,0);};rs();addEventListener('resize',rs);
-  let alive=true;const t0=performance.now();const rgb=(c,a)=>`rgba(${c[0]|0},${c[1]|0},${c[2]|0},${a})`;
-  function draw(now){if(!alive)return;requestAnimationFrame(draw);const t=(now-t0)/1000;
-    for(const k of['top','bot','fg','ray','part'])cur[k]=cur[k].map((v,i)=>v+(tgt[k][i]-v)*0.05);cur.oc+=(tgt.oc-cur.oc)*0.04;const oc=cur.oc,W=W2,H=H2;
-    const bg=g.createLinearGradient(0,0,0,H);bg.addColorStop(0,rgb(cur.top,1));bg.addColorStop(1,rgb(cur.bot,1));g.globalCompositeOperation='source-over';g.fillStyle=bg;g.fillRect(0,0,W,H);
-    g.globalCompositeOperation='lighter';
-    for(let k=0;k<6;k++){const x=W*(0.08+k*0.17)+Math.sin(t*0.18+k*1.7)*50,w0=40+k%3*30,w1=W*0.22,a=0.05+0.03*Math.sin(t*0.3+k);const gr=g.createLinearGradient(0,0,0,H*0.95);gr.addColorStop(0,rgb(cur.ray,a));gr.addColorStop(1,rgb(cur.ray,0));g.fillStyle=gr;g.beginPath();g.moveTo(x-w0/2,0);g.lineTo(x+w0/2,0);g.lineTo(x+w1/2+H*0.25,H);g.lineTo(x-w1/2+H*0.25,H);g.closePath();g.fill();}
-    if(oc>0.02){g.strokeStyle=rgb([200,240,255],0.05*oc);g.lineWidth=2;for(let i=0;i<26;i++){g.beginPath();const y0=H*0.02+i*9;for(let x=0;x<=W;x+=24){const y=y0+Math.sin(x*0.012+t*1.3+i)*6+Math.sin(x*0.031-t*0.9)*4;x?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}}
-    g.globalCompositeOperation='source-over';
-    g.fillStyle=rgb(cur.fg.map(v=>v*1.6),0.7);g.beginPath();g.moveTo(0,H);for(let x=0;x<=W;x+=20)g.lineTo(x,H*0.82+Math.sin(x*0.004+1)*H*0.04+Math.sin(x*0.013)*H*0.015);g.lineTo(W,H);g.fill();
-    if(oc<0.98){g.strokeStyle=rgb(cur.fg,1-oc);g.lineCap='round';for(const b of blades){const bx=b.x*W,bh=b.h*H*(H>W?0.7:1),sw=Math.sin(t*1.1+b.ph+b.x*6)*16;g.lineWidth=b.w;g.beginPath();g.moveTo(bx,H+2);g.quadraticCurveTo(bx+sw*0.3,H-bh*0.5,bx+sw,H-bh);g.stroke();}}
-    if(oc>0.02){g.lineCap='round';for(const k of kelp){const kx=k.x*W,kh=k.h*H;g.strokeStyle=rgb([30,70,50],oc*0.9);g.lineWidth=k.w;g.beginPath();g.moveTo(kx,H+4);for(let s=1;s<=14;s++){const f=s/14;g.lineTo(kx+Math.sin(t*0.8+f*3+k.ph)*38*f,H-kh*f);}g.stroke();}
-      g.fillStyle=rgb([200,90,110],oc*0.6);for(let i=0;i<9;i++){g.beginPath();g.arc(W*(0.05+i*0.12),H+10,40+i%3*18,Math.PI,0);g.fill();}}
-    for(const p of parts){if(oc>0.5){p.y-=0.0012*p.v;p.x+=Math.sin(t*2+p.ph)*0.0006;if(p.y<-0.02){p.y=1.02;p.x=Math.random();}g.strokeStyle=rgb(cur.part,0.5*oc);g.lineWidth=1.2;g.beginPath();g.arc(p.x*W,p.y*H,p.s*2.2,0,6.28);g.stroke();}
-      else{p.x+=Math.sin(t*0.3+p.ph)*0.0004;p.y+=Math.cos(t*0.25+p.ph)*0.0003;const bl=Math.pow(Math.max(0,Math.sin(t*p.v*1.6+p.ph)),4);const r=p.s*(3+bl*5);const gr=g.createRadialGradient(p.x*W,p.y*H,0,p.x*W,p.y*H,r*3);gr.addColorStop(0,rgb(cur.part,0.2+0.7*bl));gr.addColorStop(1,rgb(cur.part,0));g.fillStyle=gr;g.fillRect(p.x*W-r*3,p.y*H-r*3,r*6,r*6);}}
-    const vg=g.createRadialGradient(W/2,H*0.45,Math.min(W,H)*0.3,W/2,H*0.45,Math.max(W,H)*0.8);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,0.55)');g.fillStyle=vg;g.fillRect(0,0,W,H);}
-  requestAnimationFrame(draw);
+  const home=$('#home'),hero=home.querySelector('.hero'),cv=$('#homeBg'),g=cv.getContext('2d');let W=1,H=1;const dpr=Math.min(2,window.devicePixelRatio||1);
+  const still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // a few fireflies drifting over the hero art; they gather toward the tank on the right
+  const flies=Array.from({length:26},()=>({x:rand(0.42,1),y:rand(0.12,0.9),s:rand(0.7,1.6),ph:rand(0,6.28),v:rand(0.4,1.1)}));
+  const rs=()=>{W=hero.clientWidth;H=hero.clientHeight;cv.width=W*dpr;cv.height=H*dpr;g.setTransform(dpr,0,0,dpr,0,0);if(still)draw(0);};
+  let alive=true;const t0=performance.now();
+  function draw(now){if(!alive)return;if(!still)requestAnimationFrame(draw);const t=(now-t0)/1000;g.clearRect(0,0,W,H);g.globalCompositeOperation='lighter';
+    for(const p of flies){if(!still){p.x+=Math.sin(t*0.3+p.ph)*0.00035;p.y+=Math.cos(t*0.23+p.ph)*0.00028;}
+      const bl=Math.pow(Math.max(0,Math.sin(t*p.v*1.4+p.ph)),5),r=p.s*(2+bl*4),x=p.x*W,y=p.y*H;
+      const gr=g.createRadialGradient(x,y,0,x,y,r*4);gr.addColorStop(0,`rgba(232,255,150,${0.08+0.75*bl})`);gr.addColorStop(1,'rgba(200,255,120,0)');g.fillStyle=gr;g.fillRect(x-r*4,y-r*4,r*8,r*8);}
+    g.globalCompositeOperation='source-over';}
+  rs();addEventListener('resize',rs);if(!still)requestAnimationFrame(draw);
   const rq=()=>$$('#homeQual button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.q===QK));rq();
   $$('#homeQual button').forEach(b=>b.addEventListener('click',()=>{QK=b.dataset.q;Q=QUAL[QK];try{localStorage.setItem('ark-quality',QK);}catch(e){}rq();}));
-  $$('.mode').forEach(b=>{const k=b.dataset.mode;const hov=()=>{tgt=conv(PAL[k]);};b.addEventListener('pointerenter',hov);b.addEventListener('focus',hov);b.addEventListener('pointerleave',()=>{tgt=conv(PAL.mixed);});
+  const alt=home.querySelector('.cta-alt');if(alt)alt.addEventListener('click',e=>{e.preventDefault();$('#shelf').scrollIntoView({behavior:still?'auto':'smooth'});});
+  if(typeof homeDecorate==='function')homeDecorate();
+  $$('#home [data-mode]').forEach(b=>{const k=b.dataset.mode;
     b.addEventListener('click',()=>{MK=k;MODE=MODES[k];OCEAN=!!MODE.ocean;$('#loading').classList.remove('gone');home.classList.add('gone');setTimeout(()=>{alive=false;home.remove();},900);resolve(k);});});
 });}
 await runHome();
@@ -774,7 +878,7 @@ let terrain,tBase,tZW;
     const n1=fbm(x*0.6+1,z*0.6+2,3),n2=fbm(x*0.25+7,z*0.25+3,3);
     if(w[0]>0.05){const dv=Math.sin(x*0.42+z*0.28+fbm(x*0.16,z*0.16,3)*5);c.lerp(sand2,w[0]*0.55*Math.pow(1-Math.abs(dv),2));if(n2>0.6)c.lerp(red,w[0]*smooth(0.6,0.72,n2)*0.7);}
     if(w[1]>0.05){c.lerp(grassy,w[1]*smooth(0.35,0.6,n1)*0.8);if(n2<0.36)c.lerp(dirt,w[1]*0.6);}
-    if(w[3]>0.05){if(n1>0.55)c.lerp(moss,w[3]*smooth(0.55,0.68,n1));else if(n2<0.4)c.lerp(soil2,w[3]*0.5);}
+    if(w[3]>0.05){if(n1>0.42)c.lerp(moss,w[3]*smooth(0.42,0.6,n1)*0.95);else if(n2<0.4)c.lerp(soil2,w[3]*0.5);}
     const dp=pondD(x,z);if(dp<1.7)c.lerp(mud,smooth(1.7,1.0,dp)*0.85);if(dp<1.05)c.lerp(peb,0.5);
     const q=streamQ(x,z);if(q.d<1.2){c.lerp(peb,smooth(1.2,0.45,q.d)*0.8);}if(MODE.stream&&Math.hypot(x-POOL.x,z-POOL.z)<POOL.r*1.4)c.lerp(peb,0.6);
     const sl=Math.hypot(HG[gj*GR+Math.min(GX,gi+1)]-HG[gj*GR+Math.max(0,gi-1)],HG[Math.min(GZ,gj+1)*GR+gi]-HG[Math.max(0,gj-1)*GR+gi])/0.2;c.lerp(rockc,smooth(0.9,1.8,sl)*0.6);
@@ -784,9 +888,9 @@ let terrain,tBase,tZW;
   const idx=new Uint32Array((TW-1)*(TH-1)*6);let o=0;for(let j=0;j<TH-1;j++)for(let i=0;i<TW-1;i++){const a=j*TW+i,b=a+1,c2=a+TW,d=c2+1;idx[o++]=a;idx[o++]=c2;idx[o++]=b;idx[o++]=b;idx[o++]=c2;idx[o++]=d;}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();
   terrain=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,map:TX.detail,normalMap:TX.groundN,normalScale:new V2(0.9,0.9),roughness:0.96}));terrain.receiveShadow=true;tank.add(terrain);})();
-function oceanColor(c,x,z,y,n1,n2){const rf=reefAt(x,z);c.set(0xcbb892).multiplyScalar(0.72+0.26*n1);const rip=Math.sin(x*2.3+z*0.8+n2*6);c.multiplyScalar(0.94+0.06*rip);
-  if(rf>0.05){_c.set(0x7c7078).lerp(new Col(0xb3657f),smooth(0.5,0.65,n2)*0.8).lerp(new Col(0x6d5a86),smooth(0.62,0.7,n1)*0.6);c.lerp(_c,smooth(0.05,0.5,rf));}
-  const w=zoneW(zu(x,z));if(w[0]>0.1)c.lerp(new Col(0x9a9a6a),w[0]*0.45*smooth(0.45,0.6,n1));c.lerp(new Col(0xb9a57c),smooth(0.5,-0.2,y)*0.4);}
+function oceanColor(c,x,z,y,n1,n2){const rf=reefAt(x,z);c.set(0xe9e1cc).multiplyScalar(0.8+0.2*n1);const rip=Math.sin(x*2.3+z*0.8+n2*6);c.multiplyScalar(0.94+0.06*rip);
+  if(rf>0.05){_c.set(0x5e4a68).lerp(new Col(0xa04a78),smooth(0.5,0.65,n2)*0.75).lerp(new Col(0x4e3a78),smooth(0.62,0.7,n1)*0.6);c.lerp(_c,smooth(0.05,0.5,rf));}
+  const w=zoneW(zu(x,z));if(w[0]>0.1)c.lerp(new Col(0x8a9a62),w[0]*0.45*smooth(0.45,0.6,n1));c.lerp(new Col(0xd2c6a8),smooth(0.5,-0.2,y)*0.35);}
 function stampAO(x,z,r,k,undo){const i0=Math.max(0,Math.floor((x-r+HW)/W*GX/ST)),i1=Math.min(TW-1,Math.ceil((x+r+HW)/W*GX/ST)),j0=Math.max(0,Math.floor((z-r+HD)/D*GZ/ST)),j1=Math.min(TH-1,Math.ceil((z+r+HD)/D*GZ/ST));
   for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const px=-HW+i*ST*W/GX,pz=-HD+j*ST*D/GZ,d=Math.hypot(px-x,pz-z)/r;if(d>=1)continue;let f=1-k*(1-d*d);if(undo)f=1/f;const kk=(j*TW+i)*3;tBase[kk]*=f;tBase[kk+1]*=f;tBase[kk+2]*=f;}}
 function refreshTerrainWet(){const a=terrain.geometry.attributes.color.array,m=env.zones.map(z=>z.m),n=a.length/3;
@@ -796,7 +900,7 @@ function refreshTerrainWet(){const a=terrain.geometry.attributes.color.array,m=e
 /* substrate layers seen through the glass */
 (function(){const M=new Mesher(),N=180,clay=new Col(0xa65a32),mesh=new Col(0x222624),deep=new Col(0x2f2118),soil=new Col(0x4a3423),t=new Col();
   const edges=[s=>[-HW+s*W,HD-0.002],s=>[-HW+0.002,HD-s*D],s=>[HW-0.002,-HD+s*D]];
-  for(const E of edges){for(let i=0;i<N;i++){const [x0,z0]=E(i/N),[x1,z1]=E((i+1)/N),t0=heightAt(x0,z0),t1=heightAt(x1,z1);const zc0=OCEAN?new Col(0xd8c79c):new Col(0xcfae7c).lerp(new Col(0x3b2d1f),clamp((zu(x0,z0)+8)/16,0,1));const u0=(x0+z0)/2,u1=(x1+z1)/2;
+  for(const E of edges){for(let i=0;i<N;i++){const [x0,z0]=E(i/N),[x1,z1]=E((i+1)/N),t0=heightAt(x0,z0),t1=heightAt(x1,z1);const zc0=OCEAN?new Col(0xe4dbc2):new Col(0xcfae7c).lerp(new Col(0x3b2d1f),clamp((zu(x0,z0)+8)/16,0,1));const u0=(x0+z0)/2,u1=(x1+z1)/2;
       const band=(ya0,ya1,yb0,yb1,cA,cB)=>{const s=M.n;M.v(x0,ya0,z0,u0,ya0/2,cA);M.v(x1,yb0,z1,u1,yb0/2,cA);M.v(x1,yb1,z1,u1,yb1/2,cB);M.v(x0,ya1,z0,u0,ya1/2,cB);M.q(s,s+1,s+2,s+3);};
       band(BOT,-1.9,BOT,-1.9,clay,clay);band(-1.9,-1.8,-1.9,-1.8,mesh,mesh);band(-1.8,t0-0.35,-1.8,t1-0.35,deep,soil);band(t0-0.35,t0,t1-0.35,t1,t.copy(zc0).multiplyScalar(0.6).clone(),zc0);}}
   const m=new THREE.Mesh(M.geo(),new THREE.MeshStandardMaterial({vertexColors:true,map:TX.soil,roughness:1,side:THREE.DoubleSide}));tank.add(m);
@@ -822,12 +926,12 @@ const topY=x=>OCEAN?9.6+fbm(x*0.35+7,1.3,3)*1.6:MODE.zone!=null?[8.2,9,9.6,10.6]
     t.copy(sand).lerp(sand2,0.5+0.5*Math.sin(strata*6.283*0.5));c.lerp(t,w[0]+w[1]*0.4);
     if(fr<0.18&&w[3]+w[2]>0.3&&m>0.4)c.lerp(mossC,(w[3]+w[2]*0.5)*0.9);
     if(w[3]>0.4&&fbm(x*0.7+9,y*0.7,3)>0.55)c.lerp(mossC,0.7*w[3]);
-    if(OCEAN){c.set(0x5d5560).multiplyScalar(0.7+0.6*m);if(fbm(x*0.5+3,y*0.5,3)>0.55)c.lerp(new Col(0xc06a88),0.8);if(fbm(x*0.9,y*0.9+5,2)>0.62)c.lerp(new Col(0x7a4a8a),0.7);if(fbm(x*1.4+8,y*1.4,2)>0.64)c.lerp(new Col(0x4f7a40),0.6);}
+    if(OCEAN){c.set(0x463a56).multiplyScalar(0.7+0.6*m);if(fbm(x*0.5+3,y*0.5,3)>0.55)c.lerp(new Col(0xb05282),0.75);if(fbm(x*0.9,y*0.9+5,2)>0.62)c.lerp(new Col(0x7a4a8a),0.7);if(fbm(x*1.4+8,y*1.4,2)>0.64)c.lerp(new Col(0x4f7a40),0.6);}
     cols[i*3]=c.r;cols[i*3+1]=c.g;cols[i*3+2]=c.b;}
   g.setAttribute('color',new THREE.BufferAttribute(cols,3));g.computeVertexNormals();
   const m=new THREE.Mesh(g,MATS.rock);m.position.z=-HD+0.02;m.receiveShadow=true;m.castShadow=false;tank.add(m);})();
 /* hanging vines */
-if(MODE.vines)(function(){const M=new Mesher(),MS=new Mesher(),stemC=new Col(0x4a5a2a);const vr=MODE.vines,nv=Math.round((18*Q.scatter+4)*(vr[1]-vr[0])/11*(MK==='marsh'?0.35:0.6));
+if(MODE.vines)(function(){const M=new Mesher(),MS=new Mesher(),stemC=new Col(0x4a5a2a);const vr=MODE.vines,nv=Math.round((18*Q.scatter+4)*(vr[1]-vr[0])/11*(MK==='marsh'?0.35:MK==='jungle'?1.15:0.8));
   for(let v=0;v<nv;v++){const x=rand(vr[0],vr[1]),ty=topY(x)-0.1,len=rand(2.5,Math.min(8,ty-2)),z0=-HD+0.7;const pts=[];for(let k=0;k<=6;k++){const t=k/6;pts.push(new V3(x+Math.sin(t*3+v)*0.25,ty-len*t,z0+0.25*Math.sin(t*2.2+v)+t*0.5));}
     addTube(MS,pts,0.018,0.01,stemC,4,1,0);
     const curve=new THREE.CatmullRomCurve3(pts);for(let t=0.04;t<1;t+=rand(0.035,0.06)){const p=curve.getPointAt(t);const wv=t*1.2;const yaw=Math.PI/2+rand(-1.2,1.2);addLeaf(M,p,yaw,{len:rand(0.13,0.2),wid:rand(0.1,0.15),lift:rand(-0.6,0.2),droop:2,tint:new Col().setHSL(0.27,0.4,rand(0.55,0.8)),hr:1,wind:wv,segs:3});}}
@@ -843,8 +947,8 @@ function addRock(x,z,r,col,moss,sy,obst){const m=new THREE.Mesh(rockGeo(r,col,mo
  [15.5,-7.5,1.7,0x6f716a,0.9,true],[16.6,5.5,1.1,0x676a63,0.8,true],[12.5,7.5,0.8,0x6a6c66,0.7,true],[9.6,1.6,0.6,0x707068,0.7,true],[13.8,-2.2,0.9,0x6a6a62,0.8,true],
  [7.4,6.2,0.45,0x77756c,0.6,true],[-1.2,3.9,0.4,0x807a6c,0.6,true],[6.2,-3.2,0.35,0x77756c,0.5,true],[8.7,-5.5,0.4,0x6f6e66,0.6,true],[10.1,-7.2,0.45,0x6f6e66,0.6,true],[11.6,-9.2,0.7,0x6a6a62,0.7,true]
 ].forEach(r=>{if(OCEAN)return;let col=r[3],moss=!!r[5];if(MODE.zone!=null){const zc=[[0xb07a58,false],[0x857563,false],[0x77756c,true],[0x6a6c66,true]][MODE.zone];col=zc[0];moss=zc[1];}addRock(r[0],r[1],r[2],col,moss,r[4]);});
-const LIVE_ROCK=[0x8a6a7a,0x7a6a80,0x9a6a6a,0x6f6a78];function liveRockGeo(r,seed){const g=rockGeo(r,pick(LIVE_ROCK),false,seed);const nr=g.attributes.normal,cl=g.attributes.color,p=g.attributes.position;for(let i=0;i<cl.count;i++){const x=p.getX(i),z=p.getZ(i),y=p.getY(i);const f=fbm(x*2+seed,z*2+y,2);if(f>0.58)cl.setXYZ(i,0.72,0.3,0.42);else if(f<0.32&&nr.getY(i)>0.3)cl.setXYZ(i,0.3,0.45,0.28);}return g;}
-function addLiveRock(x,z,r,sy){const m=new THREE.Mesh(liveRockGeo(r,rand(0,90)),MATS.rock);m.scale.set(1,sy||0.8,1);m.position.set(x,heightAt(x,z)-r*0.15,z);m.rotation.y=rand(0,6);m.castShadow=m.receiveShadow=true;tank.add(m);stampAO(x,z,r*1.5,0.3);OBST.push({x,z,r:r*0.85,top:m.position.y+r*(sy||0.8)});return m;}
+const LIVE_ROCK=[0x5e4466,0x543e62,0x6a4660,0x4a3e5e],LIVEROCKS=[];function liveRockGeo(r,seed){const g=rockGeo(r,pick(LIVE_ROCK),false,seed);const nr=g.attributes.normal,cl=g.attributes.color,p=g.attributes.position;for(let i=0;i<cl.count;i++){const x=p.getX(i),z=p.getZ(i),y=p.getY(i);const f=fbm(x*2+seed,z*2+y,2);if(f>0.58)cl.setXYZ(i,0.78,0.26,0.46);else if(f>0.5&&nr.getY(i)>0.2)cl.setXYZ(i,0.42,0.24,0.6);else if(f<0.32&&nr.getY(i)>0.3)cl.setXYZ(i,0.24,0.42,0.26);}return g;}
+function addLiveRock(x,z,r,sy){const m=new THREE.Mesh(liveRockGeo(r,rand(0,90)),MATS.rock);m.scale.set(1,sy||0.8,1);m.position.set(x,heightAt(x,z)-r*0.15,z);m.rotation.y=rand(0,6);m.castShadow=m.receiveShadow=true;tank.add(m);stampAO(x,z,r*1.5,0.3);const ob={x,z,r:r*0.85,top:m.position.y+r*(sy||0.8),g:heightAt(x,z),rock:true};OBST.push(ob);LIVEROCKS.push(ob);return m;}
 if(OCEAN){[[12,-6,2.4,1],[15.5,1,1.8,0.9],[9,3.5,1.3,0.8],[14,6.5,1.1,0.8],[5,-4,1,0.7],[-2,-7,1.2,0.8],[-9,5,0.7,0.7],[-13,-5,0.9,0.7],[2,6,0.6,0.7],[7.5,-8.5,1.4,0.9]].forEach(r=>addLiveRock(...r));
   const M=new Mesher();const ap=[new V3(3.2,0,-1.5),new V3(4.2,2.2,-1.2),new V3(6.2,2.6,-0.8),new V3(7.4,0,-0.4)];ap[0].y=heightAt(3.2,-1.5)-0.2;ap[3].y=heightAt(7.4,-0.4)-0.2;addTubeR(M,ap,[0.75,0.5,0.45,0.7],WHITE,16,1,0,3);const ag=M.geo();colorize(ag,0x7a6a78,0.25,(x,y,z,c)=>{const f=fbm(x*1.5,z*1.5+y,2);if(f>0.55)c.set(0xb86a86);else if(f<0.35)c.set(0x5a7a4a);});const arch=new THREE.Mesh(ag,MATS.rock);arch.castShadow=arch.receiveShadow=true;tank.add(arch);OBST.push({x:3.3,z:-1.5,r:0.6,top:1.5},{x:7.3,z:-0.4,r:0.6,top:1.5});stampAO(3.3,-1.5,1.2,0.3);stampAO(7.3,-0.4,1.2,0.3);}
 const HEATROCKS=[];const heatRock={x:-12.3,z:3.2,bulb:{material:{}},mesh:null};
@@ -888,15 +992,23 @@ if(MODE.stream)(function(){const pipe=new Mesher();const pts=[new V3(12.4,height
 /* tank shell */
 const glassMat=new THREE.MeshStandardMaterial({color:0xd4ece6,transparent:true,opacity:0.05,roughness:0.02,metalness:0,depthWrite:false,side:THREE.DoubleSide});
 const sheenMat=new THREE.MeshStandardMaterial({color:0x000000,metalness:1,roughness:0.06,envMapIntensity:0.22,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+/* With post-processing on, transparent layers blend in linear HDR *before* tone mapping, unlike rendering
+   straight to screen (tone-map + sRGB per fragment, then blend). Two consequences for the thin glass layers:
+   a near-mirror highlight (20x white) at 5% opacity turns the tank milky, and even in-range colours add about
+   twice as much light when blended in linear space. While the composer is active, clamp them to display range
+   and scale their alpha so the tank looks the same as without post (values set per frame in renderFrame, js8). */
+const HDR_CLAMP={value:65504},HDR_ALPHA={value:1};
+function clampHDR(m){m.onBeforeCompile=s=>{s.uniforms.uHdrClamp=HDR_CLAMP;s.uniforms.uHdrAlpha=HDR_ALPHA;s.fragmentShader='uniform float uHdrClamp;\nuniform float uHdrAlpha;\n'+s.fragmentShader.replace('#include <opaque_fragment>','#include <opaque_fragment>\n\tgl_FragColor.rgb=min(gl_FragColor.rgb,vec3(uHdrClamp));gl_FragColor.a*=uHdrAlpha;');};m.customProgramCacheKey=()=>'hdrclamp';return m;}
+clampHDR(glassMat);clampHDR(sheenMat);
 const condPanes=[];
 (function(){const H=TOP-BOT,yc=(TOP+BOT)/2;
   const defs=[{w:W,p:[0,yc,HD+0.04],r:0,side:'front'},{w:W,p:[0,yc,-HD-0.04],r:Math.PI,side:'back'},{w:D,p:[-HW-0.04,yc,0],r:-Math.PI/2,side:'left'},{w:D,p:[HW+0.04,yc,0],r:Math.PI/2,side:'right'}];
   for(const d of defs){const g=new THREE.PlaneGeometry(d.w,H);for(const mt of[glassMat,sheenMat]){const m=new THREE.Mesh(g,mt);m.position.set(...d.p);m.rotation.y=d.r;m.renderOrder=9;tank.add(m);}
     if(d.side==='back'||OCEAN)continue;
     const cg=new THREE.PlaneGeometry(d.w,H,40,12);const n=cg.attributes.position.count;cg.setAttribute('color',new THREE.BufferAttribute(new Float32Array(n*4).fill(1),4));const uv=cg.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*d.w/4,uv.getY(i)*H/4);
-    const cm=new THREE.MeshStandardMaterial({map:TX.drop,vertexColors:true,transparent:true,depthWrite:false,roughness:0.2,side:THREE.DoubleSide});const mesh=new THREE.Mesh(cg,cm);mesh.position.set(...d.p);mesh.rotation.y=d.r;
+    const cm=clampHDR(new THREE.MeshStandardMaterial({map:TX.drop,vertexColors:true,transparent:true,depthWrite:false,roughness:0.2,side:THREE.DoubleSide}));const mesh=new THREE.Mesh(cg,cm);mesh.position.set(...d.p);mesh.rotation.y=d.r;
     if(d.side==='front')mesh.position.z-=0.015;if(d.side==='left')mesh.position.x+=0.015;if(d.side==='right')mesh.position.x-=0.015;mesh.renderOrder=10;tank.add(mesh);condPanes.push({mesh,d,H});}
-  const sm=new THREE.Mesh(new THREE.PlaneGeometry(W,H),new THREE.MeshBasicMaterial({map:TX.streak,transparent:true,opacity:0.045,blending:THREE.AdditiveBlending,depthWrite:false}));sm.position.set(0,yc,HD+0.05);sm.renderOrder=11;tank.add(sm);
+  const sm=new THREE.Mesh(new THREE.PlaneGeometry(W,H),clampHDR(new THREE.MeshBasicMaterial({map:TX.streak,transparent:true,opacity:0.045,blending:THREE.AdditiveBlending,depthWrite:false})));sm.position.set(0,yc,HD+0.05);sm.renderOrder=11;tank.add(sm);
   const fm=new THREE.MeshStandardMaterial({color:0x151816,metalness:0.8,roughness:0.32});const t=0.12,HH=H+0.2;
   for(const sx of[-1,1])for(const sz of[-1,1]){const m=new THREE.Mesh(new THREE.BoxGeometry(t,HH,t),fm);m.position.set(sx*(HW+0.06),yc,sz*(HD+0.06));m.castShadow=true;tank.add(m);}
   for(const y of[BOT-0.05,TOP+0.02])for(const sz of[-1,1]){const m=new THREE.Mesh(new THREE.BoxGeometry(W+0.24,y<0?0.3:t,t),fm);m.position.set(0,y,sz*(HD+0.06));tank.add(m);}
@@ -916,7 +1028,7 @@ function ripple(x,z,s){const r=ripples.find(q=>q.t>=1);if(!r)return;r.t=0;r.s=s|
 const CAUS={value:0};
 /* underwater light model (after Tidewater): Beer-Lambert absorption on the light path (surface -> point) and the view path (glass -> eye),
    single-scatter in-scatter colour, caustics modulate the direct sun instead of adding light. Units: per world unit (~0.4 m). */
-const UW={sigL:{value:new V3(0.075,0.032,0.016)},sigV:{value:new V3(0.07,0.028,0.02)},col:{value:new V3(0.01,0.062,0.1)},amb:{value:new V3(0.0,0.012,0.02)}};
+const UW={sigL:{value:new V3(0.048,0.02,0.011)},sigV:{value:new V3(0.062,0.025,0.012)},col:{value:new V3(0.006,0.062,0.165)},amb:{value:new V3(0.0,0.012,0.02)}};
 const CAUS_GLSL=`float causticF(vec2 p,float t){p-=250.0;vec2 i=p;float c=1.0;float inten=0.005;for(int n=0;n<4;n++){float tt=t*(1.0-(3.5/float(n+1)));i=p+vec2(cos(tt-i.x)+sin(tt+i.y),sin(tt-i.y)+cos(tt+i.x));c+=1.0/length(vec2(p.x/(sin(i.x+tt)/inten),p.y/(cos(i.y+tt)/inten)));}c/=4.0;c=1.17-pow(c,1.4);return clamp(pow(abs(c),8.0),0.0,1.6);}
 float uwPath(vec3 ro,vec3 p){vec3 d=p-ro;float L=length(d);vec3 rd=d/max(L,1e-4);vec3 bmin=vec3(${(-HW).toFixed(2)},${BOT.toFixed(2)},${(-HD).toFixed(2)}),bmax=vec3(${HW.toFixed(2)},${WT.toFixed(3)},${HD.toFixed(2)});
   vec3 ir=1.0/(rd+vec3(1e-6));vec3 t0=(bmin-ro)*ir,t1=(bmax-ro)*ir;vec3 tn=min(t0,t1);float te=max(max(tn.x,tn.y),max(tn.z,0.0));return max(L-te,0.0);}
@@ -939,6 +1051,12 @@ reflectedLight.indirectSpecular=mix(reflectedLight.indirectSpecular,reflectedLig
   m.customProgramCacheKey=()=>pk+'uw3';m.needsUpdate=true;return m;}
 function uwSweep(root){if(!OCEAN)return;root.traverse(o=>{if(!o.material)return;(Array.isArray(o.material)?o.material:[o.material]).forEach(causticify);});}
 let oceanFX=null;
+/* rainforest light shafts: soft warm beams slanting down through the canopy, strongest on humid mornings */
+let jungleRays=null;
+if(!OCEAN&&(MK==='jungle'||MK==='mixed')){jungleRays=[];
+  const shaft=ctex(64,256,(g,w,h)=>{const id=g.createImageData(w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const u=(x+0.5)/w*2-1,v=y/h,a=Math.exp(-u*u*5)*Math.pow(1-v,1.3)*Math.min(1,v*8+0.15);const i=(y*w+x)*4;id.data[i]=id.data[i+1]=id.data[i+2]=255;id.data[i+3]=a*255;}g.putImageData(id,0,0);});const xr=MK==='jungle'?[-15,15]:[7.5,16],n=MK==='jungle'?9:4;
+  for(let i=0;i<n;i++){const x=rand(xr[0],xr[1]),z=rand(-5,5),g=heightAt(x,z),h=TOP-0.3-g;const m=new THREE.Mesh(new THREE.PlaneGeometry(rand(1.4,2.6),h),new THREE.MeshBasicMaterial({map:shaft,color:0xffe9b8,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+    m.position.set(x,g+h/2,z);m.renderOrder=7;tank.add(m);jungleRays.push({m,ph:rand(0,6),tilt:rand(0.12,0.3)});}}
 if(OCEAN){causticify(terrain.material);causticify(MATS.rock);causticify(MATS.pebble);
   const vol=new THREE.Mesh(new THREE.BoxGeometry(W-0.02,WT-BOT-0.02,D-0.02),new THREE.MeshBasicMaterial({color:0x0f5a76,transparent:true,opacity:0.0,depthWrite:false}));vol.visible=false;vol.position.set(0,(WT+BOT)/2,0);vol.renderOrder=8;tank.add(vol);
   const sn=TX.waterN.clone();sn.needsUpdate=true;sn.repeat.set(6,4);
@@ -1042,12 +1160,12 @@ function bTree(){const H=rand(6.2,8.4);const MB=new Mesher(),ML=new Mesher(),MV=
   const pts=[new V3(0,-0.3,0),new V3(rand(-0.3,0.3),H*0.3,rand(-0.3,0.3)),new V3(rand(-0.5,0.5),H*0.62,rand(-0.5,0.5)),new V3(rand(-0.4,0.4),H,rand(-0.4,0.4))];
   addTubeR(MB,pts,[0.36,0.26,0.19,0.12],WHITE,14,H,0.08,4);const trunk=new THREE.CatmullRomCurve3(pts);
   for(let k=0;k<5;k++){const a=k/5*6.283+rand(-0.3,0.3),dx=Math.cos(a),dz=Math.sin(a);addTubeR(MB,[new V3(dx*0.15,1.3,dz*0.15),new V3(dx*0.55,0.45,dz*0.55),new V3(dx*1.05,-0.08,dz*1.05)],[0.14,0.1,0.05],WHITE,8,H,0,1);}
-  const cluster=(c,n,sz)=>{for(let i=0;i<n;i++)addLeaf(ML,c.clone().add(new V3(rand(-0.2,0.2),rand(-0.1,0.2),rand(-0.2,0.2))),rand(0,6.28),{len:rand(0.45,0.75)*sz,wid:rand(0.22,0.3)*sz,lift:rand(-0.3,0.55),droop:1.1,fold:0.12,segs:4,hr:H,wind:0.9,tint:HSL(0.28+rand(-0.02,0.03),0.45,rand(0.5,0.85))});};
+  const cluster=(c,n,sz,sp)=>{sp=sp||0.2;for(let i=0;i<n;i++)addLeaf(ML,c.clone().add(new V3(rand(-sp,sp),rand(-0.1,0.25)*sp*4,rand(-sp,sp))),rand(0,6.28),{len:rand(0.45,0.75)*sz,wid:rand(0.22,0.3)*sz,lift:rand(-0.3,0.55),droop:1.1,fold:0.12,segs:4,hr:H,wind:0.9,tint:HSL(0.28+rand(-0.02,0.03),0.45,rand(0.5,0.85))});};
   const nb=irand(4,6);for(let k=0;k<nb;k++){const t=rand(0.5,0.95),s=trunk.getPointAt(t),a=k/nb*6.283+rand(-0.4,0.4),dx=Math.cos(a),dz=Math.sin(a),L=rand(1.4,2.4);
     const bp=[s,s.clone().add(new V3(dx*L*0.45,L*0.35,dz*L*0.45)),s.clone().add(new V3(dx*L,L*0.5+rand(-0.2,0.3),dz*L))];addTubeR(MB,bp,[0.1,0.07,0.035],WHITE,7,H,0.15,2);
-    cluster(bp[2],irand(12,16),1.1);cluster(bp[1],irand(5,8),0.9);
+    cluster(bp[2],irand(26,32),1.1,0.6);cluster(bp[1],irand(10,14),0.95,0.4);cluster(bp[2].clone().lerp(bp[1],0.5).add(new V3(0,0.25,0)),irand(8,12),1,0.45);
     if(Math.random()<0.7){const r0=bp[1].clone();const gy=-r0.y+0.3;addTube(MV,[r0,r0.clone().add(new V3(rand(-0.1,0.1),gy*0.5,rand(-0.1,0.1))),r0.clone().add(new V3(rand(-0.15,0.15),gy,rand(-0.15,0.15)))],0.012,0.008,new Col(0x5a4a34),4,H,0.2);}}
-  cluster(pts[3],irand(16,22),1.2);
+  cluster(pts[3],irand(34,42),1.2,0.75);
   for(let e=0;e<2;e++){const t=rand(0.3,0.55),c=trunk.getPointAt(t);c.x+=0.2;for(let i=0;i<9;i++)addLeaf(ME,c,i*2.4,{len:rand(0.2,0.3),wid:0.07,lift:1.1,droop:1.6,fold:0.3,segs:4,hr:H,wind:0.1});}
   return{parts:[{g:MB.geo(),m:'bark'},{g:ML.geo(),m:'leafBroad'},{g:MV.geo(),m:'stem'},{g:ME.geo(),m:'brom'}],h:H};}
 function bMush(v){const parts=[];for(let k=0;k<irand(2,5);k++){const s=rand(0.6,1.2)*(k?0.75:1),ox=k?rand(-0.12,0.12):0,oz=k?rand(-0.12,0.12):0,sh=0.17*s,sr=0.016*s,cr=0.07*s;
@@ -1063,11 +1181,18 @@ if(OCEAN){MATS.coral=wind(new THREE.MeshPhysicalMaterial({vertexColors:true,roug
   MATS.kelp=wind(new THREE.MeshStandardMaterial({map:TX.kelp,alphaTest:0.4,side:THREE.DoubleSide,vertexColors:true,roughness:0.6}));MATS.fan=wind(new THREE.MeshStandardMaterial({map:TX.fan,alphaTest:0.3,side:THREE.DoubleSide,vertexColors:true,roughness:0.6}));
   for(const k of['coral','kelp','fan','blade','stem'])causticify(MATS[k]);}
 function bSeagrass(v){const M=new Mesher();const c0=new Col(0x2a5626),c1=new Col(0x7ab05a);for(let b=0;b<irand(16,26);b++){const a=rand(0,6.28),r=rand(0,0.2);blade(M,Math.cos(a)*r,Math.sin(a)*r,rand(0.5,1.1),rand(0.05,0.3),rand(0.014,0.022),rand(0,6.28),c0,c1,6,1,1);}return{parts:[{g:M.geo(),m:'blade'}],h:1};}
-function bKelp(v){const MS=new Mesher(),ML=new Mesher(),parts=[];const H=rand(4.5,7.2);const n=irand(2,4);
-  for(let k=0;k<n;k++){const bx=rand(-0.15,0.15),bz=rand(-0.15,0.15),h=H*rand(0.75,1),pts=[];for(let i=0;i<=8;i++){const t=i/8;pts.push(new V3(bx+Math.sin(t*3+k)*0.3*t,h*t,bz+Math.cos(t*2+k)*0.25*t));}
-    addTube(MS,pts,0.022,0.012,new Col(0x6a5a24),5,H,0.9);const curve=new THREE.CatmullRomCurve3(pts);
-    for(let t=0.12;t<0.98;t+=rand(0.05,0.08)){const p=curve.getPointAt(t);addLeaf(ML,p,rand(0,6.28),{len:rand(0.5,0.85),wid:rand(0.14,0.22),lift:rand(-0.2,0.6),droop:0.8,fold:0.1,segs:4,hr:H,wind:1});const g=sph(0.035,0x9a8a3a,[p.x,p.y,p.z]);const aw=new Float32Array(g.attributes.position.count).fill(wk(p.y,H,1));g.setAttribute('aWind',new THREE.BufferAttribute(aw,1));parts.push({g,m:'coral'});}}
-  for(let i=0;i<5;i++)parts.push({g:sph(0.06,0x5a4a20,[rand(-0.12,0.12),0.02,rand(-0.12,0.12)],[1,0.6,1]),m:'coral'});
+/* giant kelp: thin stipes carrying long ruffled ribbon blades that stream up and out, plus a floating canopy near the top */
+function kelpRibbon(M,p,a,len,wid,rise,H,tint){const segs=10,dx=Math.cos(a),dz=Math.sin(a),px=-dz,pz=dx,ph=rand(0,6.28);let prev=null;
+  for(let k=0;k<=segs;k++){const t=k/segs,c=1-Math.pow(1-t,1.6);const x=p.x+dx*len*c*(1-rise)+Math.sin(t*3+ph)*0.05,y=p.y+len*t*rise+len*0.12*Math.sin(t*2.2),z=p.z+dz*len*c*(1-rise)+Math.cos(t*3+ph)*0.05;
+    const ww=wid*0.5*Math.pow(Math.sin(Math.PI*Math.min(1,t*1.05+0.05)),0.55),ruf=Math.sin(t*22+ph)*0.035*Math.min(1,t*3);_c.copy(tint).multiplyScalar(0.72+0.38*t);const w=wk(y,H,1);
+    const A=M.v(x-px*ww,y+ruf,z-pz*ww,0,t,_c,w),B=M.v(x+px*ww,y-ruf,z+pz*ww,1,t,_c,w);if(prev)M.q(prev[0],prev[1],B,A);prev=[A,B];}}
+function bKelp(v){const MS=new Mesher(),ML=new Mesher(),parts=[];const H=rand(5,7.4);const n=irand(3,5);const tint=[new Col(0xd8b04a),new Col(0xc8a03e),new Col(0xe0bc5a)][v];
+  for(let k=0;k<n;k++){const bx=rand(-0.18,0.18),bz=rand(-0.18,0.18),h=H*rand(0.7,1),pts=[];const sw=rand(0,6.28);for(let i=0;i<=10;i++){const t=i/10;pts.push(new V3(bx+Math.sin(t*2.6+sw)*0.35*t,h*t,bz+Math.cos(t*2.1+sw)*0.3*t));}
+    addTube(MS,pts,0.02,0.01,new Col(0x7a6224),5,H,0.9);const curve=new THREE.CatmullRomCurve3(pts);let side=rand(0,6.28);
+    for(let t=0.1;t<0.9;t+=rand(0.07,0.11)){const p=curve.getPointAt(t);side+=2.4+rand(-0.4,0.4);kelpRibbon(ML,p,side,rand(0.9,1.5)*(1.1-t*0.4),rand(0.16,0.24),rand(0.55,0.75),H,tint);
+      const g=sph(0.04,0xb89a3a,[p.x,p.y,p.z]);g.setAttribute('aWind',new THREE.BufferAttribute(new Float32Array(g.attributes.position.count).fill(wk(p.y,H,1)),1));parts.push({g,m:'coral'});}
+    const top=pts[10];for(let c=0;c<irand(3,5);c++)kelpRibbon(ML,top,rand(0,6.28),rand(1.2,1.9),rand(0.18,0.26),rand(0.05,0.2),H,tint);}
+  for(let i=0;i<6;i++)parts.push({g:sph(0.07,0x4a3a1a,[rand(-0.16,0.16),0.02,rand(-0.16,0.16)],[1,0.6,1]),m:'coral'});
   parts.push({g:MS.geo(),m:'stem'},{g:ML.geo(),m:'kelp'});return{parts,h:H};}
 function bStag(v){const M=new Mesher(),parts=[];const base=[new Col(0x8a5ad0),new Col(0xe0789c),new Col(0x4aa8d0)][v],tip=base.clone().lerp(new Col(0xffffff),0.55);
   const br=(p,dir,len,r,d)=>{const q=p.clone().addScaledVector(dir,len);addTube(M,[p,p.clone().lerp(q,0.5).add(new V3(rand(-0.03,0.03),0,rand(-0.03,0.03))),q],r,r*0.78,base.clone().lerp(tip,d/3.5),6,1,0);
@@ -1076,10 +1201,10 @@ function bStag(v){const M=new Mesher(),parts=[];const base=[new Col(0x8a5ad0),ne
   parts.push({g:M.geo(),m:'coral'});return{parts,h:0.9};}
 function bBrain(v){const g=new THREE.SphereGeometry(0.45,96,48,0,6.2832,0,Math.PI*0.62);const p=g.attributes.position;const seed=rand(0,50);const rid=new Float32Array(p.count);
   for(let i=0;i<p.count;i++){const q=new V3(p.getX(i),p.getY(i),p.getZ(i)).normalize();const n=fbm(q.x*2+seed,q.y*2+q.z*1.7+seed,3);const r=Math.abs(Math.sin(n*42));rid[i]=r;q.multiplyScalar(0.45*(1+0.045*r));q.y=q.y*0.65-0.05;p.setXYZ(i,q.x,q.y,q.z);}
-  g.computeVertexNormals();const base=[0x8a9a4a,0xb07a4a,0x6a9a9a][v];colorize(g,base,0.05,(x,y,z,c,i)=>{c.multiplyScalar(rid[i]<0.35?0.55:1.1);});return{parts:[{g,m:'coral'}],h:0.3};}
-function bTable(v){const parts=[];const col=[0xb07a9a,0x9ab070,0xc09a6a][v];parts.push({g:lathePart([new V2(0.08,0),new V2(0.05,0.2),new V2(0.06,0.32)],12,0,0,0,(x,y,z,c)=>c.set(col).multiplyScalar(0.7)),m:'coral'});
+  g.computeVertexNormals();const base=[0xa8b83a,0xd8783a,0x4ab8a8][v];colorize(g,base,0.05,(x,y,z,c,i)=>{c.multiplyScalar(rid[i]<0.35?0.55:1.1);});return{parts:[{g,m:'coral'}],h:0.3};}
+function bTable(v){const parts=[];const col=[0x9a4ab8,0xc8743a,0x4a9a8a][v];parts.push({g:lathePart([new V2(0.08,0),new V2(0.05,0.2),new V2(0.06,0.32)],12,0,0,0,(x,y,z,c)=>c.set(col).multiplyScalar(0.7)),m:'coral'});
   for(let k=0;k<irand(2,3);k++){const R=rand(0.45,0.7)*(k?0.75:1);const g=new THREE.CylinderGeometry(R,R*0.85,0.05,48,1);const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),f=1+0.12*(fbm(Math.cos(a)*2+k,Math.sin(a)*2,2)-0.5);p.setX(i,x*f);p.setZ(i,z*f);}g.computeVertexNormals();
-    colorize(g,col,0.15,(x,y,z,c)=>{if(Math.hypot(x,z)>R*0.85)c.lerp(new Col(0xf0e6d0),0.5);});g.translate(k?rand(-0.2,0.2):0,0.32+k*0.12,k?rand(-0.2,0.2):0);parts.push({g,m:'coral'});}return{parts,h:0.5};}
+    colorize(g,col,0.15,(x,y,z,c)=>{if(Math.hypot(x,z)>R*0.85)c.lerp(new Col(0xffd8f0),0.35);else c.multiplyScalar(0.8+0.4*hash2(x*40,z*40));});g.translate(k?rand(-0.2,0.2):0,0.32+k*0.12,k?rand(-0.2,0.2):0);parts.push({g,m:'coral'});}return{parts,h:0.5};}
 function bFan(v){const M=new Mesher();const tint=[WHITE,new Col(0xe0b0ff),new Col(0xffd0a0)][v];for(let k=0;k<2;k++){const a=rand(0,3.14)+k*0.5;addCard(M,new V3(0,0.02,0),UP.clone(),new V3(Math.cos(a),0,Math.sin(a)),rand(0.8,1.1),rand(0.8,1.1),tint,1,0.8);}return{parts:[{g:M.geo(),m:'fan'}],h:1};}
 function bAnemone(v){const M=new Mesher(),parts=[];const col=[[0x4a8a4a,0xc05ad0],[0xd06a8a,0xf0d0e0],[0xd08a3a,0xf0e0a0]][v];const c0=new Col(col[0]),c1=new Col(col[1]);
   parts.push({g:lathePart([new V2(0.14,0),new V2(0.12,0.08),new V2(0.13,0.13),new V2(0.02,0.14)],20,0,0,0,(x,y,z,c)=>c.set(0x8a4a4a)),m:'coral'});
@@ -1128,10 +1253,12 @@ function getPR(type,v){const key=type+':'+v;let r=PR[key];if(r)return r;const T=
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);tank.add(mesh);r={mesh,items:[],h:b.h,cap:T.cap,dirty:false};PR[key]=r;return r;}
 function addPlant(type,x,z,growth,v){const T=PT[type];if(v==null)v=type==='dandelion'?irand(0,1):irand(0,2);
   const p={kind:'plant',type,T,x,z,v,growth:growth==null?rand(0.55,1):growth,health:1,pollen:0,zone:zoneAt(x,z),id:++UID,alive:true,age:0,rot:rand(0,6.283),tilt:rand(-0.07,0.07),size:rand(T.size[0],T.size[1]),tint:new Col(rand(0.88,1),rand(0.92,1),rand(0.86,1)),eaten:0};
-  if(T.single){const b=T.build(v),{geo,keys}=mergeG(b.parts);p.mesh=new THREE.Mesh(geo,keys.map(k=>MATS[k]));p.mesh.castShadow=true;p.mesh.receiveShadow=true;p.h=b.h;tank.add(p.mesh);stampAO(x,z,1.8,0.3);OBST.push(p.obst={x,z,r:0.45});}
+  if(T.single){const b=T.build(v),{geo,keys}=mergeG(b.parts);p.mesh=new THREE.Mesh(geo,keys.map(k=>MATS[k]));p.mesh.castShadow=true;p.mesh.receiveShadow=true;p.h=b.h;{const mx=(TOP-0.6-heightAt(x,z))/b.h;if(p.size>mx)p.size=Math.max(0.55,mx);}tank.add(p.mesh);stampAO(x,z,1.8,0.3);OBST.push(p.obst={x,z,r:0.45});}
   else{const r=getPR(type,v);if(r.items.length>=r.cap)return null;p.r=r;p.idx=r.items.length;r.items.push(p);r.mesh.count=r.items.length;p.h=r.h;}
+  if(OCEAN&&T.coral){const ry=rockSurfY(x,z);if(ry!=null&&ry>heightAt(x,z))p.by=ry;}
   plants.push(p);pgAdd(p);placePlant(p);return p;}
-function plantBaseY(p){return p.T.water?env.waterY+0.004:heightAt(p.x,p.z)-0.02;}
+function rockSurfY(x,z){let best=null;for(const o of OBST){if(o.top==null||!o.rock)continue;const d=Math.hypot(x-o.x,z-o.z)/(o.r*1.05);if(d>=1)continue;const y=o.g+(o.top-o.g)*Math.pow(1-d*d,0.6)-0.07;if(best==null||y>best)best=y;}return best;}
+function plantBaseY(p){if(p.by!=null)return p.by;return p.T.water?env.waterY+0.004:heightAt(p.x,p.z)-0.02;}
 function plantScale(p){return p.size*(0.3+0.7*p.growth);}
 function plantTop(p){return plantBaseY(p)+p.h*plantScale(p)*0.92;}
 function placePlant(p){const y=plantBaseY(p),s=plantScale(p);
@@ -1160,7 +1287,7 @@ const tcell=(x,z)=>clamp(Math.floor(x+HW),0,TNX-1)+clamp(Math.floor(z+HD),0,TNZ-
 for(let j=0;j<TNZ;j++)for(let i=0;i<TNX;i++){const x=-HW+i+0.5,z=-HD+j+0.5,w=zoneW(zu(x,z));const c=j*TNX+i;turfCap[c]=OCEAN?clamp(0.3+0.45*reefAt(x,z),0,1):clamp(w[1]*1+w[2]*0.55+w[3]*0.22+w[0]*0.05,0,1)*(z<-HD+1.2?0.2:1);turf[c]=turfCap[c]*rand(0.6,0.9);}
 function grassClusterGeo(c0,c1,n,hmin,hmax){const M=new Mesher();for(let b=0;b<n;b++){const a=rand(0,6.28),r=rand(0,0.06);blade(M,Math.cos(a)*r,Math.sin(a)*r,rand(hmin,hmax),rand(0.1,0.45),rand(0.01,0.018),rand(0,6.28),c0,c1,3,hmax,1);}return M.geo();}
 const GN=Math.floor(16000);
-const grass=(function(){const geo=OCEAN?grassClusterGeo(new Col(0x5a2a2a),new Col(0xa05a4a),7,0.05,0.14):grassClusterGeo(new Col(0x33501f),new Col(0x9fb85a),8,0.14,0.4);const mesh=new THREE.InstancedMesh(geo,MATS.blade,GN);mesh.frustumCulled=false;mesh.receiveShadow=true;
+const grass=(function(){const geo=OCEAN?grassClusterGeo(new Col(0x2c4628),new Col(0x7f9a4e),7,0.05,0.12):grassClusterGeo(new Col(0x33501f),new Col(0x9fb85a),8,0.14,0.4);const mesh=new THREE.InstancedMesh(geo,MATS.blade,GN);mesh.frustumCulled=false;mesh.receiveShadow=true;
   const gx=new Float32Array(GN),gz=new Float32Array(GN),gs=new Float32Array(GN),gr=new Float32Array(GN),gc=new Int32Array(GN),gy=new Float32Array(GN),gzi=new Uint8Array(GN),gb=new Float32Array(GN);const cells=[];for(let i=0;i<TNX*TNZ;i++)cells.push([]);let n=0,tries=0;
   while(n<GN&&tries<GN*12){tries++;const x=rand(-HW+0.3,HW-0.3),z=rand(-HD+0.9,HD-0.3),c=tcell(x,z);if(Math.random()>turfCap[c]*0.95)continue;if(OCEAN&&Math.random()<0.45)continue;if(pondD(x,z)<1.18||streamQ(x,z).d<0.75||Math.hypot(x-POOL.x,z-POOL.z)<POOL.r*1.4||slopeAt(x,z)>1.3||blocked(x,z,0.05))continue;
     gx[n]=x;gz[n]=z;gs[n]=rand(0.7,1.35);gr[n]=rand(0,6.28);gc[n]=c;gy[n]=heightAt(x,z)-0.01;gzi[n]=zoneAt(x,z);gb[n]=localMoist(x,z,gzi[n])-env.zones[gzi[n]].m;cells[c].push(n);n++;}
@@ -1188,7 +1315,10 @@ if(!OCEAN)(function(){const S=Q.scatter;
   const dry=grassClusterGeo(new Col(0x7a6a44),new Col(0xdccb96),9,0.12,0.34);
   scatter(dry,MATS.blade,1300*S,(x,z)=>{const w=zoneW(zu(x,z));return w[0]*0.6*(1-smooth(0.3,0.9,Math.abs(Math.sin(x*0.42+z*0.28))));},{s:[0.8,1.6]});
   const gcM=new Mesher();for(let i=0;i<6;i++)addLeaf(gcM,new V3(0,0.01,0),i*1.05,{len:0.11,wid:0.07,lift:0.5,droop:3,segs:3,hr:0.2,wind:0.3});
-  scatter(gcM.geo(),MATS.leafVar,1600*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*0.8;},{s:[0.7,1.5],col:()=>new Col().setHSL(rand(0.25,0.32),0.3,rand(0.6,0.9))});
+  scatter(gcM.geo(),MATS.leafVar,3400*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*1+w[2]*0.15;},{s:[0.7,1.5],col:()=>new Col().setHSL(rand(0.25,0.32),0.3,rand(0.6,0.9))});
+  /* rainforest understorey: low fern sprigs and selaginella fill the gaps between the big plants */
+  const spM=new Mesher();for(let i=0;i<5;i++)addLeaf(spM,new V3(0,0.01,0),i*1.26+rand(-0.2,0.2),{len:rand(0.22,0.3),wid:0.06,lift:0.9,droop:4.5,segs:5,hr:0.3,wind:0.6});
+  scatter(spM.geo(),MATS.leafVar,1500*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*0.9;},{s:[0.8,1.7],col:()=>new Col().setHSL(rand(0.24,0.33),rand(0.35,0.55),rand(0.4,0.7))});
   const val=new Mesher();for(let b=0;b<6;b++)blade(val,rand(-0.05,0.05),rand(-0.05,0.05),rand(0.35,0.6),rand(0.05,0.2),0.012,rand(0,6.28),new Col(0x1f4a24),new Col(0x4f8a3a),5,0.6,1);
   scatter(val.geo(),MATS.blade,700*S,(x,z)=>pondD(x,z)<0.85?0.9:0,{s:[0.7,1.3],water:true});
 })();
@@ -1378,7 +1508,7 @@ const CMO={};
 if(OCEAN){const fm=(tex)=>new THREE.MeshPhysicalMaterial({map:tex,roughness:0.28,clearcoat:0.9,clearcoatRoughness:0.2,side:THREE.DoubleSide});
   CMO.damsel=fm(TX.damsel);CMO.clown=fm(TX.clown);CMO.grouper=fm(TX.grouper);CMO.moray=new THREE.MeshPhysicalMaterial({map:TX.moray,roughness:0.35,clearcoat:1,side:THREE.DoubleSide});TX.moray.wrapS=TX.moray.wrapT=THREE.RepeatWrapping;
   CMO.fin=c=>new THREE.MeshStandardMaterial({map:TX.fin,color:c,transparent:true,opacity:0.82,side:THREE.DoubleSide,depthWrite:false,roughness:0.4});
-  CMO.jelly=new THREE.MeshPhysicalMaterial({color:0xd8ecf8,transparent:true,opacity:0.4,roughness:0.12,clearcoat:1,side:THREE.DoubleSide,depthWrite:false,emissive:0x3a8aff,emissiveIntensity:0});
+  CMO.jglow=new THREE.SpriteMaterial({map:TX.soft,color:0x5aa8ff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0});CMO.jelly=new THREE.MeshPhysicalMaterial({color:0xd8ecf8,transparent:true,opacity:0.4,roughness:0.12,clearcoat:1,side:THREE.DoubleSide,depthWrite:false,emissive:0x3a8aff,emissiveIntensity:0});
   CMO.gonad=new THREE.MeshStandardMaterial({color:0xf0a0c8,transparent:true,opacity:0.8,emissive:0xff66cc,emissiveIntensity:0,depthWrite:false});
   CMO.line=new THREE.LineBasicMaterial({color:0xe8f4ff,transparent:true,opacity:0.5,depthWrite:false});}
 const FISH={damsel:{L:0.22,R:0.045,FY:1.5,FZ:0.5,mat:'damsel',fin:0x3a7fff,tail:0xffd02a},clown:{L:0.2,R:0.046,FY:1.35,FZ:0.58,mat:'clown',fin:0xf07a1c,tail:0xf07a1c},grouper:{L:0.85,R:0.125,FY:1.15,FZ:0.72,mat:'grouper',fin:0xb8342a,tail:0xb8342a}};
@@ -1424,6 +1554,7 @@ function buildUrchin(){const P=[sph(0.06,0x3a1a3a,[0,0.05,0],[1,0.8,1],14,10)];c
   const root=new THREE.Group();root.add(mm(P,CM.chitin));return{root};}
 function buildJelly(){const root=new THREE.Group();const pts=[];for(let i=0;i<=14;i++){const t=i/14,a=t*Math.PI/2;pts.push(new V2(Math.max(0.002,0.2*Math.sin(a)*(1+0.08*(1-t))),0.13*Math.cos(a)));}
   const bell=new THREE.Mesh(new THREE.LatheGeometry(pts,32),CMO.jelly);bell.renderOrder=6;root.add(bell);
+  const halo=new THREE.Sprite(CMO.jglow);halo.scale.setScalar(0.6);halo.position.y=0.05;halo.renderOrder=11;root.add(halo);
   for(let k=0;k<4;k++){const t=new THREE.Mesh(new THREE.TorusGeometry(0.035,0.008,6,16,Math.PI*1.6),CMO.gonad);t.rotation.set(Math.PI/2,0,k*Math.PI/2);t.position.set(Math.cos(k*Math.PI/2)*0.05,0.07,Math.sin(k*Math.PI/2)*0.05);bell.add(t);}
   const M=new Mesher();for(let k=0;k<4;k++){const a=k/4*6.283+0.4;blade(M,Math.cos(a)*0.02,Math.sin(a)*0.02,0.28,0.15,0.03,a,new Col(0xf0e0f0),new Col(0xd8c8e8),6,1,0);}const arms=new THREE.Mesh(M.geo(),CMO.jelly);arms.rotation.x=Math.PI;root.add(arms);
   const NT=48,tpos=new Float32Array(NT*3*2*3);const tg=new THREE.BufferGeometry();tg.setAttribute('position',new THREE.BufferAttribute(tpos,3));const tent=new THREE.LineSegments(tg,CMO.line);tent.frustumCulled=false;root.add(tent);
@@ -1847,8 +1978,9 @@ Object.assign(SPEC,{
   update(a,dt){let cx=0,cy=0,cz=0,ax=0,ay=0,az=0,sx=0,sy=0,sz=0,n=0;
     for(const b of queryAgents(a.x,a.z,1.4)){if(b===a||b.sp!=='damsel')continue;const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,d=Math.hypot(dx,dy,dz);if(d>1.4)continue;n++;cx+=b.x;cy+=b.y;cz+=b.z;ax+=b.vx;ay+=b.vy;az+=b.vz;if(d<0.3){sx-=dx/(d*d+0.02);sy-=dy/(d*d+0.02);sz-=dz/(d*d+0.02);}}
     let fx=0,fy=0,fz=0;if(n){fx+=(cx/n-a.x)*0.7+(ax/n-a.vx)*1.2;fy+=(cy/n-a.y)*0.7+(ay/n-a.vy)*1.2;fz+=(cz/n-a.z)*0.7+(az/n-a.vz)*1.2;}fx+=sx*0.06;fy+=sy*0.06;fz+=sz*0.06;
-    a.tt-=dt;if(a.tt<=0||Math.hypot(a.wp.x-a.x,a.wp.z-a.z)<1.5){a.tt=rand(4,9);a.wp=randWater();a.wp.y=isNight()?heightAt(a.wp.x,a.wp.z)+rand(0.4,1):rand(1.5,WT-1.2);}
-    const wx=a.wp.x-a.x,wy=a.wp.y-a.y,wz=a.wp.z-a.z,wl=Math.hypot(wx,wy,wz)||1;fx+=wx/wl*0.5;fy+=wy/wl*0.5;fz+=wz/wl*0.5;
+    const W=a.sch||a;if(a.sch&&!a.sch.lead.alive)a.sch.lead=a;
+    if(!a.sch||a.sch.lead===a){W.tt-=dt;if(W.tt<=0||Math.hypot(W.wp.x-a.x,W.wp.z-a.z)<1.5){W.tt=rand(5,10);W.wp=randWater();W.wp.y=isNight()?heightAt(W.wp.x,W.wp.z)+rand(0.4,1):rand(1.8,WT-1.6);}}
+    const wx=W.wp.x-a.x,wy=W.wp.y-a.y,wz=W.wp.z-a.z,wl=Math.hypot(wx,wy,wz)||1;fx+=wx/wl*0.5;fy+=wy/wl*0.5;fz+=wz/wl*0.5;
     const th=threatNear(a,1.5);let vmax=isNight()?0.35:0.7;if(th){const dx=a.x-th.x,dy=a.y-th.y,dz=a.z-th.z,d=Math.hypot(dx,dy,dz)||1;fx+=dx/d*4;fy+=dy/d*2;fz+=dz/d*4;vmax=1.7;a.flee={from:th,t:1};a.state='flee';}else{a.flee=null;a.state=feedPlankton(a,dt,0.02)?'feed':'school';}
     const g=heightAt(a.x,a.z);if(a.y<g+0.4)fy+=2;if(a.y>WT-0.6)fy-=2;if(a.x<-HW+1.5)fx+=2;if(a.x>HW-1.5)fx-=2;if(a.z<-HD+2)fz+=2;if(a.z>HD-1.5)fz-=2;
     a.vx+=fx*dt;a.vy+=fy*dt*0.6;a.vz+=fz*dt;const sp=Math.hypot(a.vx,a.vy,a.vz)||1;const k=clamp(sp,0.25,vmax)/sp;a.vx*=k;a.vy*=k;a.vz*=k;
@@ -2110,28 +2242,35 @@ function checkContracts(){for(let i=contracts.length-1;i>=0;i--){const c=contrac
 /* =================== initial world =================== */
 setMsg('播种…');await tick();
 const SZ=MODE.zone;
+const SAVE=readSave();if(SAVE)restoreEnv(SAVE);
 function randIn(zi,test,tries){for(let t=0;t<(tries||300);t++){const x=SZ!=null?rand(-HW+0.7,HW-0.7):clamp(ZONES[zi].cx+rand(-6,6),-HW+0.7,HW-0.7),z=rand(-HD+1.2,HD-0.6);if(zoneAt(x,z)!==zi)continue;if(test&&!test(x,z))continue;return[x,z];}return null;}
 const okLand=(x,z,sp)=>!inWater(x,z,-0.05)&&pondD(x,z)>1.15&&streamQ(x,z).d>0.7&&!blocked(x,z,0.15)&&spacingOK(x,z,sp);
 function seed(type,zi,n,sp,test){for(let i=0;i<n;i++){const p=randIn(zi,(x,z)=>okLand(x,z,sp)&&(!test||test(x,z)));if(p)addPlant(type,p[0],p[1]);}}
 function seedLily(n){if(!MODE.pond)return;for(let i=0;i<n;i++){for(let t=0;t<80;t++){const a=rand(0,6.283),r=rand(0,POND.r*0.9),x=POND.x+Math.cos(a)*r,z=POND.z+Math.sin(a)*r;if(inPond(x,z,0.12)&&spacingOK(x,z,0.6)){addPlant('lily',x,z);break;}}}}
 const nearPond=(x,z)=>{const d=pondD(x,z);return d>1.15&&d<1.9;};
 function seedOcean(type,zs,n,sp,test){for(let i=0;i<n;i++){for(let t=0;t<200;t++){const x=rand(-HW+0.8,HW-0.8),z=rand(-HD+1.3,HD-0.6);if(!zs.includes(zoneAt(x,z)))continue;const s=suit(type,x,z);if(!s.ok||!spacingOK(x,z,sp))continue;if(test&&!test(x,z))continue;addPlant(type,x,z);break;}}}
-if(OCEAN){
-  seedOcean('seagrass',[0,1],34,0.4);seedOcean('kelp',[0,1],7,1.2,(x,z)=>z<-2);seedOcean('staghorn',[2,3],12,0.9);seedOcean('brain',[2,3],8,0.9);seedOcean('table',[3],5,1.3);seedOcean('fan',[3,2],8,0.8,(x,z)=>z<3);seedOcean('anemone',[2,3],4,1.4);
+if(SAVE)restorePlants(SAVE);
+else if(OCEAN){
+  seedOcean('seagrass',[0,1],52,0.4);seedOcean('kelp',[0,1],7,1.2,(x,z)=>z<-2);seedOcean('staghorn',[2,3],22,0.75);seedOcean('brain',[2,3],14,0.8);seedOcean('table',[3],5,1.3);seedOcean('fan',[3,2],12,0.7,(x,z)=>z<3);seedOcean('anemone',[2,3],4,1.4);
+  /* reef heads: every live rock is crusted with coral, the big ones carry a whole garden */
+  const RC=['staghorn','staghorn','brain','table','fan','staghorn','brain','anemone'];
+  for(const o of LIVEROCKS){const n=Math.round(2+o.r*3.2);for(let i=0;i<n;i++){for(let t=0;t<40;t++){const a=rand(0,6.283),d=Math.sqrt(rand(0,1))*o.r*0.8,x=o.x+Math.cos(a)*d,z=o.z+Math.sin(a)*d;if(z<-HD+1.2||Math.abs(x)>HW-0.6||!spacingOK(x,z,0.42))continue;const ty=i===0&&o.r>1.5?'table':pick(RC);if(ty==='anemone'&&plants.filter(q=>q.type==='anemone').length>=7)continue;addPlant(ty,x,z,rand(0.7,1));break;}}
+    for(let i=0;i<Math.round(o.r*2);i++){for(let t=0;t<40;t++){const a=rand(0,6.283),d=o.r*rand(1.0,1.6),x=o.x+Math.cos(a)*d,z=o.z+Math.sin(a)*d;if(z<-HD+1.2||Math.abs(x)>HW-0.6||blocked(x,z,0.05)||!spacingOK(x,z,0.5))continue;addPlant(pick(['brain','staghorn','fan','seagrass']),x,z);break;}}}
 }else if(SZ==null){
   seed('saguaro',0,6,1.4);seed('barrel',0,12,0.8);seed('aloe',0,8,0.8);seed('echeveria',0,12,0.5);
   seed('foxtail',1,30,0.45);seed('daisy',1,20,0.45);seed('cosmos',1,12,0.6);seed('dandelion',1,12,0.45);seed('clover',1,12,0.6);
   seed('cattail',2,18,0.5,nearPond);seed('fern',2,6,0.7);seed('moss',2,8,0.45);seed('clover',2,6,0.6);seed('daisy',2,4,0.45);
   seedLily(12);
-  seed('tree',3,5,2.8,(x,z)=>z<3);seed('monstera',3,10,1.1);seed('fern',3,22,0.7);seed('bromeliad',3,10,0.6);seed('moss',3,18,0.45);
+  seed('tree',3,6,2.6,(x,z)=>z<3);seed('monstera',3,14,1.0);seed('fern',3,34,0.6);seed('bromeliad',3,14,0.55);seed('moss',3,26,0.4);
   for(const [x,z] of[[11.5,5.4],[13,5.1],[14.3,4.9]])if(!inWater(x,z))addPlant('mushroom',x+0.1,z+0.45,0.8,0);
 }else if(SZ===0){seed('saguaro',0,14,1.5);seed('barrel',0,26,0.8);seed('aloe',0,18,0.8);seed('echeveria',0,26,0.5);}
 else if(SZ===1){seed('foxtail',1,60,0.45);seed('daisy',1,40,0.45);seed('cosmos',1,24,0.6);seed('dandelion',1,24,0.45);seed('clover',1,26,0.6);seedLily(7);}
 else if(SZ===2){seed('cattail',2,34,0.5,nearPond);seed('fern',2,16,0.7);seed('moss',2,22,0.45);seed('clover',2,18,0.6);seed('daisy',2,14,0.45);seedLily(16);}
-else{seed('tree',3,10,2.8,(x,z)=>z<4);seed('monstera',3,22,1.1);seed('fern',3,42,0.7);seed('bromeliad',3,22,0.6);seed('moss',3,34,0.45);seedLily(8);
+else{seed('tree',3,14,2.4,(x,z)=>z<4.5);seed('monstera',3,32,0.95);seed('fern',3,70,0.55);seed('bromeliad',3,30,0.5);seed('moss',3,50,0.38);seed('fern',3,20,0.45,(x,z)=>z>3);seedLily(8);
   for(let i=0;i<6;i++){const p=randIn(3,(x,z)=>okLand(x,z,0.3));if(p)addPlant('mushroom',p[0],p[1],0.8,0);}}
 flushPlants();refreshGrass();
-if(SPK.includes('ant')){let cx=-5.2,cz=4.2;if(SZ!=null){for(let t=0;t<60;t++){const x=rand(-8,8),z=rand(2,7);if(okLand(x,z,0.6)){cx=x;cz=z;break;}}}makeColony(cx,cz);}
+if(SAVE){if(SAVE.col&&SPK.includes('ant')){makeColony(SAVE.col.x,SAVE.col.z);colony.store=SAVE.col.store;}}
+else if(SPK.includes('ant')){let cx=-5.2,cz=4.2;if(SZ!=null){for(let t=0;t<60;t++){const x=rand(-8,8),z=rand(2,7);if(okLand(x,z,0.6)){cx=x;cz=z;break;}}}makeColony(cx,cz);}
 setMsg('唤醒生物…');await tick();
 const spawnIn=(sp,zi,n,o,test)=>{if(!SPK.includes(sp))return;for(let i=0;i<n;i++){const p=randIn(zi,(x,z)=>!inWater(x,z,-0.1)&&!blocked(x,z,0.1)&&(!test||test(x,z)));if(p)new Agent(sp,p[0],p[1],o?Object.assign({},o):undefined);}};
 function spawnFrogs(nA,nT,egg){if(!SPK.includes('frog')||!MODE.pond)return;
@@ -2140,10 +2279,11 @@ function spawnFrogs(nA,nT,egg){if(!SPK.includes('frog')||!MODE.pond)return;
   if(egg){const a=1.2,r=pondR(a)*0.8;new Agent('frog',POND.x+Math.cos(a)*r,POND.z+Math.sin(a)*r,{stage:'egg',age:0,energy:1});}}
 function spawnButterflies(zi,nA,nL){spawnIn('butterfly',zi,nA);spawnIn('butterfly',zi,nL,{stage:'larva',scale:0.6,age:0});
   if(pop.butterfly)for(const b of pop.butterfly)if(b.stage==='larva'&&!b.trail){b.stageT=0.4;b.trail=new Trail(0.45,b.x,b.z,b.h);}}
-const nAnt=SZ==null?40:32;if(colony)for(let i=0;i<nAnt;i++)new Agent('ant',colony.x+rand(-0.6,0.6),colony.z+rand(-0.6,0.6));
-if(OCEAN){
+const nAnt=SZ==null?40:32;if(colony&&!SAVE)for(let i=0;i<nAnt;i++)new Agent('ant',colony.x+rand(-0.6,0.6),colony.z+rand(-0.6,0.6));
+if(SAVE)restoreAnimals(SAVE);
+else if(OCEAN){
   const oz=(sp,zs,n,o)=>{for(let i=0;i<n;i++){for(let t=0;t<200;t++){const x=rand(-HW+1,HW-1),z=rand(-HD+1.4,HD-0.8);if(!zs.includes(zoneAt(x,z))||blocked(x,z,0.15))continue;new Agent(sp,x,z,o?Object.assign({},o):undefined);break;}}};
-  oz('damsel',[1,2,3],24);oz('jelly',[0,1,2],5);oz('shrimp',[2,3,1],14);oz('crab',[1,2,3],5);oz('starfish',[1,2],4);oz('urchin',[2,3],4);oz('grouper',[3],1);
+  for(const [cx,cz] of [[-4,1.5],[6,2.5]]){const cy=heightAt(cx,cz)+rand(2.2,3.2),h=rand(0,6.283),sch={lead:null,tt:rand(3,6),wp:randWater()};sch.wp.y=cy;for(let i=0;i<20;i++){const x=cx+rand(-1.1,1.1),z=cz+rand(-1,1);if(blocked(x,z,0.1))continue;const d=new Agent('damsel',x,z);d.y=cy+rand(-0.45,0.45);d.h=h+rand(-0.3,0.3);d.vx=Math.cos(d.h)*0.45;d.vz=Math.sin(d.h)*0.45;d.sch=sch;if(!sch.lead)sch.lead=d;}}oz('damsel',[1,2,3],4);oz('jelly',[0,1,2],5);oz('shrimp',[2,3,1],14);oz('crab',[1,2,3],5);oz('starfish',[1,2],4);oz('urchin',[2,3],4);oz('grouper',[3],1);
   const anes=plants.filter(p=>p.type==='anemone');for(let i=0;i<4;i++){const h=anes[i%Math.max(1,anes.length)];if(h)new Agent('clown',h.x+rand(-0.3,0.3),h.z+rand(-0.3,0.3));else oz('clown',[3],1);}
 }else if(SZ==null){
   spawnIn('cricket',1,16);spawnIn('snail',3,6);spawnIn('snail',2,3);spawnIn('isopod',3,12);spawnIn('isopod',2,6);
@@ -2154,7 +2294,7 @@ if(OCEAN){
 else if(SZ===1){spawnIn('cricket',1,30);spawnButterflies(1,10,4);spawnIn('isopod',1,6);spawnIn('firefly',1,6);spawnIn('spider',1,2);spawnIn('mantis',1,1);spawnIn('lizard',1,2);spawnFrogs(3,3,false);}
 else if(SZ===2){spawnIn('cricket',2,12);spawnIn('snail',2,8);spawnIn('isopod',2,14);spawnButterflies(2,6,2);spawnIn('firefly',2,12);spawnIn('spider',2,2);spawnIn('mantis',2,1);spawnFrogs(8,8,true);}
 else{spawnIn('cricket',3,12);spawnIn('snail',3,10);spawnIn('isopod',3,20);spawnButterflies(3,6,2);spawnIn('firefly',3,14);spawnIn('spider',3,2);spawnIn('mantis',3,1);spawnIn('lizard',3,2);spawnFrogs(6,5,true);}
-for(let i=0;i<3;i++)newContract();
+if(SAVE)restoreContracts(SAVE);else for(let i=0;i<3;i++)newContract();
 
 /* =================== post-processing =================== */
 let composer=null,bloomPass=null,bokehPass=null;
@@ -2204,25 +2344,25 @@ function pickEntity(ray){const o=ray.origin,d=ray.direction;let best=null,bs=1;c
   for(const k of SPK)for(const a of pop[k]){if(!a.alive||a.hidden||a.wrapped)continue;test(a,a.x,(a.y||heightAt(a.x,a.z))+0.04,a.z,{ant:0.08,lizard:0.3,snake:0.3,frog:0.2,mantis:0.2,grouper:0.35,moray:0.3,jelly:0.28,crab:0.2}[k]||0.14);}
   for(const p of plants)if(p.alive){const s=plantScale(p);test(p,p.x,plantBaseY(p)+p.h*s*0.45,p.z,Math.max(0.2,p.h*s*0.35),1.4);}
   return best;}
-let tool='observe';const sub={plant:'daisy',animal:'cricket',rain:'spot'};let down=null,moveSel=null;const pointers=new Map();let pinch0=0,pinchC=null;
+let tool='observe';const sub={plant:'daisy',animal:'cricket',rain:'spot'};let down=null,moveSel=null;const pointers=new Map();let pinch0=0,pinchC=null,pinchMv=0;
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pointers.size===2){const [a,b]=[...pointers.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);pinchC={x:(a.x+b.x)/2,y:(a.y+b.y)/2};rain.active=false;down=null;return;}
+  if(pointers.size===2){const [a,b]=[...pointers.values()];pinchMv=0;pinch0=Math.hypot(a.x-b.x,a.y-b.y);pinchC={x:(a.x+b.x)/2,y:(a.y+b.y)/2};rain.active=false;down=null;return;}
   down={x:e.clientX,y:e.clientY,btn:e.button,moved:0,shift:e.shiftKey};
   if(tool==='rain'&&e.button===0){const h=groundHit(rayFrom(e));if(h){rain.active=true;rain.cx=h.x;rain.cz=h.z;initSound();}}});
 canvas.addEventListener('pointermove',e=>{const prev=pointers.get(e.pointerId);
   if(prev){const dx=e.clientX-prev.x,dy=e.clientY-prev.y;prev.x=e.clientX;prev.y=e.clientY;
-    if(pointers.size===2){const [a,b]=[...pointers.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),c={x:(a.x+b.x)/2,y:(a.y+b.y)/2};if(pinch0>0)cam.tR=clamp(cam.tR*pinch0/d,0.6,80);if(pinchC&&!cam.follow)panBy(c.x-pinchC.x,c.y-pinchC.y);pinch0=d;pinchC=c;return;}
+    if(pointers.size===2){const [a,b]=[...pointers.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),c={x:(a.x+b.x)/2,y:(a.y+b.y)/2};if(pinch0>0){cam.tR=clamp(cam.tR*pinch0/d,0.6,80);directorHold();}if(pinchC){const mx=c.x-pinchC.x,my=c.y-pinchC.y;pinchMv+=Math.hypot(mx,my);if(!cam.follow||pinchMv>40)panBy(mx,my);}pinch0=d;pinchC=c;return;}
     if(down){down.moved+=Math.abs(dx)+Math.abs(dy);
       if(rain.active){const h=groundHit(rayFrom(e));if(h){rain.cx=h.x;rain.cz=h.z;}}
       else if(down.btn===2||down.shift){panBy(dx,dy);}
       else if(tool==='shovel'&&down.btn===0){if(down.moved>7){down.brush=1;const r=rayFrom(e);shovelAt(r,groundHit(r),true);}}
-      else{if(down.moved>40)tutDone('cam');cam.tTheta-=dx*0.006;cam.tPhi=clamp(cam.tPhi-dy*0.005,0.12,1.55);if(cam.fmode==='chase')cam.fmode='orbit';}}}
+      else{if(down.moved>40)tutDone('cam');directorHold();cam.tTheta-=dx*0.006;cam.tPhi=clamp(cam.tPhi-dy*0.005,0.12,1.55);if(cam.fmode==='chase')cam.fmode='orbit';}}}
   updateCursor(e);});
-function panBy(dx,dy){if(cam.follow){stopFollow();}const k=cam.r*0.0015;const right=new V3().setFromMatrixColumn(camera.matrixWorld,0),fwd=new V3().crossVectors(UP,right);cam.tT.addScaledVector(right,-dx*k).addScaledVector(fwd,dy*k);cam.tT.x=clamp(cam.tT.x,-HW,HW);cam.tT.z=clamp(cam.tT.z,-HD,HD);cam.tT.y=clamp(cam.tT.y,0,6);}
+function panBy(dx,dy){directorOff();if(cam.follow){stopFollow();}const k=cam.r*0.0015;const right=new V3().setFromMatrixColumn(camera.matrixWorld,0),fwd=new V3().crossVectors(UP,right);cam.tT.addScaledVector(right,-dx*k).addScaledVector(fwd,dy*k);cam.tT.x=clamp(cam.tT.x,-HW,HW);cam.tT.z=clamp(cam.tT.z,-HD,HD);cam.tT.y=clamp(cam.tT.y,0,6);}
 function endPtr(e){pointers.delete(e.pointerId);if(pointers.size<2){pinch0=0;pinchC=null;}if(rain.active){rain.active=false;down=null;return;}if(down&&down.moved<7&&!down.brush&&e.type==='pointerup')clickAt(e);down=null;}
 canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);canvas.addEventListener('pointerleave',()=>{cursor.visible=false;});
-canvas.addEventListener('wheel',e=>{e.preventDefault();cam.tR=clamp(cam.tR*Math.exp(e.deltaY*0.0012),0.6,80);if(cam.fmode==='eye'&&e.deltaY>0)cam.fmode='orbit';},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();directorHold();cam.tR=clamp(cam.tR*Math.exp(e.deltaY*0.0012),0.6,80);if(cam.fmode==='eye'&&e.deltaY>0)cam.fmode='orbit';},{passive:false});
 const cursor=new THREE.Mesh(new THREE.RingGeometry(0.9,1,56),new THREE.MeshBasicMaterial({color:0xa4d18b,transparent:true,opacity:0.8,depthWrite:false,side:THREE.DoubleSide}));cursor.rotation.x=-Math.PI/2;cursor.visible=false;cursor.renderOrder=13;tank.add(cursor);
 const selRing=new THREE.Mesh(new THREE.RingGeometry(0.85,1,56),new THREE.MeshBasicMaterial({color:0xf0b25a,transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}));selRing.rotation.x=-Math.PI/2;selRing.visible=false;selRing.renderOrder=13;tank.add(selRing);
 function updateCursor(e){if(tool==='observe'){cursor.visible=false;return;}const h=groundHit(rayFrom(e));if(!h){cursor.visible=false;return;}let r=0.3,c=0xa4d18b;
@@ -2255,7 +2395,7 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==
 
 /* =================== selection =================== */
 let selected=null;
-function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');$('#inspect').hidden=false;inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
+function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');if(!auto||!narrowUI())$('#inspect').hidden=false;inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
 function deselect(){selected=null;$('#inspect').hidden=true;selRing.visible=false;stopFollow();}
 function showZone(h){selected={kind:'zone',zi:zoneAt(h.x,h.z),alive:true,x:h.x,z:h.z};$('#inspect').hidden=false;inspDirty=true;renderInspect();}
 function onEntityGone(e){if(selected===e){const was=e;if(was.kind==='animal'&&cam.follow===was){toast(`「${was.name}」的故事结束了`);}selected=null;$('#inspect').hidden=true;}if(cam.follow===e)cam.follow=null;if(moveSel===e)moveSel=null;}
@@ -2268,10 +2408,11 @@ const _kd=new V3(),_kb=new V3();
 function clampTarget(){const t=cam.tT;t.x=clamp(t.x,-HW+0.25,HW-0.25);t.z=clamp(t.z,-HD+0.35,HD-0.25);t.y=clamp(t.y,heightAt(t.x,t.z)+0.12,TOP-0.3);}
 function camKeys(dt){if(!keys.size)return;const fast=keys.has('shift')?2.8:1;dt=Math.min(dt,0.05);
   let mx=0,mz=0;if(keys.has('w')||keys.has('arrowup'))mz+=1;if(keys.has('s')||keys.has('arrowdown'))mz-=1;if(keys.has('a')||keys.has('arrowleft'))mx-=1;if(keys.has('d')||keys.has('arrowright'))mx+=1;
-  if(mx||mz){tutDone('cam');if(cam.follow)stopFollow();if(cam.fmode==='eye'||cam.fmode==='chase')cam.fmode='orbit';const sp=(1.2+cam.r*0.32)*fast*dt;
+  if(mx||mz){tutDone('cam');directorOff();if(cam.follow)stopFollow();if(cam.fmode==='eye'||cam.fmode==='chase')cam.fmode='orbit';const sp=(1.2+cam.r*0.32)*fast*dt;
     if(mz){camera.getWorldDirection(_kd);_kb.copy(cam.tT);cam.tT.addScaledVector(_kd,sp*mz);clampTarget();const moved=_kb.sub(cam.tT).multiplyScalar(-1).dot(_kd)*mz;const rest=sp-moved;
       if(rest>1e-4){const r0=cam.tR;cam.tR=clamp(cam.tR-rest*mz,0.8,80);const used=Math.abs(r0-cam.tR);if(rest-used>1e-4&&mz>0){_kd.y=0;if(_kd.lengthSq()>1e-6){_kd.normalize();cam.tT.addScaledVector(_kd,rest-used);clampTarget();}}}}
     if(mx){cam.tT.x+=Math.cos(cam.theta)*sp*mx;cam.tT.z+=-Math.sin(cam.theta)*sp*mx;clampTarget();}}
+  if(keys.has('q')||keys.has('e')||keys.has('r')||keys.has('f'))directorHold();
   if(keys.has('q'))cam.tTheta+=1.5*dt*fast;if(keys.has('e'))cam.tTheta-=1.5*dt*fast;
   if(keys.has('r'))cam.tR=clamp(cam.tR*Math.exp(-1.3*dt*fast),0.6,80);if(keys.has('f'))cam.tR=clamp(cam.tR*Math.exp(1.3*dt*fast),0.6,80);}
 
@@ -2406,8 +2547,8 @@ function predNames(sp){return SPK.filter(k=>SPEC[k].diet&&SPEC[k].diet[sp]).map(
 
 /* ---- tabs & panels ---- */
 $$('.tabs button').forEach(b=>b.addEventListener('click',()=>{const box=b.closest('.side');box.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b?'true':'false'));box.querySelectorAll('.tabbody').forEach(x=>x.hidden=x.id!=='tab-'+b.dataset.tab);if(b.dataset.tab==='log')logDirty=true;if(b.dataset.tab==='species')renderSpecies();}));
-$('#leftToggle').addEventListener('click',()=>{$('#left').classList.toggle('open');$('#right').classList.remove('open');});
-$('#rightToggle').addEventListener('click',()=>{$('#right').classList.toggle('open');$('#left').classList.remove('open');});
+$('#leftToggle').addEventListener('click',()=>setPanel('left'));
+$('#rightToggle').addEventListener('click',()=>setPanel('right'));
 function setTool(t){tool=t;moveSel=null;$$('.tool[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===t?'true':'false'));canvas.classList.toggle('paint',t!=='observe');renderPalette();cursor.visible=false;
   const hints={observe:'点击生物查看、跟随 · 点击地面查看区域',rain:'在缸内按住并拖动，云跟着指针下雨',plant:'绿色圈=适合，黄色=湿度不合适，红色=不能种',animal:'点击地面投放',feed:'饲料会被蚂蚁、蟋蟀和鼠妇吃掉',move:'先点一只动物，再点放下的位置',shovel:'点击铲掉一株植物或布景（返还部分孢子）· 按住拖动可以连续铲',decor:'选一种布景，点击地面摆放 · 用铲除工具可以移走'};if(OCEAN){hints.rain='在水面按住拖动，补充淡水、降低盐度';hints.feed='浮游饵料喂鱼和珊瑚，剩下的沉底给螃蟹和虾';}$('#hint').textContent=hints[t]||'';$('#hint').style.opacity=1;}
 $$('.tool[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
@@ -2521,7 +2662,7 @@ function updateVisuals(rdt,gdt){const th=(env.time-0.25)*Math.PI*2,sh=Math.sin(t
   foam.forEach((f,i)=>{f.ph+=rdt*(1.5+i*0.2);const s=env.pump?0.6+0.25*Math.sin(f.ph):0;f.s.scale.setScalar(s*1.4);f.s.material.opacity=env.pump?0.45+0.15*Math.sin(f.ph*1.3):0;f.s.position.set(POOL.x+Math.sin(i*2.1)*0.35,SY0+0.1+i*0.03,-HD+1.25+Math.cos(i*1.7)*0.25);});
   for(const r of ripples){if(r.t>=1)continue;r.t+=rdt*1.3;const s=r.s*(0.2+r.t*1.6);r.m.scale.set(s,s,s);r.m.material.opacity=(1-r.t)*0.55;if(r.t>=1)r.m.visible=false;}
   U.uTime.value+=rdt;U.uWind.value+=((1+rain.intensity*1.6+(env.vent>0?2.4:0))-U.uWind.value)*Math.min(1,rdt*2);
-  updateRain(rdt);decorFX(rdt);if(OCEAN)oceanVisuals(rdt,dl);
+  updateRain(rdt);decorFX(rdt);if(OCEAN)oceanVisuals(rdt,dl);else if(jungleRays)jungleVisuals(dl);
   if(snd.fallGain)snd.fallGain.gain.setTargetAtTime(snd.on?(MODE.stream&&env.pump?0.1:0)+(OCEAN?(env.pump?0.07:0.03):0)+Math.min(0.08,DECOR.filter(d=>d.fount).length*0.03*(env.pump?1:0)):0,snd.ctx.currentTime,0.4);
   for(const m of mist){if(m.off)continue;let target;if(m.zi<0)target=env.pump?0.28:0;else{const z=env.zones[m.zi];target=smooth(0.7,0.99,z.h)*0.15*(env.vent>0?0.2:1)+(isNight()?0.05:0);if(m.x0==null)m.x0=m.x;m.x+=m.v*rdt;if(Math.abs(m.x-m.x0)>3.5)m.v*=-1;}
     m.s.material.opacity+=(target-m.s.material.opacity)*Math.min(1,rdt);m.s.position.set(m.x,heightAt(m.x,m.z)+m.y,m.z);}
@@ -2559,8 +2700,8 @@ function updateLabels(){const w=canvas.clientWidth,h=canvas.clientHeight;const s
   flabel.style.display='none';}
 
 /* ---- ocean visuals & mode UI ---- */
-const TUT=[{k:'cam',t:'用 W A S D 或拖动鼠标移动镜头',r:10},{k:'follow',t:'点一只动物，让镜头跟着它',r:10},{k:'plant',t:'用“种植”种下一株植物',r:15},{k:'decor',t:'用“布景”摆一件布景',r:15},{k:'fast',t:'把时间调到 3× 看一天过去',r:10}];
-function tutDone(k){const t=TUT.find(x=>x.k===k);if(!t||t.done)return;t.done=true;env.coins+=t.r;toast(`上手任务完成：${t.t}　<b>+${t.r} 孢子</b>`);if(TUT.every(x=>x.done))setTimeout(()=>toast('上手任务全部完成。右边“委托”会持续给你新目标'),1500);ctDirty=true;if(!$('#tab-contracts').hidden)renderContracts();}
+const TUT=[{k:'cam',t:IS_MOBILE?'单指拖动，转动镜头看看':'用 W A S D 或拖动鼠标移动镜头',r:10},{k:'follow',t:'点一只动物，让镜头跟着它',r:10},{k:'plant',t:'用“种植”种下一株植物',r:15},{k:'decor',t:'用“布景”摆一件布景',r:15},{k:'fast',t:'把时间调到 3× 看一天过去',r:10}];
+function tutDone(k){const t=TUT.find(x=>x.k===k);if(!t||t.done)return;t.done=true;env.coins+=t.r;toast(`上手任务完成：${t.t}　<b>+${t.r} 孢子</b>`);if(TUT.every(x=>x.done))setTimeout(()=>toast('上手任务全部完成。右边“委托”会持续给你新目标'),1500);ctDirty=true;if(!$('#tab-contracts').hidden)renderContracts();renderTutHint();}
 let glassHidden=false,zen=false;const GLASSY=[];
 tank.traverse(o=>{if(!o.isMesh||!o.material)return;const m=o.material;if(m===glassMat||m===sheenMat||o===lid||(m.map&&m.map===TX.streak)||(m.color&&m.color.getHex()===0x151816&&o.position.y>BOT+0.5)||o.position.y>TOP+0.1)GLASSY.push(o);});
 function setGlass(h){glassHidden=h;GLASSY.forEach(o=>o.visible=!h);HEATROCKS.forEach(r=>r.parts&&r.parts.slice(1).forEach(o=>o.visible=!h));condT=1;$('#glassBtn').setAttribute('aria-pressed',h);try{localStorage.setItem('ark-glass',h?1:0);}catch(e){}}
@@ -2573,14 +2714,16 @@ let uwT=9;let condLevel=1;try{const v=localStorage.getItem('ark-cond');if(v!=nul
 function renderCond(){$$('#condSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.c===condLevel));}$$('#condSeg button').forEach(b=>b.addEventListener('click',()=>{condLevel=+b.dataset.c;try{localStorage.setItem('ark-cond',condLevel);}catch(e){}renderCond();condT=1;}));renderCond();
 const PZO={seagrass:[0,1],kelp:[0,1],staghorn:[2,3],brain:[2,3],table:[3],fan:[2,3],anemone:[2,3]};
 const OC_DAY=new Col(0x0e4f6a),OC_NIGHT=new Col(0x020c16),OC_VOL=new Col(0x0f5a76),OC_GREEN=new Col(0x2f6a48);
+function jungleVisuals(dl){const t=U.uTime.value,hum=env.zones[3].h,k=dl*(0.03+0.05*smooth(0.6,0.95,hum));
+  for(const r of jungleRays){r.m.rotation.set(0,Math.atan2(camera.position.x-r.m.position.x,camera.position.z-r.m.position.z),r.tilt);r.m.material.opacity=k*(0.55+0.45*Math.sin(t*0.25+r.ph));}}
 function oceanVisuals(rdt,dl){const F=oceanFX;if(!F)return;const t=U.uTime.value;
   CAUS.value=clamp(dl*(env.pump?1:0.75)+(env.lamp&&dl<0.5?0.35:0),0,1);
-  const lit=0.12+0.88*dl+(env.lamp?0.15:0),gr=smooth(0.3,0.9,env.algae);UW.col.value.set(lerp(0.01,0.03,gr)*lit,lerp(0.062,0.09,gr)*lit,lerp(0.1,0.05,gr)*lit);UW.sigV.value.set(0.07,0.028+gr*0.01,0.02+gr*0.03);
+  const lit=0.12+0.88*dl+(env.lamp?0.15:0),gr=smooth(0.3,0.9,env.algae);UW.col.value.set(lerp(0.006,0.03,gr)*lit,lerp(0.062,0.09,gr)*lit,lerp(0.165,0.05,gr)*lit);UW.sigV.value.set(0.062,0.025+gr*0.01,0.012+gr*0.03);
   uwT+=rdt;if(uwT>2){uwT=0;uwSweep(agentGroup);uwSweep(tank);}
   F.vol.material.color.copy(OC_VOL).lerp(OC_GREEN,smooth(0.3,0.9,env.algae));F.vol.material.opacity=0.14+0.1*env.algae;
   F.sn.offset.x+=rdt*(env.pump?0.03:0.008);F.sn.offset.y+=rdt*(env.pump?0.02:0.005);
   for(const r of F.rays){r.m.rotation.set(0,Math.atan2(camera.position.x-r.m.position.x,camera.position.z-r.m.position.z),r.tilt);r.m.material.opacity=dl*0.09*(0.6+0.4*Math.sin(t*0.4+r.ph));}
-  CMO.jelly.emissiveIntensity=isNight()?0.7:0.04;U.uWind.value=(env.pump?1.4:0.5)+Math.sin(t*0.3)*0.25;}
+  const jn=1-smooth(0.15,0.45,dl);CMO.jelly.emissiveIntensity=0.04+1.6*jn;CMO.jglow.opacity=0.75*jn*(0.75+0.25*Math.sin(t*1.7));CMO.gonad.emissiveIntensity=0.9*jn;U.uWind.value=(env.pump?1.4:0.5)+Math.sin(t*0.3)*0.25;}
 function relabel(sel,txt){const b=$(sel);if(!b)return;const n=[...b.childNodes].reverse().find(n=>n.nodeType===3&&n.textContent.trim());if(n)n.textContent=txt;}
 if(OCEAN){relabel('[data-tool="rain"]','补淡水');relabel('#ventBtn','换水');relabel('#pumpBtn','造浪泵');
   $('#o2').previousElementSibling.textContent='溶解氧 DO';$('#co2').previousElementSibling.textContent='酸碱度 pH';const th=document.querySelector('.zones thead');if(th)th.innerHTML='<tr><th>水质</th><th colspan="2"></th><th style="text-align:right">数值</th></tr>';
@@ -2590,10 +2733,12 @@ if(!MODE.stream&&!OCEAN)$('#pumpBtn').style.display='none';
 
 /* =================== loop =================== */
 let last=performance.now(),uiT=0,panelT=0,scoreT=0;
+function renderFrame(dt){const p=usePost();HDR_CLAMP.value=p?1:65504;HDR_ALPHA.value=p?GLASS_POST_ALPHA:1;if(p)composer.render(dt);else renderer.render(scene,camera);}
+let GLASS_POST_ALPHA=0.35;  // calibrated: mean brightness with post on matches rendering without post
 function frame(now){requestAnimationFrame(frame);if(window.__freeze){last=now;return;}const rdt=Math.min(0.05,(now-last)/1000);last=now;const gdt=rdt*env.speed;
   if(gdt>0){const n=Math.ceil(gdt/0.1),st=gdt/n;for(let i=0;i<n;i++)simStep(st);o2T+=gdt;if(o2T>3){o2T=0;O2H.push(env.o2);if(O2H.length>240)O2H.shift();}}
-  updateVisuals(rdt,gdt);applyCam(rdt);directorTick();updateLabels();sndListener();
-  if(usePost())composer.render(rdt);else renderer.render(scene,camera);
+  updateVisuals(rdt,gdt);introTick(rdt);applyCam(rdt);directorTick();updateLabels();sndListener();
+  renderFrame(rdt);
   scoreT+=rdt;if(scoreT>1){scoreT=0;computeScore();checkContracts();refreshLocks();}
   uiT+=rdt;if(uiT>0.3){uiT=0;updateHUD();if(selected&&!$('#inspect').hidden&&!inspHover)renderInspect();if(logDirty&&!$('#tab-log').hidden){renderLog();logDirty=false;}}
   panelT+=rdt;if(panelT>1){panelT=0;if(!$('#tab-env').hidden)renderEnv();if(!$('#tab-contracts').hidden)renderContracts();if(!$('#tab-species').hidden)renderSpecies();}}
@@ -2603,7 +2748,193 @@ setMsg('就绪');
 initPost().then(()=>{});
 requestAnimationFrame(frame);
 setTimeout(()=>{LOADED=true;$('#loading').classList.add('gone');},300);
-setTimeout(()=>{$('#hint').style.opacity=0;},12000);
-logEvent('info',`${MODE.name}启动。W A S D 移动镜头，试试打开“导演模式”`,null,0);
+logEvent('info',`${MODE.name}启动。导演模式已开启，${IS_MOBILE?'双指拖动':'按 W A S D 或右键拖动'}可随时接管镜头`,null,0);
+
+/* =================== opening shot · director hand-off · onboarding chip =================== */
+// The first minute decides whether the tank feels alive. Instead of dropping the player on a far-away
+// overview behind two data panels, the tank introduces itself: an establishing shot of the whole tank,
+// a slow glide down to one animal, then director mode keeps finding moments until the player takes over.
+// Any input skips the intro. Rotating/zooming only pauses the director; navigating (WASD, panning) hands
+// the camera to the player.
+var INTRO=null;
+const INTRO_LINE={mixed:'沙漠、草甸、溪沼、雨林连成一片',desert:'沙丘、仙人掌和晒太阳的沙蜥',meadow:'野花与蟋蟀，蝴蝶完成变态发育',
+  marsh:'大水塘、香蒲和合唱的雨蛙',jungle:'瀑布、雾气、蕨类和夜里的萤火虫',ocean:'珊瑚礁、小丑鱼、螃蟹和伏击的海鳗'};
+const HERO_PREF=['frog','clown','lizard','butterfly','mantis','crab','snail','grouper','cricket','damsel','shrimp','spider','isopod','ant'];
+const HERO_FIRST={meadow:'butterfly',desert:'lizard',ocean:'clown'};  // the species each tank's card promises
+const INTRO_PHI=0.98;  // arrival angle: a little overhead so dunes and plants don't hide the animal
+const INTRO_HOLD=1.6,INTRO_GLIDE=7.4,INTRO_END=9.6;  // seconds: establishing shot, arrival, hand-off
+const easeIO=t=>t<0.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+
+// distance at which the whole tank fits on screen at the default viewing angle (portrait phones need more)
+function fitR(){const vf=camera.fov*Math.PI/360,hf=Math.atan(Math.tan(vf)*camera.aspect);
+  return clamp(Math.max((HW+2)/Math.tan(hf),(HD+2)/Math.tan(vf)),30,80);}
+
+// a visible, characterful animal near the middle of the tank
+function pickHero(){let best=null,bs=-Infinity;const pref=[...new Set([HERO_FIRST[MK],...HERO_PREF].filter(Boolean))];
+  pref.forEach((k,i)=>{for(const a of pop[k]||[]){if(!a.alive||a.hidden||a.wrapped||a.stage==='egg'||a.stage==='pupa')continue;
+    const s=(pref.length-i)*10-Math.abs(a.x)*0.35-Math.abs(a.z)*0.25-(a.stage&&a.stage!=='adult'?15:0);if(s>bs){bs=s;best=a;}}});
+  if(!best){const pool=[];for(const k of SPK)for(const b of pop[k]||[])if(b.alive&&!b.hidden&&b.stage!=='egg')pool.push(b);if(pool.length)best=pick(pool);}
+  return best;}
+
+// arrival direction with the clearest line of sight: within ±90° of the planned angle, prefer the one whose
+// camera→animal line passes farthest from tall plants (a saguaro in front of a lizard ruins the shot)
+function clearTheta(h,r,phi,base){const sp=Math.sin(phi);let best=base,bs=-Infinity;
+  for(let k=-3;k<=3;k++){const th=base+k*Math.PI/6,cx=h.x+r*sp*Math.sin(th),cz=h.z+r*sp*Math.cos(th),dx=cx-h.x,dz=cz-h.z,L2=dx*dx+dz*dz||1;
+    let clear=3;for(const p of plants){if(!p.alive)continue;const ph=p.h*plantScale(p);if(ph<0.5)continue;
+      const u=clamp(((p.x-h.x)*dx+(p.z-h.z)*dz)/L2,0.05,1),d=Math.hypot(p.x-(h.x+dx*u),p.z-(h.z+dz*u))-Math.max(0.2,ph*0.22);if(d<clear)clear=d;}
+    const s=Math.min(clear,1.2)-Math.abs(k)*0.05;if(s>bs){bs=s;best=th;}}
+  return best;}
+
+function introStart(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const r0=fitR(),th0=0.32,ph0=1.0;cam.follow=null;cam.t.set(0,1.2,0);cam.tT.copy(cam.t);cam.r=cam.tR=r0;cam.theta=cam.tTheta=th0;cam.phi=cam.tPhi=ph0;
+  INTRO={t:reduce?INTRO_GLIDE:0,hero:pickHero(),from:{x:0,y:1.2,z:0,r:r0,theta:th0,phi:ph0},glass0:glassHidden};
+  introGlass(true);  // the establishing shot looks in from outside: no lid bars or condensation in the way
+  $('#introTitle').textContent=MODE.name;$('#introLine').textContent=INTRO_LINE[MK]||'';
+  document.body.classList.add('intro');}
+
+function introTick(dt){const I=INTRO;if(!I)return;I.t+=dt;
+  let h=I.hero;if(!h||!h.alive||h.hidden){h=I.hero=pickHero();}
+  const e=easeIO(clamp((I.t-INTRO_HOLD)/(INTRO_GLIDE-INTRO_HOLD),0,1)),F=I.from;
+  if(h){const hs=followSize(h),hy=(h.y||heightAt(h.x,h.z))+0.06*hs,r1=hs*1.6;
+    if(I.th1==null||I.th1h!==h){I.th1h=h;I.th1=clearTheta(h,r1,INTRO_PHI,F.theta+0.9);}
+    cam.t.set(F.x+(h.x-F.x)*e,F.y+(hy-F.y)*e,F.z+(h.z-F.z)*e);
+    cam.r=Math.exp(Math.log(F.r)+(Math.log(r1)-Math.log(F.r))*e);
+    cam.theta=F.theta+(I.th1-F.theta)*e+Math.max(0,I.t-INTRO_GLIDE)*0.1;cam.phi=F.phi+(INTRO_PHI-F.phi)*e;}
+  else cam.theta+=dt*0.05;  // nothing alive to visit: slow turntable
+  cam.tT.copy(cam.t);cam.tR=cam.r;cam.tTheta=cam.theta;cam.tPhi=cam.phi;
+  if(!I.capOff&&I.t>INTRO_GLIDE-1.4){I.capOff=true;$('#introCap').classList.add('off');}
+  if(!I.named&&I.t>=INTRO_GLIDE&&h){I.named=true;caption(`${h.S.name}「${h.name}」`);}
+  if(I.t>=INTRO_END)introEnd(false);}
+
+// like setGlass() but temporary: doesn't touch the saved preference
+function introGlass(h){glassHidden=h;GLASSY.forEach(o=>o.visible=!h);HEATROCKS.forEach(r=>r.parts&&r.parts.slice(1).forEach(o=>o.visible=!h));condT=1;}
+
+function introEnd(byUser){const I=INTRO;if(!I)return;INTRO=null;document.body.classList.remove('intro');introGlass(I.glass0);
+  const h=I.hero&&I.hero.alive&&!I.hero.hidden?I.hero:null;
+  director.on=true;$('#dirBtn').setAttribute('aria-pressed','true');director.next=0;
+  if(h){if(!I.named)caption(`${h.S.name}「${h.name}」`);selectEntity(h,true);startFollow(h,'orbit',true);director.prio=1;director.lockUntil=performance.now()+(byUser?6000:9000);}
+  else director.lockUntil=0;
+  restorePanels();renderTutHint();
+  $('#hint').style.opacity=1;setTimeout(()=>{if(tool==='observe')$('#hint').style.opacity=0;},12000);
+  setTimeout(()=>toast(`导演模式已开启：镜头会自动追踪捕猎、羽化和孵化。${IS_MOBILE?'双指拖动可以接管镜头':'拖动镜头或按 W A S D 随时接管'}`),byUser?200:700);}
+
+// skip on any deliberate input; the event still reaches its normal handler
+function introSkip(){if(INTRO)introEnd(true);}
+canvas.addEventListener('pointerdown',introSkip,true);
+canvas.addEventListener('wheel',introSkip,{capture:true,passive:true});
+addEventListener('keydown',e=>{if(!INTRO||e.ctrlKey||e.metaKey||e.altKey||e.key==='Shift')return;if(e.key==='Escape'||e.key===' ')e.preventDefault();introSkip();},true);
+$('#introSkip').addEventListener('click',introSkip);
+
+/* director yields to the player */
+let dirOffToasted=false;
+function directorHold(ms){if(director.on&&!INTRO)director.lockUntil=Math.max(director.lockUntil,performance.now()+(ms||20000));}
+function directorOff(){if(!director.on||INTRO)return;director.on=false;$('#dirBtn').setAttribute('aria-pressed','false');caption('');
+  if(!dirOffToasted){dirOffToasted=true;toast('你接管了镜头。想继续自动观赏，点右上角的导演模式按钮');}}
+
+/* side panels: closed by default so the tank gets the screen; desktop remembers what you opened */
+const narrowUI=()=>matchMedia('(max-width:860px)').matches;
+function setPanel(side,on){const el=$('#'+side),v=on==null?!el.classList.contains('open'):on;el.classList.toggle('open',v);
+  if(v&&narrowUI())$('#'+(side==='left'?'right':'left')).classList.remove('open');
+  const lo=$('#left').classList.contains('open');document.body.classList.toggle('left-open',lo);
+  $('#leftToggle').setAttribute('aria-pressed',lo);$('#rightToggle').setAttribute('aria-pressed',$('#right').classList.contains('open'));
+  if(!narrowUI())try{localStorage.setItem('ark-panels',JSON.stringify({l:$('#left').classList.contains('open'),r:$('#right').classList.contains('open')}));}catch(e){}}
+function restorePanels(){if(narrowUI())return;try{const s=JSON.parse(localStorage.getItem('ark-panels')||'null');if(s){setPanel('left',!!s.l);setPanel('right',!!s.r);}}catch(e){}}
+
+/* onboarding chip: the next 上手任务 stays visible even with the panels closed */
+function renderTutHint(){const el=$('#tutHint');if(!el)return;const t=TUT.find(x=>!x.done);if(!t){el.hidden=true;return;}
+  const n=TUT.filter(x=>x.done).length,txt=t.t;
+  el.hidden=false;el.innerHTML=`<b>上手 ${n+1}/${TUT.length}</b><span>${txt}</span><em>+${t.r}</em>`;}
+$('#tutHint').addEventListener('click',()=>{setPanel('left',true);const b=$('#left .tabs button[data-tab="contracts"]');if(b)b.click();});
+
+/* =================== save / load =================== */
+/* One autosave per tank in localStorage. Everything here is a function declaration so js6 can call
+   readSave/restore* while it builds the world (they're hoisted; no module-level consts are touched early). */
+function saveKey(k){return 'ark-save-'+(k||MK);}
+function readSave(k){try{const s=localStorage.getItem(saveKey(k));if(!s)return null;const o=JSON.parse(s);return o&&o.v===1&&o.mk===(k||MK)?o:null;}catch(e){return null;}}
+function saveMeta(k){try{const s=localStorage.getItem('ark-meta-'+k);return s?JSON.parse(s):null;}catch(e){return null;}}
+function serializeWorld(){const r=v=>Math.round(v*1000)/1000;const E={};
+  for(const k of['time','day','o2','co2','coins','lamp','pump','vent','pond','algae','heat','score','balanceDays','dayOk','sal','nut','plank','temp','visit'])if(env[k]!==undefined)E[k]=env[k];
+  E.zones=env.zones.map(z=>Object.assign({},z));
+  const P=plants.filter(p=>p.alive).map(p=>[p.type,r(p.x),r(p.z),p.v,r(p.growth),r(p.health),r(p.size),r(p.rot),p.by!=null?r(p.by):null]);
+  const A=[];for(const k of SPK)for(const a of pop[k]){if(!a.alive)continue;A.push({sp:k,x:r(a.x),z:r(a.z),y:r(a.y||0),h:r(a.h),st:a.stage,sc:r(a.scale),e:r(a.energy),ag:r(a.age),l:r(a.life),n:a.name,k:a.kills,d:a.kids,t:r(a.stageT||0)});}
+  return{v:1,mk:MK,ts:Date.now(),E,P,A,turf:Array.from(turf,v=>Math.round(v*100)/100),D:DECOR.map(d=>[d.type,r(d.x),r(d.z)]),
+    C:contracts.map(c=>({k:c.tpl.k,n:c.n,b:c.base,r:c.reward,u:c.due})),S:stats,T:TUT.filter(t=>t.done).map(t=>t.k),col:colony?{x:colony.x,z:colony.z,store:colony.store}:null};}
+let saveOff=false;
+function saveNow(){if(saveOff||INTRO)return false;try{const o=serializeWorld();localStorage.setItem(saveKey(),JSON.stringify(o));
+  const old=saveMeta(MK);localStorage.setItem('ark-meta-'+MK,JSON.stringify({day:env.day,ts:o.ts,a:o.A.length,p:o.P.length,name:old&&old.name||''}));return true;}catch(e){return false;}}
+function clearSave(k){try{localStorage.removeItem(saveKey(k));localStorage.removeItem('ark-meta-'+(k||MK));}catch(e){}}
+function restoreEnv(S){const E=S.E||{};for(const k in E)if(k!=='zones')env[k]=E[k];if(E.zones)env.zones.forEach((z,i)=>E.zones[i]&&Object.assign(z,E.zones[i]));
+  env.waterY=waterLevelY();if(S.S)for(const k in S.S)stats[k]=S.S[k];if(S.turf)S.turf.forEach((v,i)=>{if(i<turf.length)turf[i]=v;});}
+function restorePlants(S){for(const q of S.P||[]){if(!PT[q[0]])continue;const p=addPlant(q[0],q[1],q[2],q[4],q[3]);if(!p)continue;p.health=q[5];p.size=q[6];p.rot=q[7];if(q[8]!=null)p.by=q[8];placePlant(p);}}
+function restoreAnimals(S){for(const q of S.A||[]){if(!SPK.includes(q.sp))continue;let a;try{a=new Agent(q.sp,q.x,q.z,{stage:q.st,scale:q.sc,energy:q.e,age:q.ag,name:q.n,h:q.h});}catch(e){continue;}
+    a.life=q.l||a.life;a.kills=q.k||0;a.kids=q.d||0;if(q.t)a.stageT=q.t;if(a.flying&&q.y)a.y=q.y;
+    if(q.sp==='butterfly'&&a.stage==='larva'&&!a.trail)a.trail=new Trail(0.45,a.x,a.z,a.h);}
+  if(OCEAN)formSchools();}
+/* damselfish share a waypoint per school so the shoal moves as one */
+function formSchools(){const fish=(pop.damsel||[]).filter(a=>a.alive);const L=fish.filter(a=>a.x<0),R=fish.filter(a=>a.x>=0);
+  for(const g of[L,R]){if(!g.length)continue;const sch={lead:g[0],tt:rand(3,6),wp:randWater()};sch.wp.y=g[0].y;g.forEach(a=>a.sch=sch);}}
+function restoreContracts(S){for(const c of S.C||[]){const tpl=CT.find(t=>t.k===c.k);if(tpl)contracts.push({tpl,n:c.n,base:c.b,reward:c.r,due:c.u,id:++UID});}while(contracts.length<3){const n=contracts.length;newContract();if(contracts.length===n)break;}ctDirty=true;}
+function restoreLate(S){for(const d of S.D||[]){if(!DECOR_T[d[0]])continue;const o=buildDecor(d[0],d[1],d[2]);DECOR.push(o);if(o.heat&&glassHidden)o.heat.parts.slice(1).forEach(m=>m.visible=false);if(o.air)env.airstones=(env.airstones||0)+1;}
+  for(const k of S.T||[]){const t=TUT.find(x=>x.k===k);if(t)t.done=true;}renderTutHint();if(DECOR.length)refreshGrass();}
+if(SAVE){restoreLate(SAVE);setTimeout(()=>toast(`已读取存档：${MODE.name} · 第 ${env.day} 天`),INTRO?10500:600);}
+setInterval(saveNow,30000);
+addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow();});
+{const hb=$('#homeBtn');if(hb){const nb=hb.cloneNode(true);hb.replaceWith(nb);nb.textContent='保存并返回首页';nb.addEventListener('click',()=>{saveNow();saveOff=true;location.reload();});}
+  const rb=$('#resetBtn');let arm=0;if(rb)rb.addEventListener('click',()=>{if(Date.now()-arm>3000){arm=Date.now();rb.textContent='再点一次确认：清空这只缸的存档';setTimeout(()=>{rb.textContent='重新开始这只缸';},3000);return;}
+    saveOff=true;clearSave();try{sessionStorage.setItem('ark-go',MK);}catch(e){}location.reload();});}
+/* =================== save manager (home page) ===================
+   One slot per tank. Rename only changes the label in the meta record; delete removes both keys.
+   Export writes a JSON file with every save (or one); import validates it and overwrites matching tanks. */
+function saveRecord(k){try{const raw=localStorage.getItem(saveKey(k));if(!raw)return null;return{data:JSON.parse(raw),meta:saveMeta(k)||{}};}catch(e){return null;}}
+function fmtWhen(ts){if(!ts)return '';const d=new Date(ts),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;}
+/* inside the claude.ai preview the page may not download directly; ask the viewer through the downloads capability there */
+async function downloadJSON(obj,name){const txt=JSON.stringify(obj);
+  if(window.claude&&typeof window.claude.use==='function'){const dl=await window.claude.use('downloads').catch(()=>null);if(dl){await dl.save({filename:name,data:txt});return;}}
+  const b=new Blob([txt],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
+function exportSaves(keys){const out={format:'glass-ark-saves',v:1,exported:Date.now(),saves:{}};for(const k of keys){const r=saveRecord(k);if(r)out.saves[k]=r;}
+  const n=Object.keys(out.saves).length;if(!n)return Promise.resolve(0);const d=new Date(),p=x=>String(x).padStart(2,'0');
+  return downloadJSON(out,`glass-ark-${keys.length===1?keys[0]:'saves'}-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.json`).then(()=>n);}
+function importSaves(text){let o;try{o=JSON.parse(text);}catch(e){return{err:'文件不是有效的 JSON'};}
+  if(!o||o.format!=='glass-ark-saves'||!o.saves||typeof o.saves!=='object')return{err:'这不是玻璃方舟的存档文件'};
+  const ok=[],bad=[];for(const k in o.saves){const r=o.saves[k];const d=r&&r.data;
+    if(!MODES[k]||!d||d.v!==1||d.mk!==k||!Array.isArray(d.P)||!Array.isArray(d.A)||!d.E){bad.push(k);continue;}
+    const m=r.meta||{};const meta={day:+(d.E.day||m.day||1),ts:+(d.ts||m.ts||Date.now()),a:d.A.length,p:d.P.length,name:typeof m.name==='string'?m.name.slice(0,24):''};
+    try{localStorage.setItem(saveKey(k),JSON.stringify(d));localStorage.setItem('ark-meta-'+k,JSON.stringify(meta));ok.push(k);}catch(e){return{err:'浏览器存储空间不足，导入失败'};}}
+  return{ok,bad};}
+function initSaveManager(){const dlg=$('#saves'),list=$('#savesList'),msg=$('#savesMsg'),file=$('#saveFile');if(!dlg||dlg.dataset.ready)return;dlg.dataset.ready='1';
+  const say=t=>{msg.textContent=t;};
+  const render=()=>{list.innerHTML='';for(const k of Object.keys(MODES)){const M=MODES[k],m=saveMeta(k),has=!!m&&!!localStorage.getItem(saveKey(k));
+      const li=document.createElement('li');if(!has)li.className='empty';
+      li.innerHTML=`<img src="assets/home/card-${k}.webp" alt="" width="72" height="48"><div class="si"><div class="sn"></div><div class="sm"></div></div><div class="sa"></div>`;
+      li.querySelector('.sn').textContent=has&&m.name?m.name:M.name;
+      li.querySelector('.sm').textContent=has?`${m.name?M.name+' · ':''}第 ${m.day} 天 · ${m.a} 只动物 · ${m.p} 株植物 · ${fmtWhen(m.ts)}`:'还没有存档';
+      const sa=li.querySelector('.sa');
+      if(has){const mk=(t,f,c)=>{const b=document.createElement('button');b.type='button';b.textContent=t;if(c)b.className=c;b.addEventListener('click',f);sa.appendChild(b);return b;};
+        mk('重命名',()=>{const sn=li.querySelector('.sn');const inp=document.createElement('input');inp.maxLength=24;inp.value=m.name||'';inp.placeholder=M.name;inp.setAttribute('aria-label',`${M.name}存档的名字`);sn.replaceWith(inp);inp.focus();inp.select();
+          let fin=false;const done=keep=>{if(fin)return;fin=true;if(keep){const mm=saveMeta(k)||m;mm.name=inp.value.trim().slice(0,24);try{localStorage.setItem('ark-meta-'+k,JSON.stringify(mm));}catch(e){}say(mm.name?`已重命名为“${mm.name}”`:'已恢复默认名字');}render();homeDecorate();};
+          inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();done(true);}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done(false);}});inp.addEventListener('blur',()=>done(true),{once:true});});
+        mk('导出',()=>{exportSaves([k]).then(()=>say(`已导出${M.name}的存档`),e=>say(e&&e.code==='declined'?'已取消导出':'这里不能下载文件'));});
+        let arm=0;const del=mk('删除',()=>{if(Date.now()-arm>3000){arm=Date.now();del.textContent='确认删除';del.classList.add('armed');setTimeout(()=>{del.textContent='删除';del.classList.remove('armed');},3000);return;}
+          clearSave(k);say(`已删除${M.name}的存档`);render();homeDecorate();},'danger');}
+      list.appendChild(li);}
+    $('#saveExportAll').disabled=!Object.keys(MODES).some(k=>localStorage.getItem(saveKey(k)));};
+  const open=()=>{say('');render();if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');};
+  $('#saveOpen').addEventListener('click',open);
+  $('#savesClose').addEventListener('click',()=>dlg.close());
+  dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
+  $('#saveExportAll').addEventListener('click',()=>{exportSaves(Object.keys(MODES)).then(n=>say(n?`已导出 ${n} 个存档`:'没有可以导出的存档'),e=>say(e&&e.code==='declined'?'已取消导出':'这里不能下载文件'));});
+  $('#saveImport').addEventListener('click',()=>file.click());
+  file.addEventListener('change',()=>{const f=file.files&&file.files[0];file.value='';if(!f)return;if(f.size>5e6){say('文件太大，不像是存档');return;}
+    f.text().then(t=>{const r=importSaves(t);if(r.err){say(r.err);return;}
+      say(r.ok.length?`已导入：${r.ok.map(k=>MODES[k].name).join('、')}${r.bad.length?`；跳过 ${r.bad.length} 个无效存档`:''}`:'文件里没有可用的存档');render();homeDecorate();});});}
+/* home page: "存档 · 第 N 天" badges on the cards, and the main button continues the mixed tank if it has a save */
+function homeDecorate(){$$('#home .mode[data-mode]').forEach(b=>{const k=b.dataset.mode,m=saveMeta(k);const old=b.querySelector('.mode-save');if(old)old.remove();if(!m)return;
+    const s=document.createElement('span');s.className='mode-save';s.textContent=`${m.name||'存档'} · 第 ${m.day} 天`;const im=b.querySelector('.mode-img');(im||b).appendChild(s);b.setAttribute('aria-label',`${b.querySelector('.mode-name')?.firstChild?.textContent||k}，继续第 ${m.day} 天`);});
+  const m=saveMeta('mixed'),l=$('#ctaLabel');if(l)l.textContent=m?`继续混合生态缸 · 第 ${m.day} 天`:'打开混合生态缸';
+  initSaveManager();
+  try{const go=sessionStorage.getItem('ark-go');if(go){sessionStorage.removeItem('ark-go');const b=document.querySelector(`#home .mode[data-mode="${go}"]`);if(b)setTimeout(()=>b.click(),0);}}catch(e){}}
+
+introStart();
 </script>
 </html>

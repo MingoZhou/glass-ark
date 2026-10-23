@@ -95,12 +95,12 @@ function bTree(){const H=rand(6.2,8.4);const MB=new Mesher(),ML=new Mesher(),MV=
   const pts=[new V3(0,-0.3,0),new V3(rand(-0.3,0.3),H*0.3,rand(-0.3,0.3)),new V3(rand(-0.5,0.5),H*0.62,rand(-0.5,0.5)),new V3(rand(-0.4,0.4),H,rand(-0.4,0.4))];
   addTubeR(MB,pts,[0.36,0.26,0.19,0.12],WHITE,14,H,0.08,4);const trunk=new THREE.CatmullRomCurve3(pts);
   for(let k=0;k<5;k++){const a=k/5*6.283+rand(-0.3,0.3),dx=Math.cos(a),dz=Math.sin(a);addTubeR(MB,[new V3(dx*0.15,1.3,dz*0.15),new V3(dx*0.55,0.45,dz*0.55),new V3(dx*1.05,-0.08,dz*1.05)],[0.14,0.1,0.05],WHITE,8,H,0,1);}
-  const cluster=(c,n,sz)=>{for(let i=0;i<n;i++)addLeaf(ML,c.clone().add(new V3(rand(-0.2,0.2),rand(-0.1,0.2),rand(-0.2,0.2))),rand(0,6.28),{len:rand(0.45,0.75)*sz,wid:rand(0.22,0.3)*sz,lift:rand(-0.3,0.55),droop:1.1,fold:0.12,segs:4,hr:H,wind:0.9,tint:HSL(0.28+rand(-0.02,0.03),0.45,rand(0.5,0.85))});};
+  const cluster=(c,n,sz,sp)=>{sp=sp||0.2;for(let i=0;i<n;i++)addLeaf(ML,c.clone().add(new V3(rand(-sp,sp),rand(-0.1,0.25)*sp*4,rand(-sp,sp))),rand(0,6.28),{len:rand(0.45,0.75)*sz,wid:rand(0.22,0.3)*sz,lift:rand(-0.3,0.55),droop:1.1,fold:0.12,segs:4,hr:H,wind:0.9,tint:HSL(0.28+rand(-0.02,0.03),0.45,rand(0.5,0.85))});};
   const nb=irand(4,6);for(let k=0;k<nb;k++){const t=rand(0.5,0.95),s=trunk.getPointAt(t),a=k/nb*6.283+rand(-0.4,0.4),dx=Math.cos(a),dz=Math.sin(a),L=rand(1.4,2.4);
     const bp=[s,s.clone().add(new V3(dx*L*0.45,L*0.35,dz*L*0.45)),s.clone().add(new V3(dx*L,L*0.5+rand(-0.2,0.3),dz*L))];addTubeR(MB,bp,[0.1,0.07,0.035],WHITE,7,H,0.15,2);
-    cluster(bp[2],irand(12,16),1.1);cluster(bp[1],irand(5,8),0.9);
+    cluster(bp[2],irand(26,32),1.1,0.6);cluster(bp[1],irand(10,14),0.95,0.4);cluster(bp[2].clone().lerp(bp[1],0.5).add(new V3(0,0.25,0)),irand(8,12),1,0.45);
     if(Math.random()<0.7){const r0=bp[1].clone();const gy=-r0.y+0.3;addTube(MV,[r0,r0.clone().add(new V3(rand(-0.1,0.1),gy*0.5,rand(-0.1,0.1))),r0.clone().add(new V3(rand(-0.15,0.15),gy,rand(-0.15,0.15)))],0.012,0.008,new Col(0x5a4a34),4,H,0.2);}}
-  cluster(pts[3],irand(16,22),1.2);
+  cluster(pts[3],irand(34,42),1.2,0.75);
   for(let e=0;e<2;e++){const t=rand(0.3,0.55),c=trunk.getPointAt(t);c.x+=0.2;for(let i=0;i<9;i++)addLeaf(ME,c,i*2.4,{len:rand(0.2,0.3),wid:0.07,lift:1.1,droop:1.6,fold:0.3,segs:4,hr:H,wind:0.1});}
   return{parts:[{g:MB.geo(),m:'bark'},{g:ML.geo(),m:'leafBroad'},{g:MV.geo(),m:'stem'},{g:ME.geo(),m:'brom'}],h:H};}
 function bMush(v){const parts=[];for(let k=0;k<irand(2,5);k++){const s=rand(0.6,1.2)*(k?0.75:1),ox=k?rand(-0.12,0.12):0,oz=k?rand(-0.12,0.12):0,sh=0.17*s,sr=0.016*s,cr=0.07*s;
@@ -116,11 +116,18 @@ if(OCEAN){MATS.coral=wind(new THREE.MeshPhysicalMaterial({vertexColors:true,roug
   MATS.kelp=wind(new THREE.MeshStandardMaterial({map:TX.kelp,alphaTest:0.4,side:THREE.DoubleSide,vertexColors:true,roughness:0.6}));MATS.fan=wind(new THREE.MeshStandardMaterial({map:TX.fan,alphaTest:0.3,side:THREE.DoubleSide,vertexColors:true,roughness:0.6}));
   for(const k of['coral','kelp','fan','blade','stem'])causticify(MATS[k]);}
 function bSeagrass(v){const M=new Mesher();const c0=new Col(0x2a5626),c1=new Col(0x7ab05a);for(let b=0;b<irand(16,26);b++){const a=rand(0,6.28),r=rand(0,0.2);blade(M,Math.cos(a)*r,Math.sin(a)*r,rand(0.5,1.1),rand(0.05,0.3),rand(0.014,0.022),rand(0,6.28),c0,c1,6,1,1);}return{parts:[{g:M.geo(),m:'blade'}],h:1};}
-function bKelp(v){const MS=new Mesher(),ML=new Mesher(),parts=[];const H=rand(4.5,7.2);const n=irand(2,4);
-  for(let k=0;k<n;k++){const bx=rand(-0.15,0.15),bz=rand(-0.15,0.15),h=H*rand(0.75,1),pts=[];for(let i=0;i<=8;i++){const t=i/8;pts.push(new V3(bx+Math.sin(t*3+k)*0.3*t,h*t,bz+Math.cos(t*2+k)*0.25*t));}
-    addTube(MS,pts,0.022,0.012,new Col(0x6a5a24),5,H,0.9);const curve=new THREE.CatmullRomCurve3(pts);
-    for(let t=0.12;t<0.98;t+=rand(0.05,0.08)){const p=curve.getPointAt(t);addLeaf(ML,p,rand(0,6.28),{len:rand(0.5,0.85),wid:rand(0.14,0.22),lift:rand(-0.2,0.6),droop:0.8,fold:0.1,segs:4,hr:H,wind:1});const g=sph(0.035,0x9a8a3a,[p.x,p.y,p.z]);const aw=new Float32Array(g.attributes.position.count).fill(wk(p.y,H,1));g.setAttribute('aWind',new THREE.BufferAttribute(aw,1));parts.push({g,m:'coral'});}}
-  for(let i=0;i<5;i++)parts.push({g:sph(0.06,0x5a4a20,[rand(-0.12,0.12),0.02,rand(-0.12,0.12)],[1,0.6,1]),m:'coral'});
+/* giant kelp: thin stipes carrying long ruffled ribbon blades that stream up and out, plus a floating canopy near the top */
+function kelpRibbon(M,p,a,len,wid,rise,H,tint){const segs=10,dx=Math.cos(a),dz=Math.sin(a),px=-dz,pz=dx,ph=rand(0,6.28);let prev=null;
+  for(let k=0;k<=segs;k++){const t=k/segs,c=1-Math.pow(1-t,1.6);const x=p.x+dx*len*c*(1-rise)+Math.sin(t*3+ph)*0.05,y=p.y+len*t*rise+len*0.12*Math.sin(t*2.2),z=p.z+dz*len*c*(1-rise)+Math.cos(t*3+ph)*0.05;
+    const ww=wid*0.5*Math.pow(Math.sin(Math.PI*Math.min(1,t*1.05+0.05)),0.55),ruf=Math.sin(t*22+ph)*0.035*Math.min(1,t*3);_c.copy(tint).multiplyScalar(0.72+0.38*t);const w=wk(y,H,1);
+    const A=M.v(x-px*ww,y+ruf,z-pz*ww,0,t,_c,w),B=M.v(x+px*ww,y-ruf,z+pz*ww,1,t,_c,w);if(prev)M.q(prev[0],prev[1],B,A);prev=[A,B];}}
+function bKelp(v){const MS=new Mesher(),ML=new Mesher(),parts=[];const H=rand(5,7.4);const n=irand(3,5);const tint=[new Col(0xd8b04a),new Col(0xc8a03e),new Col(0xe0bc5a)][v];
+  for(let k=0;k<n;k++){const bx=rand(-0.18,0.18),bz=rand(-0.18,0.18),h=H*rand(0.7,1),pts=[];const sw=rand(0,6.28);for(let i=0;i<=10;i++){const t=i/10;pts.push(new V3(bx+Math.sin(t*2.6+sw)*0.35*t,h*t,bz+Math.cos(t*2.1+sw)*0.3*t));}
+    addTube(MS,pts,0.02,0.01,new Col(0x7a6224),5,H,0.9);const curve=new THREE.CatmullRomCurve3(pts);let side=rand(0,6.28);
+    for(let t=0.1;t<0.9;t+=rand(0.07,0.11)){const p=curve.getPointAt(t);side+=2.4+rand(-0.4,0.4);kelpRibbon(ML,p,side,rand(0.9,1.5)*(1.1-t*0.4),rand(0.16,0.24),rand(0.55,0.75),H,tint);
+      const g=sph(0.04,0xb89a3a,[p.x,p.y,p.z]);g.setAttribute('aWind',new THREE.BufferAttribute(new Float32Array(g.attributes.position.count).fill(wk(p.y,H,1)),1));parts.push({g,m:'coral'});}
+    const top=pts[10];for(let c=0;c<irand(3,5);c++)kelpRibbon(ML,top,rand(0,6.28),rand(1.2,1.9),rand(0.18,0.26),rand(0.05,0.2),H,tint);}
+  for(let i=0;i<6;i++)parts.push({g:sph(0.07,0x4a3a1a,[rand(-0.16,0.16),0.02,rand(-0.16,0.16)],[1,0.6,1]),m:'coral'});
   parts.push({g:MS.geo(),m:'stem'},{g:ML.geo(),m:'kelp'});return{parts,h:H};}
 function bStag(v){const M=new Mesher(),parts=[];const base=[new Col(0x8a5ad0),new Col(0xe0789c),new Col(0x4aa8d0)][v],tip=base.clone().lerp(new Col(0xffffff),0.55);
   const br=(p,dir,len,r,d)=>{const q=p.clone().addScaledVector(dir,len);addTube(M,[p,p.clone().lerp(q,0.5).add(new V3(rand(-0.03,0.03),0,rand(-0.03,0.03))),q],r,r*0.78,base.clone().lerp(tip,d/3.5),6,1,0);
@@ -129,10 +136,10 @@ function bStag(v){const M=new Mesher(),parts=[];const base=[new Col(0x8a5ad0),ne
   parts.push({g:M.geo(),m:'coral'});return{parts,h:0.9};}
 function bBrain(v){const g=new THREE.SphereGeometry(0.45,96,48,0,6.2832,0,Math.PI*0.62);const p=g.attributes.position;const seed=rand(0,50);const rid=new Float32Array(p.count);
   for(let i=0;i<p.count;i++){const q=new V3(p.getX(i),p.getY(i),p.getZ(i)).normalize();const n=fbm(q.x*2+seed,q.y*2+q.z*1.7+seed,3);const r=Math.abs(Math.sin(n*42));rid[i]=r;q.multiplyScalar(0.45*(1+0.045*r));q.y=q.y*0.65-0.05;p.setXYZ(i,q.x,q.y,q.z);}
-  g.computeVertexNormals();const base=[0x8a9a4a,0xb07a4a,0x6a9a9a][v];colorize(g,base,0.05,(x,y,z,c,i)=>{c.multiplyScalar(rid[i]<0.35?0.55:1.1);});return{parts:[{g,m:'coral'}],h:0.3};}
-function bTable(v){const parts=[];const col=[0xb07a9a,0x9ab070,0xc09a6a][v];parts.push({g:lathePart([new V2(0.08,0),new V2(0.05,0.2),new V2(0.06,0.32)],12,0,0,0,(x,y,z,c)=>c.set(col).multiplyScalar(0.7)),m:'coral'});
+  g.computeVertexNormals();const base=[0xa8b83a,0xd8783a,0x4ab8a8][v];colorize(g,base,0.05,(x,y,z,c,i)=>{c.multiplyScalar(rid[i]<0.35?0.55:1.1);});return{parts:[{g,m:'coral'}],h:0.3};}
+function bTable(v){const parts=[];const col=[0x9a4ab8,0xc8743a,0x4a9a8a][v];parts.push({g:lathePart([new V2(0.08,0),new V2(0.05,0.2),new V2(0.06,0.32)],12,0,0,0,(x,y,z,c)=>c.set(col).multiplyScalar(0.7)),m:'coral'});
   for(let k=0;k<irand(2,3);k++){const R=rand(0.45,0.7)*(k?0.75:1);const g=new THREE.CylinderGeometry(R,R*0.85,0.05,48,1);const p=g.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),f=1+0.12*(fbm(Math.cos(a)*2+k,Math.sin(a)*2,2)-0.5);p.setX(i,x*f);p.setZ(i,z*f);}g.computeVertexNormals();
-    colorize(g,col,0.15,(x,y,z,c)=>{if(Math.hypot(x,z)>R*0.85)c.lerp(new Col(0xf0e6d0),0.5);});g.translate(k?rand(-0.2,0.2):0,0.32+k*0.12,k?rand(-0.2,0.2):0);parts.push({g,m:'coral'});}return{parts,h:0.5};}
+    colorize(g,col,0.15,(x,y,z,c)=>{if(Math.hypot(x,z)>R*0.85)c.lerp(new Col(0xffd8f0),0.35);else c.multiplyScalar(0.8+0.4*hash2(x*40,z*40));});g.translate(k?rand(-0.2,0.2):0,0.32+k*0.12,k?rand(-0.2,0.2):0);parts.push({g,m:'coral'});}return{parts,h:0.5};}
 function bFan(v){const M=new Mesher();const tint=[WHITE,new Col(0xe0b0ff),new Col(0xffd0a0)][v];for(let k=0;k<2;k++){const a=rand(0,3.14)+k*0.5;addCard(M,new V3(0,0.02,0),UP.clone(),new V3(Math.cos(a),0,Math.sin(a)),rand(0.8,1.1),rand(0.8,1.1),tint,1,0.8);}return{parts:[{g:M.geo(),m:'fan'}],h:1};}
 function bAnemone(v){const M=new Mesher(),parts=[];const col=[[0x4a8a4a,0xc05ad0],[0xd06a8a,0xf0d0e0],[0xd08a3a,0xf0e0a0]][v];const c0=new Col(col[0]),c1=new Col(col[1]);
   parts.push({g:lathePart([new V2(0.14,0),new V2(0.12,0.08),new V2(0.13,0.13),new V2(0.02,0.14)],20,0,0,0,(x,y,z,c)=>c.set(0x8a4a4a)),m:'coral'});
@@ -181,10 +188,12 @@ function getPR(type,v){const key=type+':'+v;let r=PR[key];if(r)return r;const T=
   mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);tank.add(mesh);r={mesh,items:[],h:b.h,cap:T.cap,dirty:false};PR[key]=r;return r;}
 function addPlant(type,x,z,growth,v){const T=PT[type];if(v==null)v=type==='dandelion'?irand(0,1):irand(0,2);
   const p={kind:'plant',type,T,x,z,v,growth:growth==null?rand(0.55,1):growth,health:1,pollen:0,zone:zoneAt(x,z),id:++UID,alive:true,age:0,rot:rand(0,6.283),tilt:rand(-0.07,0.07),size:rand(T.size[0],T.size[1]),tint:new Col(rand(0.88,1),rand(0.92,1),rand(0.86,1)),eaten:0};
-  if(T.single){const b=T.build(v),{geo,keys}=mergeG(b.parts);p.mesh=new THREE.Mesh(geo,keys.map(k=>MATS[k]));p.mesh.castShadow=true;p.mesh.receiveShadow=true;p.h=b.h;tank.add(p.mesh);stampAO(x,z,1.8,0.3);OBST.push(p.obst={x,z,r:0.45});}
+  if(T.single){const b=T.build(v),{geo,keys}=mergeG(b.parts);p.mesh=new THREE.Mesh(geo,keys.map(k=>MATS[k]));p.mesh.castShadow=true;p.mesh.receiveShadow=true;p.h=b.h;{const mx=(TOP-0.6-heightAt(x,z))/b.h;if(p.size>mx)p.size=Math.max(0.55,mx);}tank.add(p.mesh);stampAO(x,z,1.8,0.3);OBST.push(p.obst={x,z,r:0.45});}
   else{const r=getPR(type,v);if(r.items.length>=r.cap)return null;p.r=r;p.idx=r.items.length;r.items.push(p);r.mesh.count=r.items.length;p.h=r.h;}
+  if(OCEAN&&T.coral){const ry=rockSurfY(x,z);if(ry!=null&&ry>heightAt(x,z))p.by=ry;}
   plants.push(p);pgAdd(p);placePlant(p);return p;}
-function plantBaseY(p){return p.T.water?env.waterY+0.004:heightAt(p.x,p.z)-0.02;}
+function rockSurfY(x,z){let best=null;for(const o of OBST){if(o.top==null||!o.rock)continue;const d=Math.hypot(x-o.x,z-o.z)/(o.r*1.05);if(d>=1)continue;const y=o.g+(o.top-o.g)*Math.pow(1-d*d,0.6)-0.07;if(best==null||y>best)best=y;}return best;}
+function plantBaseY(p){if(p.by!=null)return p.by;return p.T.water?env.waterY+0.004:heightAt(p.x,p.z)-0.02;}
 function plantScale(p){return p.size*(0.3+0.7*p.growth);}
 function plantTop(p){return plantBaseY(p)+p.h*plantScale(p)*0.92;}
 function placePlant(p){const y=plantBaseY(p),s=plantScale(p);
@@ -213,7 +222,7 @@ const tcell=(x,z)=>clamp(Math.floor(x+HW),0,TNX-1)+clamp(Math.floor(z+HD),0,TNZ-
 for(let j=0;j<TNZ;j++)for(let i=0;i<TNX;i++){const x=-HW+i+0.5,z=-HD+j+0.5,w=zoneW(zu(x,z));const c=j*TNX+i;turfCap[c]=OCEAN?clamp(0.3+0.45*reefAt(x,z),0,1):clamp(w[1]*1+w[2]*0.55+w[3]*0.22+w[0]*0.05,0,1)*(z<-HD+1.2?0.2:1);turf[c]=turfCap[c]*rand(0.6,0.9);}
 function grassClusterGeo(c0,c1,n,hmin,hmax){const M=new Mesher();for(let b=0;b<n;b++){const a=rand(0,6.28),r=rand(0,0.06);blade(M,Math.cos(a)*r,Math.sin(a)*r,rand(hmin,hmax),rand(0.1,0.45),rand(0.01,0.018),rand(0,6.28),c0,c1,3,hmax,1);}return M.geo();}
 const GN=Math.floor(16000);
-const grass=(function(){const geo=OCEAN?grassClusterGeo(new Col(0x5a2a2a),new Col(0xa05a4a),7,0.05,0.14):grassClusterGeo(new Col(0x33501f),new Col(0x9fb85a),8,0.14,0.4);const mesh=new THREE.InstancedMesh(geo,MATS.blade,GN);mesh.frustumCulled=false;mesh.receiveShadow=true;
+const grass=(function(){const geo=OCEAN?grassClusterGeo(new Col(0x2c4628),new Col(0x7f9a4e),7,0.05,0.12):grassClusterGeo(new Col(0x33501f),new Col(0x9fb85a),8,0.14,0.4);const mesh=new THREE.InstancedMesh(geo,MATS.blade,GN);mesh.frustumCulled=false;mesh.receiveShadow=true;
   const gx=new Float32Array(GN),gz=new Float32Array(GN),gs=new Float32Array(GN),gr=new Float32Array(GN),gc=new Int32Array(GN),gy=new Float32Array(GN),gzi=new Uint8Array(GN),gb=new Float32Array(GN);const cells=[];for(let i=0;i<TNX*TNZ;i++)cells.push([]);let n=0,tries=0;
   while(n<GN&&tries<GN*12){tries++;const x=rand(-HW+0.3,HW-0.3),z=rand(-HD+0.9,HD-0.3),c=tcell(x,z);if(Math.random()>turfCap[c]*0.95)continue;if(OCEAN&&Math.random()<0.45)continue;if(pondD(x,z)<1.18||streamQ(x,z).d<0.75||Math.hypot(x-POOL.x,z-POOL.z)<POOL.r*1.4||slopeAt(x,z)>1.3||blocked(x,z,0.05))continue;
     gx[n]=x;gz[n]=z;gs[n]=rand(0.7,1.35);gr[n]=rand(0,6.28);gc[n]=c;gy[n]=heightAt(x,z)-0.01;gzi[n]=zoneAt(x,z);gb[n]=localMoist(x,z,gzi[n])-env.zones[gzi[n]].m;cells[c].push(n);n++;}
@@ -241,7 +250,10 @@ if(!OCEAN)(function(){const S=Q.scatter;
   const dry=grassClusterGeo(new Col(0x7a6a44),new Col(0xdccb96),9,0.12,0.34);
   scatter(dry,MATS.blade,1300*S,(x,z)=>{const w=zoneW(zu(x,z));return w[0]*0.6*(1-smooth(0.3,0.9,Math.abs(Math.sin(x*0.42+z*0.28))));},{s:[0.8,1.6]});
   const gcM=new Mesher();for(let i=0;i<6;i++)addLeaf(gcM,new V3(0,0.01,0),i*1.05,{len:0.11,wid:0.07,lift:0.5,droop:3,segs:3,hr:0.2,wind:0.3});
-  scatter(gcM.geo(),MATS.leafVar,1600*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*0.8;},{s:[0.7,1.5],col:()=>new Col().setHSL(rand(0.25,0.32),0.3,rand(0.6,0.9))});
+  scatter(gcM.geo(),MATS.leafVar,3400*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*1+w[2]*0.15;},{s:[0.7,1.5],col:()=>new Col().setHSL(rand(0.25,0.32),0.3,rand(0.6,0.9))});
+  /* rainforest understorey: low fern sprigs and selaginella fill the gaps between the big plants */
+  const spM=new Mesher();for(let i=0;i<5;i++)addLeaf(spM,new V3(0,0.01,0),i*1.26+rand(-0.2,0.2),{len:rand(0.22,0.3),wid:0.06,lift:0.9,droop:4.5,segs:5,hr:0.3,wind:0.6});
+  scatter(spM.geo(),MATS.leafVar,1500*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*0.9;},{s:[0.8,1.7],col:()=>new Col().setHSL(rand(0.24,0.33),rand(0.35,0.55),rand(0.4,0.7))});
   const val=new Mesher();for(let b=0;b<6;b++)blade(val,rand(-0.05,0.05),rand(-0.05,0.05),rand(0.35,0.6),rand(0.05,0.2),0.012,rand(0,6.28),new Col(0x1f4a24),new Col(0x4f8a3a),5,0.6,1);
   scatter(val.geo(),MATS.blade,700*S,(x,z)=>pondD(x,z)<0.85?0.9:0,{s:[0.7,1.3],water:true});
 })();

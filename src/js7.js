@@ -47,25 +47,25 @@ function pickEntity(ray){const o=ray.origin,d=ray.direction;let best=null,bs=1;c
   for(const k of SPK)for(const a of pop[k]){if(!a.alive||a.hidden||a.wrapped)continue;test(a,a.x,(a.y||heightAt(a.x,a.z))+0.04,a.z,{ant:0.08,lizard:0.3,snake:0.3,frog:0.2,mantis:0.2,grouper:0.35,moray:0.3,jelly:0.28,crab:0.2}[k]||0.14);}
   for(const p of plants)if(p.alive){const s=plantScale(p);test(p,p.x,plantBaseY(p)+p.h*s*0.45,p.z,Math.max(0.2,p.h*s*0.35),1.4);}
   return best;}
-let tool='observe';const sub={plant:'daisy',animal:'cricket',rain:'spot'};let down=null,moveSel=null;const pointers=new Map();let pinch0=0,pinchC=null;
+let tool='observe';const sub={plant:'daisy',animal:'cricket',rain:'spot'};let down=null,moveSel=null;const pointers=new Map();let pinch0=0,pinchC=null,pinchMv=0;
 canvas.addEventListener('contextmenu',e=>e.preventDefault());
 canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pointers.size===2){const [a,b]=[...pointers.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);pinchC={x:(a.x+b.x)/2,y:(a.y+b.y)/2};rain.active=false;down=null;return;}
+  if(pointers.size===2){const [a,b]=[...pointers.values()];pinchMv=0;pinch0=Math.hypot(a.x-b.x,a.y-b.y);pinchC={x:(a.x+b.x)/2,y:(a.y+b.y)/2};rain.active=false;down=null;return;}
   down={x:e.clientX,y:e.clientY,btn:e.button,moved:0,shift:e.shiftKey};
   if(tool==='rain'&&e.button===0){const h=groundHit(rayFrom(e));if(h){rain.active=true;rain.cx=h.x;rain.cz=h.z;initSound();}}});
 canvas.addEventListener('pointermove',e=>{const prev=pointers.get(e.pointerId);
   if(prev){const dx=e.clientX-prev.x,dy=e.clientY-prev.y;prev.x=e.clientX;prev.y=e.clientY;
-    if(pointers.size===2){const [a,b]=[...pointers.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),c={x:(a.x+b.x)/2,y:(a.y+b.y)/2};if(pinch0>0)cam.tR=clamp(cam.tR*pinch0/d,0.6,80);if(pinchC&&!cam.follow)panBy(c.x-pinchC.x,c.y-pinchC.y);pinch0=d;pinchC=c;return;}
+    if(pointers.size===2){const [a,b]=[...pointers.values()];const d=Math.hypot(a.x-b.x,a.y-b.y),c={x:(a.x+b.x)/2,y:(a.y+b.y)/2};if(pinch0>0){cam.tR=clamp(cam.tR*pinch0/d,0.6,80);directorHold();}if(pinchC){const mx=c.x-pinchC.x,my=c.y-pinchC.y;pinchMv+=Math.hypot(mx,my);if(!cam.follow||pinchMv>40)panBy(mx,my);}pinch0=d;pinchC=c;return;}
     if(down){down.moved+=Math.abs(dx)+Math.abs(dy);
       if(rain.active){const h=groundHit(rayFrom(e));if(h){rain.cx=h.x;rain.cz=h.z;}}
       else if(down.btn===2||down.shift){panBy(dx,dy);}
       else if(tool==='shovel'&&down.btn===0){if(down.moved>7){down.brush=1;const r=rayFrom(e);shovelAt(r,groundHit(r),true);}}
-      else{if(down.moved>40)tutDone('cam');cam.tTheta-=dx*0.006;cam.tPhi=clamp(cam.tPhi-dy*0.005,0.12,1.55);if(cam.fmode==='chase')cam.fmode='orbit';}}}
+      else{if(down.moved>40)tutDone('cam');directorHold();cam.tTheta-=dx*0.006;cam.tPhi=clamp(cam.tPhi-dy*0.005,0.12,1.55);if(cam.fmode==='chase')cam.fmode='orbit';}}}
   updateCursor(e);});
-function panBy(dx,dy){if(cam.follow){stopFollow();}const k=cam.r*0.0015;const right=new V3().setFromMatrixColumn(camera.matrixWorld,0),fwd=new V3().crossVectors(UP,right);cam.tT.addScaledVector(right,-dx*k).addScaledVector(fwd,dy*k);cam.tT.x=clamp(cam.tT.x,-HW,HW);cam.tT.z=clamp(cam.tT.z,-HD,HD);cam.tT.y=clamp(cam.tT.y,0,6);}
+function panBy(dx,dy){directorOff();if(cam.follow){stopFollow();}const k=cam.r*0.0015;const right=new V3().setFromMatrixColumn(camera.matrixWorld,0),fwd=new V3().crossVectors(UP,right);cam.tT.addScaledVector(right,-dx*k).addScaledVector(fwd,dy*k);cam.tT.x=clamp(cam.tT.x,-HW,HW);cam.tT.z=clamp(cam.tT.z,-HD,HD);cam.tT.y=clamp(cam.tT.y,0,6);}
 function endPtr(e){pointers.delete(e.pointerId);if(pointers.size<2){pinch0=0;pinchC=null;}if(rain.active){rain.active=false;down=null;return;}if(down&&down.moved<7&&!down.brush&&e.type==='pointerup')clickAt(e);down=null;}
 canvas.addEventListener('pointerup',endPtr);canvas.addEventListener('pointercancel',endPtr);canvas.addEventListener('pointerleave',()=>{cursor.visible=false;});
-canvas.addEventListener('wheel',e=>{e.preventDefault();cam.tR=clamp(cam.tR*Math.exp(e.deltaY*0.0012),0.6,80);if(cam.fmode==='eye'&&e.deltaY>0)cam.fmode='orbit';},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();directorHold();cam.tR=clamp(cam.tR*Math.exp(e.deltaY*0.0012),0.6,80);if(cam.fmode==='eye'&&e.deltaY>0)cam.fmode='orbit';},{passive:false});
 const cursor=new THREE.Mesh(new THREE.RingGeometry(0.9,1,56),new THREE.MeshBasicMaterial({color:0xa4d18b,transparent:true,opacity:0.8,depthWrite:false,side:THREE.DoubleSide}));cursor.rotation.x=-Math.PI/2;cursor.visible=false;cursor.renderOrder=13;tank.add(cursor);
 const selRing=new THREE.Mesh(new THREE.RingGeometry(0.85,1,56),new THREE.MeshBasicMaterial({color:0xf0b25a,transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}));selRing.rotation.x=-Math.PI/2;selRing.visible=false;selRing.renderOrder=13;tank.add(selRing);
 function updateCursor(e){if(tool==='observe'){cursor.visible=false;return;}const h=groundHit(rayFrom(e));if(!h){cursor.visible=false;return;}let r=0.3,c=0xa4d18b;
@@ -98,7 +98,7 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==
 
 /* =================== selection =================== */
 let selected=null;
-function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');$('#inspect').hidden=false;inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
+function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');if(!auto||!narrowUI())$('#inspect').hidden=false;inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
 function deselect(){selected=null;$('#inspect').hidden=true;selRing.visible=false;stopFollow();}
 function showZone(h){selected={kind:'zone',zi:zoneAt(h.x,h.z),alive:true,x:h.x,z:h.z};$('#inspect').hidden=false;inspDirty=true;renderInspect();}
 function onEntityGone(e){if(selected===e){const was=e;if(was.kind==='animal'&&cam.follow===was){toast(`「${was.name}」的故事结束了`);}selected=null;$('#inspect').hidden=true;}if(cam.follow===e)cam.follow=null;if(moveSel===e)moveSel=null;}

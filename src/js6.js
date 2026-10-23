@@ -159,28 +159,35 @@ function checkContracts(){for(let i=contracts.length-1;i>=0;i--){const c=contrac
 /* =================== initial world =================== */
 setMsg('播种…');await tick();
 const SZ=MODE.zone;
+const SAVE=readSave();if(SAVE)restoreEnv(SAVE);
 function randIn(zi,test,tries){for(let t=0;t<(tries||300);t++){const x=SZ!=null?rand(-HW+0.7,HW-0.7):clamp(ZONES[zi].cx+rand(-6,6),-HW+0.7,HW-0.7),z=rand(-HD+1.2,HD-0.6);if(zoneAt(x,z)!==zi)continue;if(test&&!test(x,z))continue;return[x,z];}return null;}
 const okLand=(x,z,sp)=>!inWater(x,z,-0.05)&&pondD(x,z)>1.15&&streamQ(x,z).d>0.7&&!blocked(x,z,0.15)&&spacingOK(x,z,sp);
 function seed(type,zi,n,sp,test){for(let i=0;i<n;i++){const p=randIn(zi,(x,z)=>okLand(x,z,sp)&&(!test||test(x,z)));if(p)addPlant(type,p[0],p[1]);}}
 function seedLily(n){if(!MODE.pond)return;for(let i=0;i<n;i++){for(let t=0;t<80;t++){const a=rand(0,6.283),r=rand(0,POND.r*0.9),x=POND.x+Math.cos(a)*r,z=POND.z+Math.sin(a)*r;if(inPond(x,z,0.12)&&spacingOK(x,z,0.6)){addPlant('lily',x,z);break;}}}}
 const nearPond=(x,z)=>{const d=pondD(x,z);return d>1.15&&d<1.9;};
 function seedOcean(type,zs,n,sp,test){for(let i=0;i<n;i++){for(let t=0;t<200;t++){const x=rand(-HW+0.8,HW-0.8),z=rand(-HD+1.3,HD-0.6);if(!zs.includes(zoneAt(x,z)))continue;const s=suit(type,x,z);if(!s.ok||!spacingOK(x,z,sp))continue;if(test&&!test(x,z))continue;addPlant(type,x,z);break;}}}
-if(OCEAN){
-  seedOcean('seagrass',[0,1],34,0.4);seedOcean('kelp',[0,1],7,1.2,(x,z)=>z<-2);seedOcean('staghorn',[2,3],12,0.9);seedOcean('brain',[2,3],8,0.9);seedOcean('table',[3],5,1.3);seedOcean('fan',[3,2],8,0.8,(x,z)=>z<3);seedOcean('anemone',[2,3],4,1.4);
+if(SAVE)restorePlants(SAVE);
+else if(OCEAN){
+  seedOcean('seagrass',[0,1],52,0.4);seedOcean('kelp',[0,1],7,1.2,(x,z)=>z<-2);seedOcean('staghorn',[2,3],22,0.75);seedOcean('brain',[2,3],14,0.8);seedOcean('table',[3],5,1.3);seedOcean('fan',[3,2],12,0.7,(x,z)=>z<3);seedOcean('anemone',[2,3],4,1.4);
+  /* reef heads: every live rock is crusted with coral, the big ones carry a whole garden */
+  const RC=['staghorn','staghorn','brain','table','fan','staghorn','brain','anemone'];
+  for(const o of LIVEROCKS){const n=Math.round(2+o.r*3.2);for(let i=0;i<n;i++){for(let t=0;t<40;t++){const a=rand(0,6.283),d=Math.sqrt(rand(0,1))*o.r*0.8,x=o.x+Math.cos(a)*d,z=o.z+Math.sin(a)*d;if(z<-HD+1.2||Math.abs(x)>HW-0.6||!spacingOK(x,z,0.42))continue;const ty=i===0&&o.r>1.5?'table':pick(RC);if(ty==='anemone'&&plants.filter(q=>q.type==='anemone').length>=7)continue;addPlant(ty,x,z,rand(0.7,1));break;}}
+    for(let i=0;i<Math.round(o.r*2);i++){for(let t=0;t<40;t++){const a=rand(0,6.283),d=o.r*rand(1.0,1.6),x=o.x+Math.cos(a)*d,z=o.z+Math.sin(a)*d;if(z<-HD+1.2||Math.abs(x)>HW-0.6||blocked(x,z,0.05)||!spacingOK(x,z,0.5))continue;addPlant(pick(['brain','staghorn','fan','seagrass']),x,z);break;}}}
 }else if(SZ==null){
   seed('saguaro',0,6,1.4);seed('barrel',0,12,0.8);seed('aloe',0,8,0.8);seed('echeveria',0,12,0.5);
   seed('foxtail',1,30,0.45);seed('daisy',1,20,0.45);seed('cosmos',1,12,0.6);seed('dandelion',1,12,0.45);seed('clover',1,12,0.6);
   seed('cattail',2,18,0.5,nearPond);seed('fern',2,6,0.7);seed('moss',2,8,0.45);seed('clover',2,6,0.6);seed('daisy',2,4,0.45);
   seedLily(12);
-  seed('tree',3,5,2.8,(x,z)=>z<3);seed('monstera',3,10,1.1);seed('fern',3,22,0.7);seed('bromeliad',3,10,0.6);seed('moss',3,18,0.45);
+  seed('tree',3,6,2.6,(x,z)=>z<3);seed('monstera',3,14,1.0);seed('fern',3,34,0.6);seed('bromeliad',3,14,0.55);seed('moss',3,26,0.4);
   for(const [x,z] of[[11.5,5.4],[13,5.1],[14.3,4.9]])if(!inWater(x,z))addPlant('mushroom',x+0.1,z+0.45,0.8,0);
 }else if(SZ===0){seed('saguaro',0,14,1.5);seed('barrel',0,26,0.8);seed('aloe',0,18,0.8);seed('echeveria',0,26,0.5);}
 else if(SZ===1){seed('foxtail',1,60,0.45);seed('daisy',1,40,0.45);seed('cosmos',1,24,0.6);seed('dandelion',1,24,0.45);seed('clover',1,26,0.6);seedLily(7);}
 else if(SZ===2){seed('cattail',2,34,0.5,nearPond);seed('fern',2,16,0.7);seed('moss',2,22,0.45);seed('clover',2,18,0.6);seed('daisy',2,14,0.45);seedLily(16);}
-else{seed('tree',3,10,2.8,(x,z)=>z<4);seed('monstera',3,22,1.1);seed('fern',3,42,0.7);seed('bromeliad',3,22,0.6);seed('moss',3,34,0.45);seedLily(8);
+else{seed('tree',3,14,2.4,(x,z)=>z<4.5);seed('monstera',3,32,0.95);seed('fern',3,70,0.55);seed('bromeliad',3,30,0.5);seed('moss',3,50,0.38);seed('fern',3,20,0.45,(x,z)=>z>3);seedLily(8);
   for(let i=0;i<6;i++){const p=randIn(3,(x,z)=>okLand(x,z,0.3));if(p)addPlant('mushroom',p[0],p[1],0.8,0);}}
 flushPlants();refreshGrass();
-if(SPK.includes('ant')){let cx=-5.2,cz=4.2;if(SZ!=null){for(let t=0;t<60;t++){const x=rand(-8,8),z=rand(2,7);if(okLand(x,z,0.6)){cx=x;cz=z;break;}}}makeColony(cx,cz);}
+if(SAVE){if(SAVE.col&&SPK.includes('ant')){makeColony(SAVE.col.x,SAVE.col.z);colony.store=SAVE.col.store;}}
+else if(SPK.includes('ant')){let cx=-5.2,cz=4.2;if(SZ!=null){for(let t=0;t<60;t++){const x=rand(-8,8),z=rand(2,7);if(okLand(x,z,0.6)){cx=x;cz=z;break;}}}makeColony(cx,cz);}
 setMsg('唤醒生物…');await tick();
 const spawnIn=(sp,zi,n,o,test)=>{if(!SPK.includes(sp))return;for(let i=0;i<n;i++){const p=randIn(zi,(x,z)=>!inWater(x,z,-0.1)&&!blocked(x,z,0.1)&&(!test||test(x,z)));if(p)new Agent(sp,p[0],p[1],o?Object.assign({},o):undefined);}};
 function spawnFrogs(nA,nT,egg){if(!SPK.includes('frog')||!MODE.pond)return;
@@ -189,10 +196,11 @@ function spawnFrogs(nA,nT,egg){if(!SPK.includes('frog')||!MODE.pond)return;
   if(egg){const a=1.2,r=pondR(a)*0.8;new Agent('frog',POND.x+Math.cos(a)*r,POND.z+Math.sin(a)*r,{stage:'egg',age:0,energy:1});}}
 function spawnButterflies(zi,nA,nL){spawnIn('butterfly',zi,nA);spawnIn('butterfly',zi,nL,{stage:'larva',scale:0.6,age:0});
   if(pop.butterfly)for(const b of pop.butterfly)if(b.stage==='larva'&&!b.trail){b.stageT=0.4;b.trail=new Trail(0.45,b.x,b.z,b.h);}}
-const nAnt=SZ==null?40:32;if(colony)for(let i=0;i<nAnt;i++)new Agent('ant',colony.x+rand(-0.6,0.6),colony.z+rand(-0.6,0.6));
-if(OCEAN){
+const nAnt=SZ==null?40:32;if(colony&&!SAVE)for(let i=0;i<nAnt;i++)new Agent('ant',colony.x+rand(-0.6,0.6),colony.z+rand(-0.6,0.6));
+if(SAVE)restoreAnimals(SAVE);
+else if(OCEAN){
   const oz=(sp,zs,n,o)=>{for(let i=0;i<n;i++){for(let t=0;t<200;t++){const x=rand(-HW+1,HW-1),z=rand(-HD+1.4,HD-0.8);if(!zs.includes(zoneAt(x,z))||blocked(x,z,0.15))continue;new Agent(sp,x,z,o?Object.assign({},o):undefined);break;}}};
-  oz('damsel',[1,2,3],24);oz('jelly',[0,1,2],5);oz('shrimp',[2,3,1],14);oz('crab',[1,2,3],5);oz('starfish',[1,2],4);oz('urchin',[2,3],4);oz('grouper',[3],1);
+  for(const [cx,cz] of [[-4,1.5],[6,2.5]]){const cy=heightAt(cx,cz)+rand(2.2,3.2),h=rand(0,6.283),sch={lead:null,tt:rand(3,6),wp:randWater()};sch.wp.y=cy;for(let i=0;i<20;i++){const x=cx+rand(-1.1,1.1),z=cz+rand(-1,1);if(blocked(x,z,0.1))continue;const d=new Agent('damsel',x,z);d.y=cy+rand(-0.45,0.45);d.h=h+rand(-0.3,0.3);d.vx=Math.cos(d.h)*0.45;d.vz=Math.sin(d.h)*0.45;d.sch=sch;if(!sch.lead)sch.lead=d;}}oz('damsel',[1,2,3],4);oz('jelly',[0,1,2],5);oz('shrimp',[2,3,1],14);oz('crab',[1,2,3],5);oz('starfish',[1,2],4);oz('urchin',[2,3],4);oz('grouper',[3],1);
   const anes=plants.filter(p=>p.type==='anemone');for(let i=0;i<4;i++){const h=anes[i%Math.max(1,anes.length)];if(h)new Agent('clown',h.x+rand(-0.3,0.3),h.z+rand(-0.3,0.3));else oz('clown',[3],1);}
 }else if(SZ==null){
   spawnIn('cricket',1,16);spawnIn('snail',3,6);spawnIn('snail',2,3);spawnIn('isopod',3,12);spawnIn('isopod',2,6);
@@ -203,4 +211,4 @@ if(OCEAN){
 else if(SZ===1){spawnIn('cricket',1,30);spawnButterflies(1,10,4);spawnIn('isopod',1,6);spawnIn('firefly',1,6);spawnIn('spider',1,2);spawnIn('mantis',1,1);spawnIn('lizard',1,2);spawnFrogs(3,3,false);}
 else if(SZ===2){spawnIn('cricket',2,12);spawnIn('snail',2,8);spawnIn('isopod',2,14);spawnButterflies(2,6,2);spawnIn('firefly',2,12);spawnIn('spider',2,2);spawnIn('mantis',2,1);spawnFrogs(8,8,true);}
 else{spawnIn('cricket',3,12);spawnIn('snail',3,10);spawnIn('isopod',3,20);spawnButterflies(3,6,2);spawnIn('firefly',3,14);spawnIn('spider',3,2);spawnIn('mantis',3,1);spawnIn('lizard',3,2);spawnFrogs(6,5,true);}
-for(let i=0;i<3;i++)newContract();
+if(SAVE)restoreContracts(SAVE);else for(let i=0;i<3;i++)newContract();

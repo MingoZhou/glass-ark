@@ -1,164 +1,216 @@
 <div align="center">
 
+<img src="docs/screenshots/home.jpg" alt="Glass Ark home page: a glass tank at night" width="100%">
+
 # Glass Ark · 玻璃方舟
 
-[English](README_EN.md) · [中文](README.md)
-
-**Build a self-sustaining world inside a glass tank.**
+**Build a self-sustaining world inside a glass tank.**<br>
 Photosynthesis, food chains, birth and death — all unfold before your eyes.
 
-*一款基于 three.js 的浏览器端生态缸上帝模拟器——在玻璃缸里养出一个活生生的微型世界。*
+<sub>一款基于 three.js 的浏览器端生态缸上帝模拟器——在玻璃缸里养出一个活生生的微型世界。</sub>
 
-![Diorama view: mixed ecosystem with glass hidden](docs/screenshots/diorama.png)
+<p>
+<img alt="three.js r165" src="https://img.shields.io/badge/three.js-r165-000?logo=threedotjs&logoColor=white">
+<img alt="No build step" src="https://img.shields.io/badge/build-none-6aa84f">
+<img alt="Works offline" src="https://img.shields.io/badge/offline-yes-3d85c6">
+<img alt="Desktop and mobile" src="https://img.shields.io/badge/platform-desktop%20%7C%20mobile-f0b25a">
+<img alt="Version v0.2" src="https://img.shields.io/badge/version-v0.2-b8463a">
+</p>
+
+[**Play online**](https://mingozhou.github.io/glass-ark/) · [Quick start](#-quick-start) · [Changelog](CHANGELOG.md) · [Sponsor](#-sponsor) · [中文](README.md)
 
 </div>
 
 ---
 
-## What is this?
+## 🌱 What is this?
 
-Glass Ark is a browser-based ecosystem terrarium simulator. You play as the "god" of this tiny world — but you don't control any creature directly. Instead, you shape the environment: trigger rain, plant vegetation, introduce species, adjust lighting, and watch life emerge on its own.
+Glass Ark is a browser-based ecosystem terrarium simulator. You play as the "god" of this tiny world — but **you don't control any creature directly, only the environment.** Trigger rain, plant vegetation, introduce species, feed them, arrange decor, switch the pump and grow light on and off, then watch the little world write its own stories.
 
-- Ants carry leaves back to their nest; when food stores are sufficient, new ants hatch
-- Caterpillars chew on host plants, pupate, and emerge as butterflies
-- Spiders spin webs, mantises ambush from branches, tree frogs catch insects with their tongues, corn snakes sit atop the food chain
-- Clownfish dart into anemones when threatened, moray eels hide in reef crevices by day and hunt at night
+- 🐜 Ants carry leaves back to their nest; when food stores are sufficient, new ants hatch
+- 🦋 Caterpillars chew on host plants, pupate, and emerge as butterflies
+- 🕷️ Spiders spin webs, mantises ambush from branches, tree frogs catch insects with their tongues, corn snakes sit atop the food chain
+- 🐠 Clownfish dart into anemones when threatened; moray eels hide in reef crevices by day and hunt at night
 
-The entire game is **a single HTML file plus a local three.js copy** — no build tools, no CDN, fully offline.
+The entire game is a single HTML file plus a local copy of three.js: nothing to install, no build step, fully playable offline.
 
-## Game Modes
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/diorama.jpg" alt="Diorama view of the mixed tank with the glass hidden"><br><sub><b>Mixed tank</b> · diorama view with the glass hidden: desert, meadow, marsh and rainforest in one tank</sub></td>
+<td width="50%"><img src="docs/screenshots/ocean-reef.jpg" alt="Ocean tank: coral growing on live rock"><br><sub><b>Ocean tank</b> · fly into the reef, where corals grow on the live rock</sub></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/rainforest.jpg" alt="Rainforest understorey"><br><sub><b>Rainforest tank</b> · a dense understorey of monstera, ferns, moss and vines</sub></td>
+<td><img src="docs/screenshots/ocean-tank.jpg" alt="Ocean tank overview"><br><sub><b>Ocean tank</b> · seagrass bed, sand flat, reef flat and reef zone</sub></td>
+</tr>
+</table>
+
+## ✨ What's new in v0.2
+
+> Full details in [CHANGELOG.md](CHANGELOG.md).
+
+- **New home page**: a night-time illustrated hero and specimen cards for all six tanks, tuned for phones and tablets
+- **Opening shot and director mode**: each tank opens on a wide shot, then glides to an animal; the camera follows hunts, metamorphoses and hatchings on its own
+- **Ocean tank rebuilt**: corals grow on live rock, clearer and bluer water, kelp streams like ribbons, damselfish swim in schools, jellyfish glow at night
+- **Lusher rainforest**: more trees and understorey, fuller canopies, more vines, and slanting light shafts by day
+- **Save and load**: every tank autosaves; the home-page save manager can rename, delete, export and import saves
+- **Rendering fixes**: bloom and depth of field finally work, and the glass no longer washes the picture out
+
+## 🫙 Game modes
 
 | Mode | Environment | Highlights |
 |---|---|---|
-| **Mixed Ecosystem** (recommended) | Desert · Meadow · Stream · Rainforest connected, waterfall cascading down cliffs | Four climates, 11 animal species, four-tier food chain |
-| Desert Tank | Sand dunes, cacti, heating rocks | Sand lizards basking on heating rocks at dawn |
-| Meadow Tank | Wildflowers, grass, small ponds | Butterflies complete metamorphosis; crickets chirp at night |
-| Stream & Swamp Tank | Large pond, cattails, water lilies | Tree frogs lay eggs, tadpoles metamorphose, chorus on rainy nights |
-| Rainforest Tank | Rainforest trees, monstera, waterfall and mist | Fireflies, mushrooms, humid understory ecology |
-| **Ocean Tank** | Seagrass beds, sand flats, reef crests, reef slopes | Coral reefs, fish schools, ambush predation, water quality management |
+| **Mixed** (recommended) | Desert · Meadow · Marsh · Rainforest in one tank, with a waterfall down the rock wall | Four climates, 11 animals, four-level food chain |
+| Desert | Dunes, cacti, heat rock | Lizards bask on the heat rock at dawn |
+| Meadow | Wildflowers, foxtail grass, small pond | Full butterfly metamorphosis, crickets chirping at night |
+| Marsh | Large pond, cattails, water lilies | Frog spawning, tadpole metamorphosis, rainy-night chorus |
+| Rainforest | Rainforest trees, monstera, waterfall and mist | Fireflies, mushrooms, a damp understorey |
+| **Ocean** | Seagrass bed, sand flat, reef flat, reef zone | Coral reef, fish schools, ambush predators, water-quality management |
 
-![Ocean reef: flying into the coral reef](docs/screenshots/ocean-reef.png)
+<details>
+<summary><b>🐾 Species</b> (20 animals, 20+ plants and corals)</summary>
 
-| Home | Rainforest | Ocean |
-|---|---|---|
-| ![Home](docs/screenshots/home.png) | ![Rainforest](docs/screenshots/rainforest.png) | ![Ocean](docs/screenshots/ocean-tank.png) |
+<br>
 
-## Species
+**Land animals (11)**: leafcutter ants, crickets, snails, butterflies (egg → caterpillar → pupa → adult), isopods, fireflies, garden spiders, mantises, tree frogs (egg → tadpole → adult), sand lizards, corn snakes
 
-**Land (11 animal species)**: Leafcutter ants, crickets, snails, butterflies (egg → caterpillar → pupa → adult), isopods, fireflies, orb-weaver spiders, mantises, tree frogs (egg → tadpole → adult), sand lizards, corn snakes
+**Land plants**: golden barrel cactus, saguaro, aloe, echeveria, foxtail grass, daisy, cosmos, dandelion, clover, cattail, water lily, fern, moss, monstera, bromeliad, rainforest tree, plus mushrooms that sprout from leaf litter on their own
 
-**Land plants**: Golden barrel cactus, columnar cacti, aloe, echeveria, foxtail grass, daisies, cosmos, dandelions, clover, cattails, water lilies, ferns, moss, monstera, bromeliads, rainforest trees, and mushrooms that grow from humus
+**Ocean animals (9)**: blue damselfish, clownfish, moon jellyfish, cleaner shrimp, crabs, starfish, sea urchins, grouper, moray eels
 
-**Ocean (9 animal species)**: Blue devil damselfish, clownfish, moon jellyfish, cleaner shrimp, crabs, starfish, sea urchins, grouper, moray eel
+**Ocean plants and corals**: seagrass, giant kelp, staghorn coral, brain coral, table coral, sea fan, anemone
 
-**Ocean flora & coral**: Seagrass, giant kelp, staghorn coral, brain coral, table coral, sea fans, anemones
+Top predators unlock only after you've raised their prey: corn snakes need enough lizards and adult frogs first; moray eels need grouper and crabs.
 
-Higher-tier predators require their prey to be established first. For example, corn snakes need sufficient sand lizards and adult tree frogs; moray eels require groupers and crabs.
+</details>
 
-## What's Simulated
+## 🔬 What's simulated
 
-- **Gas cycling**: Plants release O₂ and absorb CO₂ during photosynthesis; animals respire around the clock. Oxygen curves update in real time
-- **Moisture & humidity**: Each zone independently calculates soil moisture, air humidity, and temperature; excessive humidity triggers mold growth
-- **Ocean water quality**: Water temperature, salinity (evaporation raises salinity), nutrients, plankton, algae, dissolved oxygen. Coral bleaches above 29°C; nutrient overload causes algae blooms
-- **Behavior**: Every animal has hunger, reproduction, lifespan, and a state machine — foraging, stalking, striking, missing, fleeing, resting. Hunting has hit rates; they can miss
-- **Events**: Afternoon showers, heat waves, visitor days, ocean heat waves, plankton blooms
-- **Economy**: Ornamental value (diversity + ecological balance +精彩 moments) continuously generates spores; spores buy plants, animals, and decorations. Commissioned tasks provide phased goals
+| System | Details |
+|---|---|
+| **Gas cycle** | Plants photosynthesize by day (release O₂, absorb CO₂), animals breathe around the clock; live oxygen chart |
+| **Moisture and humidity** | Each zone tracks its own soil moisture, air humidity and temperature; too much humidity grows mold |
+| **Ocean water quality** | Temperature, salinity (evaporation raises it), nutrients, plankton, algae, dissolved oxygen; corals bleach above 29 °C and too many nutrients cause an algae bloom |
+| **Behavior** | Every animal has hunger, reproduction, lifespan and a state machine: forage, stalk, strike, miss, flee, rest; hunts can fail |
+| **Events** | Afternoon showers, heat waves, visitor days, marine heat waves, plankton blooms |
+| **Economy** | Viewing score (diversity + balance + highlight moments) earns spores for plants, animals and decor; contracts give you goals |
 
-## Controls
+## 🎮 Playing
+
+**Tools**: observe, rain / top up fresh water, plant, release, feed, move, remove (plants refund 30%, decor 50%), decor (boulder, layered rock, driftwood, stump, mini waterfall rock, heat rock; in the ocean: live rock, reef arch, shipwreck, air stone)
+
+- **Opening shot**: each tank opens on a wide shot, then glides to an animal (about 10 seconds). Click, scroll, press any key or tap "跳过" (skip) to skip it.
+- **Director mode**: on by default, made for idle viewing. Rotating or zooming just keeps it on the current animal a little longer; moving with W A S D or right-drag hands the camera to you and turns director mode off. Turn it back on with the top-right button.
+- **Panels**: the contracts and tank-status panels start collapsed so the tank gets the screen; open them with the two top-right buttons. A chip in the top-left always shows the next onboarding task.
+- **Saving**: every tank autosaves on its own (every 30 seconds, when the tab goes to the background, and when you press "保存并返回首页" — save and return home). Home cards show a "存档 · 第 N 天" (saved · day N) badge. The **存档管理** (save manager) on the home page can rename and delete saves, export them to a JSON file, and import them on another device. To start over, use "重新开始这只缸" (restart this tank) in Settings.
+
+<details>
+<summary><b>⌨️ Controls</b></summary>
+
+<br>
 
 | Action | Desktop | Mobile |
 |---|---|---|
-| Rotate camera | Left-click drag / Q E | Single-finger drag |
-| Pan | Right-click drag | Two-finger drag |
-| Zoom | Scroll wheel / R F | Pinch |
-| Fly | W S move forward/backward along view direction; A D strafe; Shift to accelerate | — |
-| Follow creature | Click an animal, choose "orbit / chase / its perspective" | Same |
-| Switch tools | Number keys 1–8 | Bottom toolbar |
+| Rotate camera | Left-drag / Q E | One-finger drag |
+| Pan | Right-drag | Two-finger drag |
+| Zoom | Scroll / R F | Pinch |
+| Fly | W S move along the view, right into the tank; A D strafe; Shift speeds up | — |
+| Follow a creature | Click an animal, then choose orbit / chase / its view | Same |
+| Switch tool | Number keys 1–8 | Bottom toolbar |
 | Hide glass | G | Top button |
-| Immersive mode (hide UI, keep toolbar) | H, Esc to exit | Top button, exit from top-left |
-| Pause | Spacebar | Top Ⅱ |
+| Immersive mode (hide UI, keep toolbar) | H, Esc to exit | Top button, exit at top-left |
+| Pause | Space | Top Ⅱ |
 
-**Tools**: Observe, rain / add fresh water, plant, introduce species, feed, move, clear (plants refund 30%, decorations refund 50%), decorate (round stones, layered rocks, driftwood, tree stumps, small waterfall rocks, heating rocks; ocean has live rock, reef arches, shipwreck debris, air stones)
+</details>
 
-**Director mode**: When enabled, the camera automatically tracks hunting, metamorphosis, hatching, and other精彩 moments — perfect for idle viewing.
+## 🚀 Quick start
 
-## Running the Game
+The game uses ES Modules, which browsers won't load from a double-clicked HTML file, so open it through a local server. three.js is bundled in `vendor/`: **no CDN needed, fully playable offline.**
 
-The game uses ES Modules, and browsers don't allow loading modules directly from double-clicked HTML files, so you need a local server. three.js is bundled in `vendor/` — **no CDN dependency, fully offline**.
+| Option | How |
+|---|---|
+| Windows | Double-click `start.bat`; the browser opens `http://localhost:8765/` (needs Python or Node.js) |
+| Mac / Linux | Run `./start.sh` in a terminal |
+| Editor | VS Code: install Live Server and choose "Open with Live Server"; JetBrains IDEs: click the browser icon at the top right |
+| Manual | Run `python -m http.server 8765` in the repo folder and visit `http://localhost:8765/` |
 
-- **Windows**: Double-click `start.bat`; your browser will automatically open `http://localhost:8765/` (requires Python or Node.js installed)
-- **Mac / Linux**: Run `./start.sh` in terminal
-- **Editor**: In VS Code, install the Live Server extension and right-click → "Open with Live Server"; JetBrains IDEs have a browser icon in the top-right
-- **Manual**: Run `python -m http.server 8765` in the repository directory, then visit `http://localhost:8765/`
+If a red banner appears at the top of the page, follow its instructions.
 
-If a red warning bar appears at the top after opening, follow the instructions.
+**Deploy to GitHub Pages**: Settings → Pages → Source: GitHub Actions (the workflow is already in the repo). A few minutes later it's live at `https://<username>.github.io/<repo>/`.
 
-### Deploy to GitHub Pages
+**Quality**: choose low / medium / high on the home page or in Settings. Phones default to low: no real-time shadows or post-processing, grass density at 30%. High enables bloom, depth of field and high-resolution shadows.
 
-Go to repository Settings → Pages → Source: select `main` branch root directory, save, and access via `https://<username>.github.io/<repo-name>/` after a few minutes.
+<p align="center"><img src="docs/screenshots/home-shelf.jpg" alt="The six tanks on the home page" width="74%"> <img src="docs/screenshots/home-mobile.jpg" alt="The home page on a phone" width="22%"></p>
 
-### Graphics Quality
+## 🛠️ Technical highlights
 
-Choose low / medium / high quality on the home screen or in settings. Mobile defaults to low quality: disables real-time shadows and post-processing, reduces grass density to 30%. High quality enables bloom, depth of field, and high-resolution shadows.
+- **three.js r165** (vendored), ES Modules + importmap, no bundler
+- Physically based light units, ACES tone mapping, PCF soft shadows, RoomEnvironment lighting, optional UnrealBloom and depth of field
+- Plants and grass use `InstancedMesh`, with wind sway in the vertex shader
+- Snakes, lizards, tadpoles and moray eels use a custom "spine tube" skin whose body follows its path
+- Ant leg gaits run in the shader, so hundreds of ants render in one draw call
+- **Underwater lighting** follows the [Tidewater](https://github.com/dgreenheck/tidewater) model: per-channel Beer-Lambert absorption along the light path (red goes first), the same along the view path plus scattered water color, and caustics that modulate direct sunlight instead of adding brightness
+- All sound is synthesized with Web Audio and spatialized: tree-frog pulse calls, cricket chirps, rain, waterfall
+- Saves live in the browser's `localStorage` (about 30 KB per tank) and can be exported as JSON
 
-## Project Structure
+<details>
+<summary><b>📁 Project structure</b></summary>
 
 ```
 .
-├── index.html          # The built game
-├── start.bat / start.sh  # One-click local server launcher
-├── build.sh            # Concatenates src/ into index.html
-├── vendor/three/       # three.js r165 and used plugins (MIT), offline-capable
+├── index.html            # The built game
+├── start.bat / start.sh  # One-click local server
+├── build.sh              # Concatenates src/ into index.html
+├── vendor/three/         # three.js r165 and the add-ons it uses (MIT), works offline
 ├── src/
-│   ├── head.html       # Page structure, styles, home screen
-│   ├── js1.js          # Renderer, procedural textures, home dynamic background and mode selection
-│   ├── js2.js          # Terrain, zones, water bodies, rocks, tank, underwater lighting
-│   ├── js3.js          # Plants: procedural modeling, instanced rendering, growth
-│   ├── js4.js          # Land animal models (skeletal tube bodies, instanced ants)
-│   ├── js4o.js         # Ocean animal models (fish, moray eel, shrimp/crabs, jellyfish)
-│   ├── js5.js          # Land species behavior and hunting system
-│   ├── js5o.js         # Ocean species behavior
-│   ├── js6.js          # Main simulation loop, weather, economy, commissions, initial ecosystem
-│   ├── js7.js          # Camera, picking, tool interaction
-│   ├── js7d.js         # WASD flight, decorations, clearing, bubbles
-│   └── js8.js          # Sound, UI, per-frame visuals, main loop
-└── docs/screenshots/
+│   ├── head.html         # Page structure, styles, home page
+│   ├── js1.js            # Renderer, procedural textures, home-page fireflies and mode selection
+│   ├── js2.js            # Terrain, zones, water, rocks, tank, underwater lighting
+│   ├── js3.js            # Plants: procedural modeling, instanced rendering, growth
+│   ├── js4.js            # Land animal models (spine tubes, instanced ants)
+│   ├── js4o.js           # Ocean animal models (fish, moray, shrimp, crabs, jellyfish)
+│   ├── js5.js            # Land species behavior and hunting
+│   ├── js5o.js           # Ocean species behavior
+│   ├── js6.js            # Simulation loop, weather, economy, contracts, initial world
+│   ├── js7.js            # Camera, picking, tool interaction
+│   ├── js7d.js           # WASD flight, decor, removal, bubbles
+│   ├── js8.js            # Sound, UI, per-frame visuals, main loop
+│   └── js9.js            # Opening shot, director mode, onboarding, saves and save manager
+├── assets/home/          # Home-page illustrations (webp)
+└── docs/screenshots/     # README screenshots
 ```
 
-After modifying `src/`, run `./build.sh` to regenerate `index.html`. All models, textures, and sounds are procedurally generated in code — no external art assets in the repository.
+After editing `src/`, run `./build.sh` to regenerate `index.html`. Every model, texture and sound in the tanks is generated in code; the only external art is the home-page illustrations in `assets/home/`.
 
-## Technical Highlights
+</details>
 
-- **three.js r165** (local vendor), ES Module + importmap, no bundler
-- Physically-based lighting units, ACES tone mapping, PCF soft shadows, RoomEnvironment ambient light, optional UnrealBloom and depth of field
-- Plants and grass rendered via `InstancedMesh`; wind sway written in vertex shaders
-- Snakes, lizards, tadpoles, and moray eels use custom "spine tube" skinning — bodies wind along trajectories
-- Ant leg gait driven in shaders; hundreds of ants drawn in a single pass
-- **Underwater lighting** references the [Tidewater](https://github.com/dgreenheck/tidewater) model:
-  - Light attenuates per-channel from water surface to object following Beer-Lambert law (red light absorbed first)
-  - View ray passing through water also attenuates and overlays scattered water color
-  - Caustics modulate direct sunlight rather than adding brightness on top
-- All sounds synthesized with Web Audio, with spatial positioning: tree frog pulse calls, cricket wing vibrations, rain sounds, waterfall sounds
+## 🗺️ Roadmap
 
-## Roadmap
+- [x] Save and load (per-tank autosave, export / import)
+- [ ] WeChat mini-game version (chunked loading, fewer instances on phones)
+- [ ] More species: bees, salamanders, octopus, sea turtles
+- [ ] Free terrain sculpting
 
-- [ ] Save and load
-- [ ] WeChat mini-game version (block-based loading, reduced instance count on mobile)
-- [ ] More species: bees, newts, octopuses, sea turtles
-- [ ] Free-form terrain sculpting
-
-## Acknowledgments
+## 🙏 Acknowledgments
 
 - [three.js](https://threejs.org/) (MIT)
-- [Tidewater](https://github.com/dgreenheck/tidewater) (MIT, © DRG Software Solutions LLC): underwater lighting model reference
+- [Tidewater](https://github.com/dgreenheck/tidewater) (MIT, © DRG Software Solutions LLC): reference for the underwater lighting model
 - Fonts: [ZCOOL XiaoWei](https://fonts.google.com/specimen/ZCOOL+XiaoWei), [JetBrains Mono](https://www.jetbrains.com/lp/mono/) (SIL Open Font License)
 
-## License
+## 📜 License
 
 **Personal use**: Free to download, run, modify, and play — no additional authorization required.
 
-**Commercial use**: Requires prior written authorization from the author. Commercial use includes but is not limited to: paid operation, embedding in paid products, commercial promotion, or as part of a paid service.
-
-For commercial licensing, please contact via GitHub Issues.
+**Commercial use**: Requires prior written authorization from the author. Commercial use includes but is not limited to: paid operation, embedding in paid products, commercial promotion, or as part of a paid service. For commercial licensing, please contact via GitHub Issues.
 
 Code is licensed under [MIT License](LICENSE); art, sound effects, and game design creative content retain all rights (non-commercial).
+
+---
+
+## ☕ Sponsor
+
+If you enjoy the game, you can buy the author a coffee. Your support is what keeps Mingo developing it!
+
+<p align="center"><img src="Appreciate.png" alt="Donation QR code" width="260"></p>
+
+<p align="center"><sub>Entirely optional and doesn't affect any game features. Stars and issue reports are just as valuable.</sub></p>

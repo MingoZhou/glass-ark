@@ -23,8 +23,9 @@ Object.assign(SPEC,{
   update(a,dt){let cx=0,cy=0,cz=0,ax=0,ay=0,az=0,sx=0,sy=0,sz=0,n=0;
     for(const b of queryAgents(a.x,a.z,1.4)){if(b===a||b.sp!=='damsel')continue;const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,d=Math.hypot(dx,dy,dz);if(d>1.4)continue;n++;cx+=b.x;cy+=b.y;cz+=b.z;ax+=b.vx;ay+=b.vy;az+=b.vz;if(d<0.3){sx-=dx/(d*d+0.02);sy-=dy/(d*d+0.02);sz-=dz/(d*d+0.02);}}
     let fx=0,fy=0,fz=0;if(n){fx+=(cx/n-a.x)*0.7+(ax/n-a.vx)*1.2;fy+=(cy/n-a.y)*0.7+(ay/n-a.vy)*1.2;fz+=(cz/n-a.z)*0.7+(az/n-a.vz)*1.2;}fx+=sx*0.06;fy+=sy*0.06;fz+=sz*0.06;
-    a.tt-=dt;if(a.tt<=0||Math.hypot(a.wp.x-a.x,a.wp.z-a.z)<1.5){a.tt=rand(4,9);a.wp=randWater();a.wp.y=isNight()?heightAt(a.wp.x,a.wp.z)+rand(0.4,1):rand(1.5,WT-1.2);}
-    const wx=a.wp.x-a.x,wy=a.wp.y-a.y,wz=a.wp.z-a.z,wl=Math.hypot(wx,wy,wz)||1;fx+=wx/wl*0.5;fy+=wy/wl*0.5;fz+=wz/wl*0.5;
+    const W=a.sch||a;if(a.sch&&!a.sch.lead.alive)a.sch.lead=a;
+    if(!a.sch||a.sch.lead===a){W.tt-=dt;if(W.tt<=0||Math.hypot(W.wp.x-a.x,W.wp.z-a.z)<1.5){W.tt=rand(5,10);W.wp=randWater();W.wp.y=isNight()?heightAt(W.wp.x,W.wp.z)+rand(0.4,1):rand(1.8,WT-1.6);}}
+    const wx=W.wp.x-a.x,wy=W.wp.y-a.y,wz=W.wp.z-a.z,wl=Math.hypot(wx,wy,wz)||1;fx+=wx/wl*0.5;fy+=wy/wl*0.5;fz+=wz/wl*0.5;
     const th=threatNear(a,1.5);let vmax=isNight()?0.35:0.7;if(th){const dx=a.x-th.x,dy=a.y-th.y,dz=a.z-th.z,d=Math.hypot(dx,dy,dz)||1;fx+=dx/d*4;fy+=dy/d*2;fz+=dz/d*4;vmax=1.7;a.flee={from:th,t:1};a.state='flee';}else{a.flee=null;a.state=feedPlankton(a,dt,0.02)?'feed':'school';}
     const g=heightAt(a.x,a.z);if(a.y<g+0.4)fy+=2;if(a.y>WT-0.6)fy-=2;if(a.x<-HW+1.5)fx+=2;if(a.x>HW-1.5)fx-=2;if(a.z<-HD+2)fz+=2;if(a.z>HD-1.5)fz-=2;
     a.vx+=fx*dt;a.vy+=fy*dt*0.6;a.vz+=fz*dt;const sp=Math.hypot(a.vx,a.vy,a.vz)||1;const k=clamp(sp,0.25,vmax)/sp;a.vx*=k;a.vy*=k;a.vz*=k;

@@ -175,7 +175,7 @@ let terrain,tBase,tZW;
     const n1=fbm(x*0.6+1,z*0.6+2,3),n2=fbm(x*0.25+7,z*0.25+3,3);
     if(w[0]>0.05){const dv=Math.sin(x*0.42+z*0.28+fbm(x*0.16,z*0.16,3)*5);c.lerp(sand2,w[0]*0.55*Math.pow(1-Math.abs(dv),2));if(n2>0.6)c.lerp(red,w[0]*smooth(0.6,0.72,n2)*0.7);}
     if(w[1]>0.05){c.lerp(grassy,w[1]*smooth(0.35,0.6,n1)*0.8);if(n2<0.36)c.lerp(dirt,w[1]*0.6);}
-    if(w[3]>0.05){if(n1>0.55)c.lerp(moss,w[3]*smooth(0.55,0.68,n1));else if(n2<0.4)c.lerp(soil2,w[3]*0.5);}
+    if(w[3]>0.05){if(n1>0.42)c.lerp(moss,w[3]*smooth(0.42,0.6,n1)*0.95);else if(n2<0.4)c.lerp(soil2,w[3]*0.5);}
     const dp=pondD(x,z);if(dp<1.7)c.lerp(mud,smooth(1.7,1.0,dp)*0.85);if(dp<1.05)c.lerp(peb,0.5);
     const q=streamQ(x,z);if(q.d<1.2){c.lerp(peb,smooth(1.2,0.45,q.d)*0.8);}if(MODE.stream&&Math.hypot(x-POOL.x,z-POOL.z)<POOL.r*1.4)c.lerp(peb,0.6);
     const sl=Math.hypot(HG[gj*GR+Math.min(GX,gi+1)]-HG[gj*GR+Math.max(0,gi-1)],HG[Math.min(GZ,gj+1)*GR+gi]-HG[Math.max(0,gj-1)*GR+gi])/0.2;c.lerp(rockc,smooth(0.9,1.8,sl)*0.6);
@@ -185,9 +185,9 @@ let terrain,tBase,tZW;
   const idx=new Uint32Array((TW-1)*(TH-1)*6);let o=0;for(let j=0;j<TH-1;j++)for(let i=0;i<TW-1;i++){const a=j*TW+i,b=a+1,c2=a+TW,d=c2+1;idx[o++]=a;idx[o++]=c2;idx[o++]=b;idx[o++]=b;idx[o++]=c2;idx[o++]=d;}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(pos,3));g.setAttribute('color',new THREE.BufferAttribute(col,3));g.setAttribute('uv',new THREE.BufferAttribute(uv,2));g.setIndex(new THREE.BufferAttribute(idx,1));g.computeVertexNormals();
   terrain=new THREE.Mesh(g,new THREE.MeshStandardMaterial({vertexColors:true,map:TX.detail,normalMap:TX.groundN,normalScale:new V2(0.9,0.9),roughness:0.96}));terrain.receiveShadow=true;tank.add(terrain);})();
-function oceanColor(c,x,z,y,n1,n2){const rf=reefAt(x,z);c.set(0xcbb892).multiplyScalar(0.72+0.26*n1);const rip=Math.sin(x*2.3+z*0.8+n2*6);c.multiplyScalar(0.94+0.06*rip);
-  if(rf>0.05){_c.set(0x7c7078).lerp(new Col(0xb3657f),smooth(0.5,0.65,n2)*0.8).lerp(new Col(0x6d5a86),smooth(0.62,0.7,n1)*0.6);c.lerp(_c,smooth(0.05,0.5,rf));}
-  const w=zoneW(zu(x,z));if(w[0]>0.1)c.lerp(new Col(0x9a9a6a),w[0]*0.45*smooth(0.45,0.6,n1));c.lerp(new Col(0xb9a57c),smooth(0.5,-0.2,y)*0.4);}
+function oceanColor(c,x,z,y,n1,n2){const rf=reefAt(x,z);c.set(0xe9e1cc).multiplyScalar(0.8+0.2*n1);const rip=Math.sin(x*2.3+z*0.8+n2*6);c.multiplyScalar(0.94+0.06*rip);
+  if(rf>0.05){_c.set(0x5e4a68).lerp(new Col(0xa04a78),smooth(0.5,0.65,n2)*0.75).lerp(new Col(0x4e3a78),smooth(0.62,0.7,n1)*0.6);c.lerp(_c,smooth(0.05,0.5,rf));}
+  const w=zoneW(zu(x,z));if(w[0]>0.1)c.lerp(new Col(0x8a9a62),w[0]*0.45*smooth(0.45,0.6,n1));c.lerp(new Col(0xd2c6a8),smooth(0.5,-0.2,y)*0.35);}
 function stampAO(x,z,r,k,undo){const i0=Math.max(0,Math.floor((x-r+HW)/W*GX/ST)),i1=Math.min(TW-1,Math.ceil((x+r+HW)/W*GX/ST)),j0=Math.max(0,Math.floor((z-r+HD)/D*GZ/ST)),j1=Math.min(TH-1,Math.ceil((z+r+HD)/D*GZ/ST));
   for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++){const px=-HW+i*ST*W/GX,pz=-HD+j*ST*D/GZ,d=Math.hypot(px-x,pz-z)/r;if(d>=1)continue;let f=1-k*(1-d*d);if(undo)f=1/f;const kk=(j*TW+i)*3;tBase[kk]*=f;tBase[kk+1]*=f;tBase[kk+2]*=f;}}
 function refreshTerrainWet(){const a=terrain.geometry.attributes.color.array,m=env.zones.map(z=>z.m),n=a.length/3;
@@ -197,7 +197,7 @@ function refreshTerrainWet(){const a=terrain.geometry.attributes.color.array,m=e
 /* substrate layers seen through the glass */
 (function(){const M=new Mesher(),N=180,clay=new Col(0xa65a32),mesh=new Col(0x222624),deep=new Col(0x2f2118),soil=new Col(0x4a3423),t=new Col();
   const edges=[s=>[-HW+s*W,HD-0.002],s=>[-HW+0.002,HD-s*D],s=>[HW-0.002,-HD+s*D]];
-  for(const E of edges){for(let i=0;i<N;i++){const [x0,z0]=E(i/N),[x1,z1]=E((i+1)/N),t0=heightAt(x0,z0),t1=heightAt(x1,z1);const zc0=OCEAN?new Col(0xd8c79c):new Col(0xcfae7c).lerp(new Col(0x3b2d1f),clamp((zu(x0,z0)+8)/16,0,1));const u0=(x0+z0)/2,u1=(x1+z1)/2;
+  for(const E of edges){for(let i=0;i<N;i++){const [x0,z0]=E(i/N),[x1,z1]=E((i+1)/N),t0=heightAt(x0,z0),t1=heightAt(x1,z1);const zc0=OCEAN?new Col(0xe4dbc2):new Col(0xcfae7c).lerp(new Col(0x3b2d1f),clamp((zu(x0,z0)+8)/16,0,1));const u0=(x0+z0)/2,u1=(x1+z1)/2;
       const band=(ya0,ya1,yb0,yb1,cA,cB)=>{const s=M.n;M.v(x0,ya0,z0,u0,ya0/2,cA);M.v(x1,yb0,z1,u1,yb0/2,cA);M.v(x1,yb1,z1,u1,yb1/2,cB);M.v(x0,ya1,z0,u0,ya1/2,cB);M.q(s,s+1,s+2,s+3);};
       band(BOT,-1.9,BOT,-1.9,clay,clay);band(-1.9,-1.8,-1.9,-1.8,mesh,mesh);band(-1.8,t0-0.35,-1.8,t1-0.35,deep,soil);band(t0-0.35,t0,t1-0.35,t1,t.copy(zc0).multiplyScalar(0.6).clone(),zc0);}}
   const m=new THREE.Mesh(M.geo(),new THREE.MeshStandardMaterial({vertexColors:true,map:TX.soil,roughness:1,side:THREE.DoubleSide}));tank.add(m);
@@ -223,12 +223,12 @@ const topY=x=>OCEAN?9.6+fbm(x*0.35+7,1.3,3)*1.6:MODE.zone!=null?[8.2,9,9.6,10.6]
     t.copy(sand).lerp(sand2,0.5+0.5*Math.sin(strata*6.283*0.5));c.lerp(t,w[0]+w[1]*0.4);
     if(fr<0.18&&w[3]+w[2]>0.3&&m>0.4)c.lerp(mossC,(w[3]+w[2]*0.5)*0.9);
     if(w[3]>0.4&&fbm(x*0.7+9,y*0.7,3)>0.55)c.lerp(mossC,0.7*w[3]);
-    if(OCEAN){c.set(0x5d5560).multiplyScalar(0.7+0.6*m);if(fbm(x*0.5+3,y*0.5,3)>0.55)c.lerp(new Col(0xc06a88),0.8);if(fbm(x*0.9,y*0.9+5,2)>0.62)c.lerp(new Col(0x7a4a8a),0.7);if(fbm(x*1.4+8,y*1.4,2)>0.64)c.lerp(new Col(0x4f7a40),0.6);}
+    if(OCEAN){c.set(0x463a56).multiplyScalar(0.7+0.6*m);if(fbm(x*0.5+3,y*0.5,3)>0.55)c.lerp(new Col(0xb05282),0.75);if(fbm(x*0.9,y*0.9+5,2)>0.62)c.lerp(new Col(0x7a4a8a),0.7);if(fbm(x*1.4+8,y*1.4,2)>0.64)c.lerp(new Col(0x4f7a40),0.6);}
     cols[i*3]=c.r;cols[i*3+1]=c.g;cols[i*3+2]=c.b;}
   g.setAttribute('color',new THREE.BufferAttribute(cols,3));g.computeVertexNormals();
   const m=new THREE.Mesh(g,MATS.rock);m.position.z=-HD+0.02;m.receiveShadow=true;m.castShadow=false;tank.add(m);})();
 /* hanging vines */
-if(MODE.vines)(function(){const M=new Mesher(),MS=new Mesher(),stemC=new Col(0x4a5a2a);const vr=MODE.vines,nv=Math.round((18*Q.scatter+4)*(vr[1]-vr[0])/11*(MK==='marsh'?0.35:0.6));
+if(MODE.vines)(function(){const M=new Mesher(),MS=new Mesher(),stemC=new Col(0x4a5a2a);const vr=MODE.vines,nv=Math.round((18*Q.scatter+4)*(vr[1]-vr[0])/11*(MK==='marsh'?0.35:MK==='jungle'?1.15:0.8));
   for(let v=0;v<nv;v++){const x=rand(vr[0],vr[1]),ty=topY(x)-0.1,len=rand(2.5,Math.min(8,ty-2)),z0=-HD+0.7;const pts=[];for(let k=0;k<=6;k++){const t=k/6;pts.push(new V3(x+Math.sin(t*3+v)*0.25,ty-len*t,z0+0.25*Math.sin(t*2.2+v)+t*0.5));}
     addTube(MS,pts,0.018,0.01,stemC,4,1,0);
     const curve=new THREE.CatmullRomCurve3(pts);for(let t=0.04;t<1;t+=rand(0.035,0.06)){const p=curve.getPointAt(t);const wv=t*1.2;const yaw=Math.PI/2+rand(-1.2,1.2);addLeaf(M,p,yaw,{len:rand(0.13,0.2),wid:rand(0.1,0.15),lift:rand(-0.6,0.2),droop:2,tint:new Col().setHSL(0.27,0.4,rand(0.55,0.8)),hr:1,wind:wv,segs:3});}}
@@ -244,8 +244,8 @@ function addRock(x,z,r,col,moss,sy,obst){const m=new THREE.Mesh(rockGeo(r,col,mo
  [15.5,-7.5,1.7,0x6f716a,0.9,true],[16.6,5.5,1.1,0x676a63,0.8,true],[12.5,7.5,0.8,0x6a6c66,0.7,true],[9.6,1.6,0.6,0x707068,0.7,true],[13.8,-2.2,0.9,0x6a6a62,0.8,true],
  [7.4,6.2,0.45,0x77756c,0.6,true],[-1.2,3.9,0.4,0x807a6c,0.6,true],[6.2,-3.2,0.35,0x77756c,0.5,true],[8.7,-5.5,0.4,0x6f6e66,0.6,true],[10.1,-7.2,0.45,0x6f6e66,0.6,true],[11.6,-9.2,0.7,0x6a6a62,0.7,true]
 ].forEach(r=>{if(OCEAN)return;let col=r[3],moss=!!r[5];if(MODE.zone!=null){const zc=[[0xb07a58,false],[0x857563,false],[0x77756c,true],[0x6a6c66,true]][MODE.zone];col=zc[0];moss=zc[1];}addRock(r[0],r[1],r[2],col,moss,r[4]);});
-const LIVE_ROCK=[0x8a6a7a,0x7a6a80,0x9a6a6a,0x6f6a78];function liveRockGeo(r,seed){const g=rockGeo(r,pick(LIVE_ROCK),false,seed);const nr=g.attributes.normal,cl=g.attributes.color,p=g.attributes.position;for(let i=0;i<cl.count;i++){const x=p.getX(i),z=p.getZ(i),y=p.getY(i);const f=fbm(x*2+seed,z*2+y,2);if(f>0.58)cl.setXYZ(i,0.72,0.3,0.42);else if(f<0.32&&nr.getY(i)>0.3)cl.setXYZ(i,0.3,0.45,0.28);}return g;}
-function addLiveRock(x,z,r,sy){const m=new THREE.Mesh(liveRockGeo(r,rand(0,90)),MATS.rock);m.scale.set(1,sy||0.8,1);m.position.set(x,heightAt(x,z)-r*0.15,z);m.rotation.y=rand(0,6);m.castShadow=m.receiveShadow=true;tank.add(m);stampAO(x,z,r*1.5,0.3);OBST.push({x,z,r:r*0.85,top:m.position.y+r*(sy||0.8)});return m;}
+const LIVE_ROCK=[0x5e4466,0x543e62,0x6a4660,0x4a3e5e],LIVEROCKS=[];function liveRockGeo(r,seed){const g=rockGeo(r,pick(LIVE_ROCK),false,seed);const nr=g.attributes.normal,cl=g.attributes.color,p=g.attributes.position;for(let i=0;i<cl.count;i++){const x=p.getX(i),z=p.getZ(i),y=p.getY(i);const f=fbm(x*2+seed,z*2+y,2);if(f>0.58)cl.setXYZ(i,0.78,0.26,0.46);else if(f>0.5&&nr.getY(i)>0.2)cl.setXYZ(i,0.42,0.24,0.6);else if(f<0.32&&nr.getY(i)>0.3)cl.setXYZ(i,0.24,0.42,0.26);}return g;}
+function addLiveRock(x,z,r,sy){const m=new THREE.Mesh(liveRockGeo(r,rand(0,90)),MATS.rock);m.scale.set(1,sy||0.8,1);m.position.set(x,heightAt(x,z)-r*0.15,z);m.rotation.y=rand(0,6);m.castShadow=m.receiveShadow=true;tank.add(m);stampAO(x,z,r*1.5,0.3);const ob={x,z,r:r*0.85,top:m.position.y+r*(sy||0.8),g:heightAt(x,z),rock:true};OBST.push(ob);LIVEROCKS.push(ob);return m;}
 if(OCEAN){[[12,-6,2.4,1],[15.5,1,1.8,0.9],[9,3.5,1.3,0.8],[14,6.5,1.1,0.8],[5,-4,1,0.7],[-2,-7,1.2,0.8],[-9,5,0.7,0.7],[-13,-5,0.9,0.7],[2,6,0.6,0.7],[7.5,-8.5,1.4,0.9]].forEach(r=>addLiveRock(...r));
   const M=new Mesher();const ap=[new V3(3.2,0,-1.5),new V3(4.2,2.2,-1.2),new V3(6.2,2.6,-0.8),new V3(7.4,0,-0.4)];ap[0].y=heightAt(3.2,-1.5)-0.2;ap[3].y=heightAt(7.4,-0.4)-0.2;addTubeR(M,ap,[0.75,0.5,0.45,0.7],WHITE,16,1,0,3);const ag=M.geo();colorize(ag,0x7a6a78,0.25,(x,y,z,c)=>{const f=fbm(x*1.5,z*1.5+y,2);if(f>0.55)c.set(0xb86a86);else if(f<0.35)c.set(0x5a7a4a);});const arch=new THREE.Mesh(ag,MATS.rock);arch.castShadow=arch.receiveShadow=true;tank.add(arch);OBST.push({x:3.3,z:-1.5,r:0.6,top:1.5},{x:7.3,z:-0.4,r:0.6,top:1.5});stampAO(3.3,-1.5,1.2,0.3);stampAO(7.3,-0.4,1.2,0.3);}
 const HEATROCKS=[];const heatRock={x:-12.3,z:3.2,bulb:{material:{}},mesh:null};
@@ -289,15 +289,23 @@ if(MODE.stream)(function(){const pipe=new Mesher();const pts=[new V3(12.4,height
 /* tank shell */
 const glassMat=new THREE.MeshStandardMaterial({color:0xd4ece6,transparent:true,opacity:0.05,roughness:0.02,metalness:0,depthWrite:false,side:THREE.DoubleSide});
 const sheenMat=new THREE.MeshStandardMaterial({color:0x000000,metalness:1,roughness:0.06,envMapIntensity:0.22,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide});
+/* With post-processing on, transparent layers blend in linear HDR *before* tone mapping, unlike rendering
+   straight to screen (tone-map + sRGB per fragment, then blend). Two consequences for the thin glass layers:
+   a near-mirror highlight (20x white) at 5% opacity turns the tank milky, and even in-range colours add about
+   twice as much light when blended in linear space. While the composer is active, clamp them to display range
+   and scale their alpha so the tank looks the same as without post (values set per frame in renderFrame, js8). */
+const HDR_CLAMP={value:65504},HDR_ALPHA={value:1};
+function clampHDR(m){m.onBeforeCompile=s=>{s.uniforms.uHdrClamp=HDR_CLAMP;s.uniforms.uHdrAlpha=HDR_ALPHA;s.fragmentShader='uniform float uHdrClamp;\nuniform float uHdrAlpha;\n'+s.fragmentShader.replace('#include <opaque_fragment>','#include <opaque_fragment>\n\tgl_FragColor.rgb=min(gl_FragColor.rgb,vec3(uHdrClamp));gl_FragColor.a*=uHdrAlpha;');};m.customProgramCacheKey=()=>'hdrclamp';return m;}
+clampHDR(glassMat);clampHDR(sheenMat);
 const condPanes=[];
 (function(){const H=TOP-BOT,yc=(TOP+BOT)/2;
   const defs=[{w:W,p:[0,yc,HD+0.04],r:0,side:'front'},{w:W,p:[0,yc,-HD-0.04],r:Math.PI,side:'back'},{w:D,p:[-HW-0.04,yc,0],r:-Math.PI/2,side:'left'},{w:D,p:[HW+0.04,yc,0],r:Math.PI/2,side:'right'}];
   for(const d of defs){const g=new THREE.PlaneGeometry(d.w,H);for(const mt of[glassMat,sheenMat]){const m=new THREE.Mesh(g,mt);m.position.set(...d.p);m.rotation.y=d.r;m.renderOrder=9;tank.add(m);}
     if(d.side==='back'||OCEAN)continue;
     const cg=new THREE.PlaneGeometry(d.w,H,40,12);const n=cg.attributes.position.count;cg.setAttribute('color',new THREE.BufferAttribute(new Float32Array(n*4).fill(1),4));const uv=cg.attributes.uv;for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*d.w/4,uv.getY(i)*H/4);
-    const cm=new THREE.MeshStandardMaterial({map:TX.drop,vertexColors:true,transparent:true,depthWrite:false,roughness:0.2,side:THREE.DoubleSide});const mesh=new THREE.Mesh(cg,cm);mesh.position.set(...d.p);mesh.rotation.y=d.r;
+    const cm=clampHDR(new THREE.MeshStandardMaterial({map:TX.drop,vertexColors:true,transparent:true,depthWrite:false,roughness:0.2,side:THREE.DoubleSide}));const mesh=new THREE.Mesh(cg,cm);mesh.position.set(...d.p);mesh.rotation.y=d.r;
     if(d.side==='front')mesh.position.z-=0.015;if(d.side==='left')mesh.position.x+=0.015;if(d.side==='right')mesh.position.x-=0.015;mesh.renderOrder=10;tank.add(mesh);condPanes.push({mesh,d,H});}
-  const sm=new THREE.Mesh(new THREE.PlaneGeometry(W,H),new THREE.MeshBasicMaterial({map:TX.streak,transparent:true,opacity:0.045,blending:THREE.AdditiveBlending,depthWrite:false}));sm.position.set(0,yc,HD+0.05);sm.renderOrder=11;tank.add(sm);
+  const sm=new THREE.Mesh(new THREE.PlaneGeometry(W,H),clampHDR(new THREE.MeshBasicMaterial({map:TX.streak,transparent:true,opacity:0.045,blending:THREE.AdditiveBlending,depthWrite:false})));sm.position.set(0,yc,HD+0.05);sm.renderOrder=11;tank.add(sm);
   const fm=new THREE.MeshStandardMaterial({color:0x151816,metalness:0.8,roughness:0.32});const t=0.12,HH=H+0.2;
   for(const sx of[-1,1])for(const sz of[-1,1]){const m=new THREE.Mesh(new THREE.BoxGeometry(t,HH,t),fm);m.position.set(sx*(HW+0.06),yc,sz*(HD+0.06));m.castShadow=true;tank.add(m);}
   for(const y of[BOT-0.05,TOP+0.02])for(const sz of[-1,1]){const m=new THREE.Mesh(new THREE.BoxGeometry(W+0.24,y<0?0.3:t,t),fm);m.position.set(0,y,sz*(HD+0.06));tank.add(m);}
@@ -317,7 +325,7 @@ function ripple(x,z,s){const r=ripples.find(q=>q.t>=1);if(!r)return;r.t=0;r.s=s|
 const CAUS={value:0};
 /* underwater light model (after Tidewater): Beer-Lambert absorption on the light path (surface -> point) and the view path (glass -> eye),
    single-scatter in-scatter colour, caustics modulate the direct sun instead of adding light. Units: per world unit (~0.4 m). */
-const UW={sigL:{value:new V3(0.075,0.032,0.016)},sigV:{value:new V3(0.07,0.028,0.02)},col:{value:new V3(0.01,0.062,0.1)},amb:{value:new V3(0.0,0.012,0.02)}};
+const UW={sigL:{value:new V3(0.048,0.02,0.011)},sigV:{value:new V3(0.062,0.025,0.012)},col:{value:new V3(0.006,0.062,0.165)},amb:{value:new V3(0.0,0.012,0.02)}};
 const CAUS_GLSL=`float causticF(vec2 p,float t){p-=250.0;vec2 i=p;float c=1.0;float inten=0.005;for(int n=0;n<4;n++){float tt=t*(1.0-(3.5/float(n+1)));i=p+vec2(cos(tt-i.x)+sin(tt+i.y),sin(tt-i.y)+cos(tt+i.x));c+=1.0/length(vec2(p.x/(sin(i.x+tt)/inten),p.y/(cos(i.y+tt)/inten)));}c/=4.0;c=1.17-pow(c,1.4);return clamp(pow(abs(c),8.0),0.0,1.6);}
 float uwPath(vec3 ro,vec3 p){vec3 d=p-ro;float L=length(d);vec3 rd=d/max(L,1e-4);vec3 bmin=vec3(${(-HW).toFixed(2)},${BOT.toFixed(2)},${(-HD).toFixed(2)}),bmax=vec3(${HW.toFixed(2)},${WT.toFixed(3)},${HD.toFixed(2)});
   vec3 ir=1.0/(rd+vec3(1e-6));vec3 t0=(bmin-ro)*ir,t1=(bmax-ro)*ir;vec3 tn=min(t0,t1);float te=max(max(tn.x,tn.y),max(tn.z,0.0));return max(L-te,0.0);}
@@ -340,6 +348,12 @@ reflectedLight.indirectSpecular=mix(reflectedLight.indirectSpecular,reflectedLig
   m.customProgramCacheKey=()=>pk+'uw3';m.needsUpdate=true;return m;}
 function uwSweep(root){if(!OCEAN)return;root.traverse(o=>{if(!o.material)return;(Array.isArray(o.material)?o.material:[o.material]).forEach(causticify);});}
 let oceanFX=null;
+/* rainforest light shafts: soft warm beams slanting down through the canopy, strongest on humid mornings */
+let jungleRays=null;
+if(!OCEAN&&(MK==='jungle'||MK==='mixed')){jungleRays=[];
+  const shaft=ctex(64,256,(g,w,h)=>{const id=g.createImageData(w,h);for(let y=0;y<h;y++)for(let x=0;x<w;x++){const u=(x+0.5)/w*2-1,v=y/h,a=Math.exp(-u*u*5)*Math.pow(1-v,1.3)*Math.min(1,v*8+0.15);const i=(y*w+x)*4;id.data[i]=id.data[i+1]=id.data[i+2]=255;id.data[i+3]=a*255;}g.putImageData(id,0,0);});const xr=MK==='jungle'?[-15,15]:[7.5,16],n=MK==='jungle'?9:4;
+  for(let i=0;i<n;i++){const x=rand(xr[0],xr[1]),z=rand(-5,5),g=heightAt(x,z),h=TOP-0.3-g;const m=new THREE.Mesh(new THREE.PlaneGeometry(rand(1.4,2.6),h),new THREE.MeshBasicMaterial({map:shaft,color:0xffe9b8,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.DoubleSide}));
+    m.position.set(x,g+h/2,z);m.renderOrder=7;tank.add(m);jungleRays.push({m,ph:rand(0,6),tilt:rand(0.12,0.3)});}}
 if(OCEAN){causticify(terrain.material);causticify(MATS.rock);causticify(MATS.pebble);
   const vol=new THREE.Mesh(new THREE.BoxGeometry(W-0.02,WT-BOT-0.02,D-0.02),new THREE.MeshBasicMaterial({color:0x0f5a76,transparent:true,opacity:0.0,depthWrite:false}));vol.visible=false;vol.position.set(0,(WT+BOT)/2,0);vol.renderOrder=8;tank.add(vol);
   const sn=TX.waterN.clone();sn.needsUpdate=true;sn.repeat.set(6,4);
