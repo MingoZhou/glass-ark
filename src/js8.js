@@ -38,7 +38,8 @@ $('#leftToggle').addEventListener('click',()=>setPanel('left'));
 $('#rightToggle').addEventListener('click',()=>setPanel('right'));
 function setTool(t){tool=t;moveSel=null;$$('.tool[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===t?'true':'false'));canvas.classList.toggle('paint',t!=='observe');renderPalette();cursor.visible=false;
   const hints={observe:'点击生物查看、跟随 · 点击地面查看区域',rain:'在缸内按住并拖动，云跟着指针下雨',plant:'绿色圈=适合，黄色=湿度不合适，红色=不能种',animal:'点击地面投放',feed:'饲料会被蚂蚁、蟋蟀和鼠妇吃掉',move:'先点一只动物，再点放下的位置',shovel:'点击铲掉一株植物或布景（返还部分孢子）· 按住拖动可以连续铲',decor:'选一种布景，点击地面摆放 · 用铲除工具可以移走'};if(OCEAN){hints.rain='在水面按住拖动，补充淡水、降低盐度';hints.feed='浮游饵料喂鱼和珊瑚，剩下的沉底给螃蟹和虾';}$('#hint').textContent=hints[t]||'';$('#hint').style.opacity=1;}
-$$('.tool[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
+/* tapping the active tool again folds its list away and goes back to observing */
+$$('.tool[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(tool===b.dataset.tool&&tool!=='observe'?'observe':b.dataset.tool)));
 function setSpeed(s){env.speed=s;if(s>=3)tutDone('fast');$$('[data-speed]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.speed===s?'true':'false'));}
 $$('[data-speed]').forEach(b=>b.addEventListener('click',()=>setSpeed(+b.dataset.speed)));
 function updateToggles(){$('#lampBtn').setAttribute('aria-pressed',env.lamp);$('#pumpBtn').setAttribute('aria-pressed',env.pump);}
@@ -47,7 +48,7 @@ $('#lampBtn').addEventListener('click',()=>{env.lamp=!env.lamp;updateToggles();t
 $('#pumpBtn').addEventListener('click',()=>{env.pump=!env.pump;updateToggles();if(OCEAN){toast(env.pump?'造浪泵开启：水流带来氧气，珊瑚和海葵随波摆动。每天约 −5 孢子':'造浪泵关闭：水流停了，溶氧会慢慢下降');return;}toast(env.pump?'水泵开启：瀑布和溪流恢复，雨林和溪沼更湿润，藻类减少。每天约 −5 孢子':'水泵关闭：溪流断流，雨林会慢慢变干');});
 $('#dirBtn').addEventListener('click',()=>{director.on=!director.on;$('#dirBtn').setAttribute('aria-pressed',director.on);if(director.on){director.lockUntil=0;director.next=0;toast('导演模式开启：镜头会自动追踪捕猎、羽化和孵化');}else{caption('');stopFollow();}});
 $('#soundBtn').addEventListener('click',()=>{snd.on=!snd.on;$('#soundBtn').setAttribute('aria-pressed',snd.on);if(snd.on){initSound();if(snd.ctx&&snd.ctx.state==='suspended')snd.ctx.resume();}if(snd.master)snd.master.gain.value=snd.on?snd.vol:0;});
-$('#setBtn').addEventListener('click',()=>{const s=$('#settings');s.hidden=!s.hidden;$('#setBtn').setAttribute('aria-pressed',!s.hidden);});
+$('#setBtn').addEventListener('click',()=>{const s=$('#settings');s.hidden=!s.hidden;$('#setBtn').setAttribute('aria-pressed',!s.hidden);if(!s.hidden&&narrowUI()){setPanel('left',false);setPanel('right',false);}syncOverlay();});
 function renderQual(){$$('#qualSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.q===QK));}
 $$('#qualSeg button').forEach(b=>b.addEventListener('click',()=>{QK=b.dataset.q;Q=QUAL[QK];try{localStorage.setItem('ark-quality',QK);}catch(e){}applyQuality();renderQual();}));
 $('#vol').addEventListener('input',e=>{snd.vol=e.target.value/100;if(snd.master&&snd.on)snd.master.gain.value=snd.vol;});
@@ -65,7 +66,8 @@ function renderPalette(){const pal=$('#palette');let h='';
   else if(tool==='decor'){for(const k in DECOR_T){const T=DECOR_T[k];h+=`<button class="item" data-decor="${k}" aria-pressed="${sub.decor===k}"><i style="background:${T.color}"></i><b>${T.name}</b><small><span class="c">${T.cost}</span> · ${T.hint}</small></button>`;}}
   else if(tool==='feed')h+=`<div class="item" style="cursor:default"><i style="background:#b07a3c"></i><b>昆虫饲料</b><small><span class="c">2</span> · 点击地面投放</small></div>`;
   else if(tool==='move')h+=`<div class="item" style="cursor:default"><i style="background:var(--lamp)"></i><b>上帝之手</b><small>把动物搬到别的地方，免费</small></div>`;
-  pal.innerHTML=h;pal.hidden=!h;
+  if(h)h=`<button class="pal-x" id="palClose" type="button" aria-label="收起，回到观察">×<small>收起</small></button>`+h;
+  pal.innerHTML=h;pal.hidden=!h;const pc=$('#palClose');if(pc)pc.addEventListener('click',()=>setTool('observe'));
   pal.querySelectorAll('[data-plant]').forEach(b=>b.addEventListener('click',()=>{sub.plant=b.dataset.plant;renderPalette();}));
   pal.querySelectorAll('[data-decor]').forEach(b=>b.addEventListener('click',()=>{sub.decor=b.dataset.decor;renderPalette();}));
   pal.querySelectorAll('[data-animal]').forEach(b=>b.addEventListener('click',()=>{sub.animal=b.dataset.animal;renderPalette();}));
@@ -85,7 +87,7 @@ function renderInspect(){const s=selected,box=$('#inspect');if(!s||!s.alive){box
       <dl class="kv"><dt>健康</dt><dd>${bar(s.health,s.health<0.4?'var(--bad)':'')}</dd><dd class="num">${Math.round(s.health*100)}%</dd><dt>生长</dt><dd>${bar(s.growth)}</dd><dd class="num">${Math.round(s.growth*100)}%</dd>${s.pollen>0?`<dt>授粉</dt><dd>${'●'.repeat(s.pollen)}</dd><dd></dd>`:''}</dl>
       <p class="fact">${OCEAN?(s.T.coral?`珊瑚靠共生藻光合作用，也滤食浮游生物。水温超过 29°C 或被藻类覆盖会白化。现在水温 ${env.temp.toFixed(1)}°C。`:s.T.host?'小丑鱼的家：触手会蜇伤别的鱼，却保护小丑鱼。':'海草和海带吸收营养盐、释放氧气，是小鱼的育婴场。'):s.T.water?(m?'漂浮在水塘上。':'水塘干了，它正在枯萎！'):s.T.fungus?'从腐烂的落叶和尸体上长出来，加快分解，也是蜗牛和鼠妇的食物。':`土壤湿度 ${Math.round(m*100)}%，它喜欢 ${Math.round(s.T.moist[0]*100)}–${Math.round(s.T.moist[1]*100)}%。`}</p><div class="row"><button class="btn" data-a="close">关闭</button></div>`;}
   else{const S=s.S,fm=cam.follow===s?cam.fmode:null;const st=stageTxt(s);const days=(s.age).toFixed(1);
-    box.innerHTML=`<h3><i style="background:${S.color}"></i><span>${s.name}</span>${S.noName?'':'<button class="rn" data-a="rename">改名</button>'}</h3>
+    box.innerHTML=`<h3><i style="background:${S.color}"></i><span>${s.name}</span>${S.noName?'':'<button class="rn" data-a="rename">改名</button>'}</h3>${s.mut?`<div class="mut-badge">★ 稀有变异 · ${mutLabel(s)}</div>`:''}
       <span class="tag">${S.name}${s.sp==='butterfly'&&s.stage==='adult'&&S.VAR&&S.VAR[s.variant]!=null?' · '+S.VAR[s.variant]:''}</span>${st&&s.stage!=='adult'?`<span class="tag">${st}</span>`:''}${s.scale<0.95&&s.stage!=='egg'&&s.stage!=='pupa'?'<span class="tag">幼体</span>':''}<span class="tag">${lvlOf(S)}</span><span class="tag">${ZONES[zoneAt(s.x,s.z)].name}</span>
       <div class="state"><b>●</b> ${reasonTxt(s)}</div>
       <div class="segm"><button data-f="orbit" aria-pressed="${fm==='orbit'}">环绕跟随</button><button data-f="chase" aria-pressed="${fm==='chase'}">追尾镜头</button><button data-f="eye" aria-pressed="${fm==='eye'}">它的视角</button></div>
@@ -192,10 +194,11 @@ function tutDone(k){const t=TUT.find(x=>x.k===k);if(!t||t.done)return;t.done=tru
 let glassHidden=false,zen=false;const GLASSY=[];
 tank.traverse(o=>{if(!o.isMesh||!o.material)return;const m=o.material;if(m===glassMat||m===sheenMat||o===lid||(m.map&&m.map===TX.streak)||(m.color&&m.color.getHex()===0x151816&&o.position.y>BOT+0.5)||o.position.y>TOP+0.1)GLASSY.push(o);});
 function setGlass(h){glassHidden=h;GLASSY.forEach(o=>o.visible=!h);HEATROCKS.forEach(r=>r.parts&&r.parts.slice(1).forEach(o=>o.visible=!h));condT=1;$('#glassBtn').setAttribute('aria-pressed',h);try{localStorage.setItem('ark-glass',h?1:0);}catch(e){}}
-function setZen(z){zen=z;document.body.classList.toggle('zen',z);$('#zenBtn').setAttribute('aria-pressed',z);if(z){$('#settings').hidden=true;$('#setBtn').setAttribute('aria-pressed','false');}}
+function setZen(z){zen=z;document.body.classList.toggle('zen',z);$('#zenBtn').setAttribute('aria-pressed',z);if(z){closeOverlays();const zx=$('#zenExit');zx.classList.remove('pulse');void zx.offsetWidth;zx.classList.add('pulse');if(!zenToasted){zenToasted=true;toast('已进入沉浸模式，只留下方工具栏。点左上角 <b>退出沉浸</b> 恢复界面');}}}
+var zenToasted=false;
 $('#glassBtn').addEventListener('click',()=>{setGlass(!glassHidden);toast(glassHidden?'玻璃和缸架已隐藏':'玻璃已恢复');});
 $('#zenBtn').addEventListener('click',()=>setZen(true));$('#zenExit').addEventListener('click',()=>setZen(false));
-addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.ctrlKey||e.metaKey)return;const k=e.key.toLowerCase();if(k==='g')$('#glassBtn').click();else if(k==='h')setZen(!zen);else if(k==='escape'&&zen)setZen(false);});
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.ctrlKey||e.metaKey)return;const k=e.key.toLowerCase();if(k==='g')$('#glassBtn').click();else if(k==='h')setZen(!zen);else if(k==='escape'){if(anyOverlay())closeOverlays();else if(tool!=='observe')setTool('observe');else if(zen)setZen(false);}});
 try{if(localStorage.getItem('ark-glass')==='1')setGlass(true);}catch(e){}
 let uwT=9;let condLevel=1;try{const v=localStorage.getItem('ark-cond');if(v!=null)condLevel=+v;}catch(e){}
 function renderCond(){$$('#condSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.c===condLevel));}$$('#condSeg button').forEach(b=>b.addEventListener('click',()=>{condLevel=+b.dataset.c;try{localStorage.setItem('ark-cond',condLevel);}catch(e){}renderCond();condT=1;}));renderCond();
@@ -224,7 +227,7 @@ function renderFrame(dt){const p=usePost();HDR_CLAMP.value=p?1:65504;HDR_ALPHA.v
 let GLASS_POST_ALPHA=0.35;  // calibrated: mean brightness with post on matches rendering without post
 function frame(now){requestAnimationFrame(frame);if(window.__freeze){last=now;return;}const rdt=Math.min(0.05,(now-last)/1000);last=now;const gdt=rdt*env.speed;
   if(gdt>0){const n=Math.ceil(gdt/0.1),st=gdt/n;for(let i=0;i<n;i++)simStep(st);o2T+=gdt;if(o2T>3){o2T=0;O2H.push(env.o2);if(O2H.length>240)O2H.shift();}}
-  updateVisuals(rdt,gdt);introTick(rdt);applyCam(rdt);directorTick();updateLabels();sndListener();
+  updateVisuals(rdt,gdt);introTick(rdt);applyCam(rdt);directorTick();jTick(rdt);updateLabels();sndListener();
   renderFrame(rdt);
   scoreT+=rdt;if(scoreT>1){scoreT=0;computeScore();checkContracts();refreshLocks();}
   uiT+=rdt;if(uiT>0.3){uiT=0;updateHUD();if(selected&&!$('#inspect').hidden&&!inspHover)renderInspect();if(logDirty&&!$('#tab-log').hidden){renderLog();logDirty=false;}}

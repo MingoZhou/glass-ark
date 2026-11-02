@@ -98,7 +98,7 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==
 
 /* =================== selection =================== */
 let selected=null;
-function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');if(!auto||!narrowUI())$('#inspect').hidden=false;inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
+function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');if(!auto||!narrowUI()){$('#inspect').hidden=false;if(narrowUI()&&anyOverlay())closeOverlays();}inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
 function deselect(){selected=null;$('#inspect').hidden=true;selRing.visible=false;stopFollow();}
 function showZone(h){selected={kind:'zone',zi:zoneAt(h.x,h.z),alive:true,x:h.x,z:h.z};$('#inspect').hidden=false;inspDirty=true;renderInspect();}
 function onEntityGone(e){if(selected===e){const was=e;if(was.kind==='animal'&&cam.follow===was){toast(`「${was.name}」的故事结束了`);}selected=null;$('#inspect').hidden=true;}if(cam.follow===e)cam.follow=null;if(moveSel===e)moveSel=null;}

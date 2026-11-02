@@ -6,7 +6,7 @@ const isNight=()=>env.daylight<0.18;
 const clockStr=()=>{const t=env.time*24,h=Math.floor(t),m=Math.floor((t-h)*60);return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;};
 const LOG=[];let logDirty=true;
 const stats={hunts:0,emerged:0,metamorph:0,hatched:0,births:0,webs:0,mush:0,planted:{},placed:{}};
-function logEvent(kind,text,who,prio){const e={id:++UID,day:env.day,t:clockStr(),kind,text,who:who&&who.id?who:null,x:who?who.x:0,z:who?who.z:0,prio:prio||1};LOG.unshift(e);if(LOG.length>80)LOG.pop();logDirty=true;if(typeof onDirectorEvent==='function')onDirectorEvent(e);}
+function logEvent(kind,text,who,prio){const e={id:++UID,day:env.day,t:clockStr(),kind,text,who:who&&who.id?who:null,x:who?who.x:0,z:who?who.z:0,prio:prio||1};LOG.unshift(e);if(LOG.length>80)LOG.pop();logDirty=true;if(typeof onDirectorEvent==='function')onDirectorEvent(e);jLog(e);}
 function bumpExcite(v){env.excite=Math.min(40,env.excite+v);}
 
 const pop={};const AGS=2,AG=new Map();
@@ -21,7 +21,7 @@ class Agent{
     this.state='idle';this.st=0;this.speed=0;this.ph=rand(0,10);this.alive=true;this.scale=o.scale!=null?o.scale:1;this.name=o.name||(this.S.noName?`${this.S.name} #${this.id}`:pick(NAMES));
     this.kills=0;this.kids=0;this.diary=[];this.wz=0;this.tt=rand(0,1);this.stageT=0;this.m=null;
     pop[sp].push(this);if(this.S.init)this.S.init(this,o);this.buildModel();}
-  buildModel(){this.disposeModel();const b=this.S.model?this.S.model(this):null;this.m=b;if(b&&b.root)agentGroup.add(b.root);}
+  buildModel(){this.disposeModel();const b=this.S.model?this.S.model(this):null;this.m=b;if(b&&b.root)agentGroup.add(b.root);if(this.mut)applyMut(this);}
   disposeModel(){const m=this.m;if(!m)return;if(m.root){agentGroup.remove(m.root);m.root.traverse(o=>{if(o.geometry&&!o.isSprite&&!SHARED_GEO.has(o.geometry))o.geometry.dispose();if(o.isSprite)o.material.dispose();});}
     if(m.tip){agentGroup.remove(m.tip);m.tip.geometry.dispose();}this.m=null;}
   setStage(s){this.stage=s;this.stageT=0;this.buildModel();}
@@ -46,10 +46,10 @@ class Agent{
     this.disposeModel();
     if(reason!=='eaten'&&reason!=='hatched'&&this.S.corpse)addDetritus(this.x,this.z,this.S.corpse*this.scale,'corpse');
     if((reason==='starved'||reason==='old')&&this.S.lvl>=2)logEvent('warn',`${this.S.name}「${this.name}」${reason==='old'?'寿终正寝':'饿死了'}`,this,1);
-    if(typeof onEntityGone==='function')onEntityGone(this);}
+    if(typeof onEntityGone==='function')onEntityGone(this);jDeath(this,reason);}
 }
 function tryBreed(a,prob,dt,x,z,o){const S=a.S;if(a.scale<1||a.energy<0.8||a.age<S.life*0.12||count(a.sp)>=capOf(a.sp)||Math.random()>prob*dt)return null;
-  a.energy-=0.35;const n=new Agent(a.sp,x==null?a.x+rand(-0.3,0.3):x,z==null?a.z+rand(-0.3,0.3):z,Object.assign({scale:0.5,age:0,energy:0.7},o||{}));a.kids++;stats.births++;
+  a.energy-=0.35;const n=new Agent(a.sp,x==null?a.x+rand(-0.3,0.3):x,z==null?a.z+rand(-0.3,0.3):z,Object.assign({scale:0.5,age:0,energy:0.7},o||{}));a.kids++;stats.births++;born(n,a);
   a.note(`生下了「${n.name}」`);if(S.lvl>=2||Math.random()<0.2)logEvent('life',`${S.name}「${a.name}」繁殖了，新成员「${n.name}」`,n,2);return n;}
 const count=sp=>pop[sp].length;
 const capOf=sp=>Math.round(SPEC[sp].cap*(sp==='ant'?(QK==='low'?0.6:1):1));
@@ -61,7 +61,7 @@ function huntTick(a,dt){const H=a.S.hunt;
   if(a.state==='eat'){a.st-=dt;a.speed=0;if(a.st<=0)finishEat(a);return true;}
   if(a.state==='strike'){a.st-=dt;a.speed=0;const prog=1-a.st/H.strikeT;if(H.lunge&&prog<0.45)a.step(H.lunge,dt);
     if(!a.struck&&prog>=H.hitAt){a.struck=true;const p=a.prey;if(p&&p.alive&&!p.heldBy&&!p.stuck&&dist3(a,p)<(H.reach*a.scale+0.08)*1.5&&Math.random()<H.success*(p.flee?0.55:1)){catchPrey(a,p);return true;}a.missed=true;if(p&&p.alive&&p.S.flee)startFlee(p,a);}
-    if(a.st<=0&&a.state==='strike'){a.state='recover';a.st=a.missed?0.8:0.2;if(a.missed&&Math.random()<0.25)logEvent('hunt',`${a.S.name}「${a.name}」扑空了`,a,1);}
+    if(a.st<=0&&a.state==='strike'){a.state='recover';a.st=a.missed?0.8:0.2;if(a.missed)jot('miss',a);if(a.missed&&Math.random()<0.25)logEvent('hunt',`${a.S.name}「${a.name}」扑空了`,a,1);}
     return true;}
   if(a.state==='recover'){a.st-=dt;a.speed=0;if(a.st<=0)a.state='idle';return true;}
   if(a.energy>H.hungry&&a.state!=='stalk'&&a.state!=='chase')return false;
@@ -74,7 +74,7 @@ function huntTick(a,dt){const H=a.S.hunt;
   return true;}
 function catchPrey(a,p){if(a.sp==='snake')stats.snakeHunts=(stats.snakeHunts||0)+1;p.heldBy=a;p.state='caught';p.flee=null;p.hop=null;a.held=p;a.state='eat';a.st=a.S.hunt.eatT;stats.hunts++;bumpExcite(3);
   const nm=p.S.stageNames&&p.stage!=='adult'?p.S.stageNames[p.stage]:p.S.name;a.note(`捕获了一只${nm}`);if(p.name&&!p.S.noName)p.note(`被${a.S.name}「${a.name}」捉住了`);
-  logEvent('hunt',`${a.S.name}「${a.name}」捕获了${nm}${p.S.noName?'':'「'+p.name+'」'}`,a,3);}
+  logEvent('hunt',`${a.S.name}「${a.name}」捕获了${nm}${p.S.noName?'':'「'+p.name+'」'}`,a,3);jHunt(a,p);}
 function finishEat(a){const p=a.held;a.held=null;a.state='idle';if(p&&p.alive){a.energy=Math.min(1,a.energy+(a.S.diet[p.sp].v||0.2));a.kills++;p.die('eaten');}if(a.S.onAte)a.S.onAte(a);}
 function startFlee(p,from){const F=p.S.flee;if(!F||p.heldBy||p.stuck)return;if(F.mode==='roll'){if(!p.rolled){p.rolled=true;p.rollT=rand(4,8);}return;}if(F.mode==='retract'){p.retracted=true;p.rollT=rand(6,12);return;}p.flee={from,t:rand(F.dur*0.7,F.dur*1.2)};}
 function fleeTick(p,dt){if(p.rolled||p.retracted){p.rollT-=dt;p.speed=0;p.state=p.rolled?'rolled':'retracted';if(p.rollT<=0){p.rolled=false;p.retracted=false;p.state='idle';}return true;}
@@ -158,7 +158,7 @@ const SPEC={
   fact:'吃草叶和腐殖质，是很多捕食者的主食。夜里雄性摩擦前翅鸣叫，受惊时一跳就是体长的十几倍。',
   model:()=>buildCricket(),
   update(a,dt){if(a.hop){hopTick(a,dt);return;}if(fleeTick(a,dt))return;alertTick(a,dt);
-    if(a.chirp>0){a.chirp-=dt;a.state='chirp';a.speed=0;a.chirpS=(a.chirpS||0)-dt;if(a.chirpS<=0){a.chirpS=0.55;sfx('chirp',a);}return;}
+    if(a.chirp>0){a.chirp-=dt;a.state='chirp';a.speed=0;a.chirpS=(a.chirpS||0)-dt;if(a.chirpS<=0){a.chirpS=0.55;sfx('chirp',a);if(isNight())jot('chirp',a);}return;}
     if(isNight()&&a.scale>=1&&Math.random()<0.03*dt){a.chirp=rand(2,4);return;}
     if(a.energy<0.88){const c=tcell(a.x,a.z);if(turf[c]>0.15){a.state='graze';a.speed=0;turf[c]-=0.003*dt;a.energy=Math.min(1,a.energy+0.03*dt);if(Math.random()<0.12*dt)startHop(a,a.h+rand(-1,1),rand(0.2,0.5));return;}
       const d=nearestDet(a.x,a.z,1.5);if(d){a.state='forage';if(a.seek(d.x,d.z,0.12,dt)<0.12){const e=Math.min(d.amount,0.02*dt);d.amount-=e;a.energy+=e*1.5;}return;}
@@ -208,7 +208,7 @@ const SPEC={
     if(isNight()&&!env.lamp){if(!a.perch||!a.perch.alive)a.perch=nearestPlant(a.x,a.z,8,p=>p.h*plantScale(p)>0.3&&!p.T.water);
       if(a.perch){const ty=plantTop(a.perch);const d=Math.hypot(a.perch.x-a.x,a.perch.z-a.z);if(d>0.08){a.seek(a.perch.x,a.perch.z,Math.min(0.9,d*2+0.05),dt,4);a.state='fly';}else{a.state='rest';a.speed=0;}a.y+=(ty-a.y)*Math.min(1,dt*2);}return;}
     a.perch=null;
-    if(a.state==='sip'||a.state==='rest'||a.state==='lay'){a.st-=dt;a.speed=0;if(a.state==='lay'&&a.st<=0&&a.target&&a.target.alive){const t=a.target;const e=new Agent('butterfly',t.x+rand(-0.08,0.08),t.z+rand(-0.08,0.08),{stage:'egg',variant:a.variant,energy:0.8,age:0,scale:1,host:t});e.y=plantBaseY(t)+t.h*plantScale(t)*0.35;a.kids++;a.note('在'+t.T.name+'上产卵');a.energy-=0.25;}
+    if(a.state==='sip'||a.state==='rest'||a.state==='lay'){a.st-=dt;a.speed=0;if(a.state==='lay'&&a.st<=0&&a.target&&a.target.alive){const t=a.target;const e=new Agent('butterfly',t.x+rand(-0.08,0.08),t.z+rand(-0.08,0.08),{stage:'egg',variant:a.variant,energy:0.8,age:0,scale:1,host:t});born(e,a);e.y=plantBaseY(t)+t.h*plantScale(t)*0.35;a.kids++;a.note('在'+t.T.name+'上产卵');a.energy-=0.25;}
       if(a.st<=0){a.state='fly';a.target=null;}return;}
     a.state='fly';a.tt-=dt;
     const wantLay=a.energy>0.7&&a.age>0.3&&count('butterfly')<capOf('butterfly')&&pop.butterfly.filter(b=>b.stage!=='adult').length<18&&Math.random()<0.0035*dt*60;
@@ -316,17 +316,17 @@ const SPEC={
   model:a=>a.stage==='egg'?buildSpawn():a.stage==='tadpole'?buildTadpole():buildFrog(),
   init(a){if(a.stage==='tadpole')a.trail=new Trail(0.22,a.x,a.z,a.h);a.croak=0;},
   update(a,dt){const st=a.stage;
-    if(st==='egg'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.35){const n=irand(5,9);for(let i=0;i<n;i++){const t=new Agent('frog',a.x+rand(-0.25,0.25),a.z+rand(-0.25,0.25),{stage:'tadpole',scale:0.6,age:0,energy:0.7});}stats.hatched+=n;logEvent('life',`水塘里孵出了 ${n} 只蝌蚪`,a,3);bumpExcite(3);a.die('hatched');}return;}
+    if(st==='egg'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.35){const n=irand(5,9);for(let i=0;i<n;i++){const t=new Agent('frog',a.x+rand(-0.25,0.25),a.z+rand(-0.25,0.25),{stage:'tadpole',scale:0.6,age:0,energy:0.7});born(t,a,'hatch');}stats.hatched+=n;logEvent('life',`水塘里孵出了 ${n} 只蝌蚪`,a,3);bumpExcite(3);a.die('hatched');}return;}
     if(st==='tadpole'){a.stageT+=dt/DAY;a.scale=Math.min(1,0.6+a.stageT*0.4);a.state='swim';a.roam(0.16,dt);const al=env.algae;if(al>0.03){env.algae-=0.00004*dt;a.energy=Math.min(1,a.energy+0.012*dt);}
       if(a.stageT>1.2&&a.energy>0.4){a.scale=0.45;a.setStage('adult');a.age=0;stats.metamorph++;bumpExcite(3);a.note('长出四肢，爬上了岸');logEvent('life',`蝌蚪「${a.name}」变成了小雨蛙`,a,3);}return;}
     const zi=zoneAt(a.x,a.z);if(env.zones[zi].h<0.45&&!inWater(a.x,a.z))a.energy-=0.005*dt;
-    a.croak=Math.max(0,a.croak-dt);if(isNight()&&a.scale>=0.9&&a.croak<=0&&Math.random()<(rain.intensity>0.2?0.35:0.12)*dt){a.croak=1.8;sfx('frog',a);}
+    a.croak=Math.max(0,a.croak-dt);if(isNight()&&a.scale>=0.9&&a.croak<=0&&Math.random()<(rain.intensity>0.2?0.35:0.12)*dt){a.croak=1.8;sfx('frog',a);if(jSeen(a))JR_LAST_CROAK=performance.now();jot('frog_call',a);}
     if(a.hop&&a.state!=='stalk'){hopTick(a,dt);return;}
     if(fleeTick(a,dt))return;alertTick(a,dt);
     if(huntTick(a,dt))return;
     a.state=inWater(a.x,a.z)?'swim':'idle';a.speed=0;a.idle=(a.idle||rand(1,3))-dt;
     if(a.idle<=0){a.idle=rand(1,3.5);let ang,len;const far=pondD(a.x,a.z)>2.2;if(far||env.zones[zi].h<0.55){ang=Math.atan2(POND.z-a.z,POND.x-a.x)+rand(-0.6,0.6);len=rand(0.5,0.9);}else{ang=a.h+rand(-1.6,1.6);len=rand(0.3,0.9);}startHop(a,ang,len);}
-    if(isNight()&&a.scale>=1&&env.zones[2].h>0.6&&count('frog')<capOf('frog')&&pop.frog.filter(f=>f.stage==='adult').length<11&&a.energy>0.75&&Math.random()<0.0012*dt){const an=rand(0,6.28);const r=pondR(an)*0.85;const x=POND.x+Math.cos(an)*r,z=POND.z+Math.sin(an)*r;if(inPond(x,z,0.05)){new Agent('frog',x,z,{stage:'egg',age:0,energy:1});a.energy-=0.3;a.kids++;a.note('在水塘里产下卵块');logEvent('life',`雨蛙「${a.name}」在水塘里产卵了`,a,3);}}},
+    if(isNight()&&a.scale>=1&&env.zones[2].h>0.6&&count('frog')<capOf('frog')&&pop.frog.filter(f=>f.stage==='adult').length<11&&a.energy>0.75&&Math.random()<0.0012*dt){const an=rand(0,6.28);const r=pondR(an)*0.85;const x=POND.x+Math.cos(an)*r,z=POND.z+Math.sin(an)*r;if(inPond(x,z,0.05)){born(new Agent('frog',x,z,{stage:'egg',age:0,energy:1}),a,'egg');a.energy-=0.3;a.kids++;a.note('在水塘里产下卵块');logEvent('life',`雨蛙「${a.name}」在水塘里产卵了`,a,3);}}},
   anim(a,dt){const m=a.m,st=a.stage;
     if(st==='egg'){m.root.position.set(a.x,env.waterY-0.01,a.z);m.root.rotation.y=a.ph*0.05;return;}
     if(st==='tadpole'){a.trail.push(a.x,a.z);a.trail.sample(a.x,a.z,14,0.22*a.scale,m.pts);const wy=waterSurf(a.x,a.z)-0.12;for(let i=0;i<14;i++){const p=m.pts[i];const s=Math.sin(a.ph*14-i*0.8)*0.02*(i/13)*a.scale;const B=i>0?m.pts[i-1]:p;const dx=p.x-B.x,dz=p.z-B.z,l=Math.hypot(dx,dz)||1;p.x+=-dz/l*s;p.z+=dx/l*s;p.y=wy;}

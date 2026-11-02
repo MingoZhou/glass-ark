@@ -14,7 +14,7 @@ Photosynthesis, food chains, birth and death — all unfold before your eyes.
 <img alt="No build step" src="https://img.shields.io/badge/build-none-6aa84f">
 <img alt="Works offline" src="https://img.shields.io/badge/offline-yes-3d85c6">
 <img alt="Desktop and mobile" src="https://img.shields.io/badge/platform-desktop%20%7C%20mobile-f0b25a">
-<img alt="Version v0.2" src="https://img.shields.io/badge/version-v0.2-b8463a">
+<img alt="Version v1.2.0" src="https://img.shields.io/badge/version-v1.2.0-b8463a">
 </p>
 
 [**Play online**](https://mingozhou.github.io/glass-ark/) · [Quick start](#-quick-start) · [Changelog](CHANGELOG.md) · [Sponsor](#-sponsor) · [中文](README.md)
@@ -45,9 +45,25 @@ The entire game is a single HTML file plus a local copy of three.js: nothing to 
 </tr>
 </table>
 
-## ✨ What's new in v0.2
+## ✨ What's new in v1.2.0
 
 > Full details in [CHANGELOG.md](CHANGELOG.md).
+
+- **缸中见闻录 (Tank Chronicle)**: 54 moments in four tiers — common, uncommon, rare and legendary. Only moments you actually see count; snap a photo while it's still on screen to upgrade it to a gold star
+- **Rare mutations**: a tiny share of newborns come out as an albino frog, a blue lizard, a black-winged butterfly and more. They're heritable and can't be bought
+- **Every menu closes on phones**: settings and both side panels have a close button, and tapping the backdrop or the phone's back gesture closes them; tap the active tool again to fold its list away
+
+- **A nicer interface**: warm glass panels, sharper small text and slim scrollbars; on desktop the home page background is now a living video
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/journal.jpg" alt="The Tank Chronicle with photos of recorded moments"><br><sub><b>缸中见闻录 (Tank Chronicle)</b> · moments you witness are recorded; photographed ones earn a gold star</sub></td>
+<td width="50%"><img src="docs/screenshots/mutant.jpg" alt="A blue mutant lizard next to an ordinary one"><br><sub><b>Rare mutations</b> · an ordinary lizard on the left, a blue mutant born in the tank on the right</sub></td>
+</tr>
+</table>
+
+<details>
+<summary><b>What was new in v1.1.0</b></summary>
 
 - **New home page**: a night-time illustrated hero and specimen cards for all six tanks, tuned for phones and tablets
 - **Opening shot and director mode**: each tank opens on a wide shot, then glides to an animal; the camera follows hunts, metamorphoses and hatchings on its own
@@ -55,6 +71,8 @@ The entire game is a single HTML file plus a local copy of three.js: nothing to 
 - **Lusher rainforest**: more trees and understorey, fuller canopies, more vines, and slanting light shafts by day
 - **Save and load**: every tank autosaves; the home-page save manager can rename, delete, export and import saves
 - **Rendering fixes**: bloom and depth of field finally work, and the glass no longer washes the picture out
+
+</details>
 
 ## 🫙 Game modes
 
@@ -102,6 +120,8 @@ Top predators unlock only after you've raised their prey: corn snakes need enoug
 - **Opening shot**: each tank opens on a wide shot, then glides to an animal (about 10 seconds). Click, scroll, press any key or tap "跳过" (skip) to skip it.
 - **Director mode**: on by default, made for idle viewing. Rotating or zooming just keeps it on the current animal a little longer; moving with W A S D or right-drag hands the camera to you and turns director mode off. Turn it back on with the top-right button.
 - **Panels**: the contracts and tank-status panels start collapsed so the tank gets the screen; open them with the two top-right buttons. A chip in the top-left always shows the next onboarding task.
+- **缸中见闻录 (Tank Chronicle)**: the book button at the top right (or J). A moment counts only if its subject is on screen when it happens; director mode counts too. The camera button (or P) takes a photo: within 12 seconds of a moment and close enough to its subject, the entry becomes a gold star and the photo goes into the chronicle; you can also save it to your device. All tanks share one chronicle, and it travels with exported saves
+- **Rare mutations**: about 0.5% of births are a mutant, marked with ★ before its name; a mutant's offspring inherit it about a third of the time. A notice pops up when one is born — tap "去看看" (go see) to find it
 - **Saving**: every tank autosaves on its own (every 30 seconds, when the tab goes to the background, and when you press "保存并返回首页" — save and return home). Home cards show a "存档 · 第 N 天" (saved · day N) badge. The **存档管理** (save manager) on the home page can rename and delete saves, export them to a JSON file, and import them on another device. To start over, use "重新开始这只缸" (restart this tank) in Settings.
 
 <details>
@@ -120,6 +140,9 @@ Top predators unlock only after you've raised their prey: corn snakes need enoug
 | Hide glass | G | Top button |
 | Immersive mode (hide UI, keep toolbar) | H, Esc to exit | Top button, exit at top-left |
 | Pause | Space | Top Ⅱ |
+| Take a photo | P | Camera button at the top |
+| Tank Chronicle | J | Book button at the top |
+| Fold the tool list, close panels | Esc | Tap the active tool again · × in the panel · tap the backdrop · back gesture |
 
 </details>
 
@@ -175,7 +198,8 @@ If a red banner appears at the top of the page, follow its instructions.
 │   ├── js7.js            # Camera, picking, tool interaction
 │   ├── js7d.js           # WASD flight, decor, removal, bubbles
 │   ├── js8.js            # Sound, UI, per-frame visuals, main loop
-│   └── js9.js            # Opening shot, director mode, onboarding, saves and save manager
+│   ├── js9.js            # Opening shot, director mode, onboarding, saves and save manager, phone panels
+│   └── js10.js           # Tank Chronicle, photos, rare mutations
 ├── assets/home/          # Home-page illustrations (webp)
 └── docs/screenshots/     # README screenshots
 ```

@@ -214,6 +214,11 @@ function runHome(){return new Promise(resolve=>{
       const bl=Math.pow(Math.max(0,Math.sin(t*p.v*1.4+p.ph)),5),r=p.s*(2+bl*4),x=p.x*W,y=p.y*H;
       const gr=g.createRadialGradient(x,y,0,x,y,r*4);gr.addColorStop(0,`rgba(232,255,150,${0.08+0.75*bl})`);gr.addColorStop(1,'rgba(200,255,120,0)');g.fillStyle=gr;g.fillRect(x-r*4,y-r*4,r*8,r*8);}
     g.globalCompositeOperation='source-over';}
+  /* desktop: play the looping hero video; its own fireflies replace the canvas ones */
+  const vid=$('#heroVid');let vidOn=false;
+  if(vid&&!still&&matchMedia('(min-width:761px)').matches&&!(navigator.connection&&navigator.connection.saveData)){
+    vid.addEventListener('playing',()=>{if(vidOn)return;vidOn=true;vid.classList.add('on');setTimeout(()=>{flies.length=0;g.clearRect(0,0,W,H);},1400);},{once:true});
+    vid.src=vid.canPlayType('video/webm; codecs="vp9"')?'assets/home/hero-loop.webm':'assets/home/hero-loop.mp4';const p=vid.play();if(p&&p.catch)p.catch(()=>{});}
   rs();addEventListener('resize',rs);if(!still)requestAnimationFrame(draw);
   const rq=()=>$$('#homeQual button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.q===QK));rq();
   $$('#homeQual button').forEach(b=>b.addEventListener('click',()=>{QK=b.dataset.q;Q=QUAL[QK];try{localStorage.setItem('ark-quality',QK);}catch(e){}rq();}));

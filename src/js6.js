@@ -71,10 +71,10 @@ function simStep(dt){
   for(const k of SPK)if(pop[k].some(a=>!a.alive))pop[k]=pop[k].filter(a=>a.alive);
   webAcc+=dt;if(webAcc>0.2){webCatch();webAcc=0;}
   if(DECOR.length)decorSim(dt);
-  if(colony&&colony.store>=3.5+count('ant')*0.06&&count('ant')<capOf('ant')){colony.store-=3.5;new Agent('ant',colony.x+rand(-0.15,0.15),colony.z+rand(-0.15,0.15),{energy:0.8,age:0});}
+  if(colony&&colony.store>=3.5+count('ant')*0.06&&count('ant')<capOf('ant')){colony.store-=3.5;jot('ant_hatch',new Agent('ant',colony.x+rand(-0.15,0.15),colony.z+rand(-0.15,0.15),{energy:0.8,age:0}));}
   if(colony)colony.store=Math.min(colony.store,50);
   for(const d of detritus){if(!d.alive)continue;const e=Math.min(d.amount,0.0012*dt);d.amount-=e;if(OCEAN)env.nut+=e*0.06;else env.zones[zoneAt(d.x,d.z)].fert+=e*0.5;R+=0.25*Math.min(1,d.amount);if(d.amount<=0.01){removeDet(d);continue;}
-    if(!OCEAN&&d.sub!=='pellet'&&env.zones[zoneAt(d.x,d.z)].h>0.62&&Math.random()<0.004*dt&&plants.filter(p=>p.type==='mushroom').length<45){const x=d.x+rand(-0.3,0.3),z=d.z+rand(-0.3,0.3);if(!inWater(x,z)&&spacingOK(x,z,0.2)){addPlant('mushroom',x,z,0.15,irand(0,2));stats.mush++;}}}
+    if(!OCEAN&&d.sub!=='pellet'&&env.zones[zoneAt(d.x,d.z)].h>0.62&&Math.random()<0.004*dt&&plants.filter(p=>p.type==='mushroom').length<45){const x=d.x+rand(-0.3,0.3),z=d.z+rand(-0.3,0.3);if(!inWater(x,z)&&spacingOK(x,z,0.2)){addPlant('mushroom',x,z,0.15,irand(0,2));stats.mush++;jot('mushroom',{x,z});}}}
   if(detritus.some(d=>!d.alive))for(let i=detritus.length-1;i>=0;i--)if(!detritus[i].alive)detritus.splice(i,1);
   const P=(env.plantP||0)+env.turfP*L*Math.min(1,co2f);env.P=P;env.R=R;const net=P-R;
   env.o2+=net*0.00022*dt;env.co2-=net*0.07*dt;const leak=env.vent>0?30:1;if(OCEAN){env.nut=clamp(env.nut+R*0.00004*dt,0.02,1.5);const sat=20.9*(1-(env.temp-25)*0.02);env.o2+=(sat-env.o2)*0.0025*dt*(env.pump?2.5:0.8)*(1+(env.airstones||0)*0.7);}else env.o2+=(20.9-env.o2)*0.0025*dt*leak;env.co2+=(420-env.co2)*0.016*dt*leak;env.o2=clamp(env.o2,12,30);env.co2=clamp(env.co2,60,6000);

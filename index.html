@@ -172,6 +172,17 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .settings h4{margin:0 0 8px;font:400 15px var(--display);letter-spacing:.1em}
 .settings p{font-size:11.5px;color:var(--muted);margin:6px 0 12px;line-height:1.5}
 .settings input[type=range]{width:100%}
+/* close buttons and the phone backdrop: every panel can be closed from inside itself */
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin:-4px -4px 10px 0}
+.sheet-head h3{margin:0;font:400 18px/1.2 var(--display);letter-spacing:.14em}
+.sheet-x{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:99px;border:1px solid var(--line-2);background:rgba(255,255,255,.04);color:var(--ink);font:300 22px/1 var(--body);cursor:pointer;pointer-events:auto}
+.sheet-x:hover,.sheet-x:focus-visible{border-color:rgba(240,178,90,.7);color:var(--lamp)}
+.tabs .sheet-x{flex:0 0 30px;width:30px;height:30px;padding:0;margin:5px 6px 5px 4px;border:1px solid var(--line-2);border-radius:99px;font:300 20px/1 var(--body);letter-spacing:0;color:var(--ink)}
+.pal-x{position:sticky;left:-8px;z-index:1;flex:0 0 auto;align-self:stretch;min-width:46px;margin:-8px 0 -8px -8px;padding:0 4px;border-radius:14px 0 0 14px;border-right:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:300 22px/1 var(--body);cursor:pointer}
+.pal-x small{font-size:10px;color:var(--muted);letter-spacing:.06em}
+.scrim{position:fixed;inset:0;z-index:3;background:rgba(3,6,4,.45);-webkit-tap-highlight-color:transparent}
+@keyframes zpulse{0%,100%{box-shadow:0 0 0 0 rgba(240,178,90,.0)}50%{box-shadow:0 0 0 6px rgba(240,178,90,.35)}}
+.zen-exit.pulse{animation:zpulse 1.2s ease-in-out 3;border-color:rgba(240,178,90,.8)}
 
 .toasts{top:calc(74px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:min(440px,calc(100% - 32px))}
 .toast{padding:8px 14px;border-radius:10px;font-size:12.5px;background:var(--panel-2);border:1px solid var(--line-2);box-shadow:0 8px 24px rgba(0,0,0,.4);animation:tin .35s ease-out}
@@ -195,6 +206,9 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .hero{position:relative;min-height:clamp(560px,92vh,940px);display:flex;align-items:center;overflow:hidden;isolation:isolate}
 .hero-art,.hero-art img{position:absolute;inset:0;width:100%;height:100%;display:block}
 .hero-art img{object-fit:cover;object-position:72% 50%;z-index:-2}
+/* living hero: a 9 s seamless loop made from the hero art; fades in over the still image once it is actually playing */
+.hero-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 50%;z-index:-2;opacity:0;transition:opacity 1.4s ease;pointer-events:none}
+.hero-vid.on{opacity:1}
 .hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(90deg,rgba(8,12,10,.96) 0%,rgba(8,12,10,.82) 26%,rgba(8,12,10,.25) 52%,rgba(8,12,10,0) 70%),linear-gradient(0deg,var(--bg) 0%,rgba(8,12,10,0) 22%)}
 #homeBg{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:-1;pointer-events:none}
@@ -234,6 +248,45 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .home-foot .keys-touch{display:none}@media (hover:none) and (pointer:coarse){.home-foot .keys-desk{display:none}.home-foot .keys-touch{display:block}}
 .home-foot .keys{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em}
 
+/* ---- 缸中见闻录 ---- */
+.save-open+.save-open{margin-left:8px}
+.shelf-head .save-open:first-of-type{margin-left:auto}
+@media (max-width:760px){.shelf-head .save-open:first-of-type{margin-left:0}}
+.journal{width:min(760px,calc(100vw - 24px))}
+.jr-prog{display:flex;flex-direction:column;gap:6px;margin:0 0 12px;color:var(--muted);font-size:12.5px}
+.jr-prog b{color:var(--ink);font-weight:600}
+.jr-prog i{display:block;height:4px;border-radius:9px;background:rgba(255,255,255,.07);overflow:hidden}
+.jr-prog i b{display:block;height:100%;background:linear-gradient(90deg,#8fb39a,#f0b25a)}
+.jr-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.jr-tabs button{padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:none;color:var(--muted);font:13px var(--body);cursor:pointer}
+.jr-tabs button[aria-pressed="true"]{color:var(--lamp-ink);background:var(--lamp);border-color:var(--lamp)}
+.jr-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.jr-card{display:flex;gap:10px;padding:10px;border:1px solid var(--line);border-left:3px solid color-mix(in srgb,var(--tc) 35%,transparent);border-radius:12px;background:rgba(255,255,255,.015);opacity:.62}
+.jr-card.got{opacity:1;border-left-color:var(--tc);background:rgba(255,255,255,.035)}
+.jr-ph{flex:none;width:72px;height:48px;border-radius:7px;object-fit:cover;background:#0a0f0c}
+.jr-ph0{display:grid;place-items:center;color:var(--faint);font:400 20px var(--display);border:1px dashed var(--line)}
+.jr-card.got .jr-ph0{border-style:solid;background:linear-gradient(135deg,color-mix(in srgb,var(--tc) 30%,#0a0f0c),#0a0f0c)}
+.jr-tx{min-width:0;display:flex;flex-direction:column;gap:2px}
+.jr-tx b{font:400 15px/1.3 var(--display);letter-spacing:.06em;color:var(--ink)}
+.jr-tx small{font-size:11.5px;line-height:1.45;color:var(--muted)}
+.jr-tx em{font-style:normal;font-size:11px;color:var(--faint);margin-top:2px}
+.jr-row{display:flex;align-items:center;gap:6px;font-size:10.5px}
+.jr-tier{color:var(--tc);font-weight:600;letter-spacing:.08em}
+.jr-where{color:var(--faint)}
+.jr-stars{margin-left:auto;display:flex;gap:1px}
+.jr-st{color:rgba(255,255,255,.18);font-size:12px}.jr-st.on{color:#c9d3cc}.jr-st.gold{color:#f0b25a;text-shadow:0 0 6px rgba(240,178,90,.6)}
+.jr-sw{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--faint);font:400 20px var(--display);border:1px dashed var(--line);box-shadow:inset 0 -6px 12px rgba(0,0,0,.35)}
+.jr-btn{position:relative}
+.jr-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:99px;background:#d9534a;color:#fff;font:600 10px/16px var(--body);text-align:center}
+.jr-toast{display:block;font-size:11px;letter-spacing:.08em;color:var(--tc,#f0b25a);margin-bottom:2px}
+.toast small{color:var(--muted);font-size:11px}
+.tlink{margin-left:6px;padding:2px 8px;border-radius:99px;border:1px solid rgba(240,178,90,.6);background:none;color:var(--lamp);font:12px var(--body);cursor:pointer;pointer-events:auto}
+.toasts .toast{pointer-events:auto}
+.mut-badge{display:inline-block;margin:-4px 0 8px;padding:2px 9px;border-radius:99px;border:1px solid rgba(240,178,90,.55);color:var(--lamp);font-size:11.5px}
+.flash{position:fixed;inset:0;z-index:20;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:flash .45s ease-out}
+@keyframes flash{0%{opacity:.75}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.flash.go{animation:none}}
 /* ---- save manager ---- */
 .save-open{margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:99px;border:1px solid var(--line-2);background:rgba(8,12,10,.5);color:var(--ink);font:400 13px var(--body);letter-spacing:.06em;cursor:pointer}
 .save-open:hover,.save-open:focus-visible{border-color:rgba(240,178,90,.6);color:var(--lamp)}
@@ -287,7 +340,9 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
   .hint{display:none}
   .tool{min-width:50px;font-size:10.5px}
   .chip span{display:none}
-  .settings{right:12px;left:12px;width:auto}
+  .settings{right:12px;left:12px;width:auto;max-height:calc(100% - 170px - env(safe-area-inset-bottom,0px));overflow:auto}
+  .side,.settings{z-index:4}
+  .toasts{top:calc(112px + env(safe-area-inset-top,0px));left:12px;right:72px;width:auto;transform:none;align-items:flex-start}
 }
 @media (max-width:520px){ .seg button{min-width:28px} .brand .clock .pill:last-child{display:none} }
 @media (prefers-reduced-motion:reduce){ .toast{animation:none} }
@@ -303,9 +358,66 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .zen-exit svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 body.zen .zen-exit{display:inline-flex}
 [hidden]{display:none!important}
-body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{display:none!important}
+body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.zen #hint{display:none!important}
 .bootfail{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:50;max-width:min(560px,calc(100vw - 32px));padding:14px 18px;border-radius:14px;background:rgba(40,16,12,.92);border:1px solid rgba(231,117,93,.6);color:#f3e6e1;font-size:13.5px;line-height:1.7;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .bootfail b{display:block;font-size:15px;margin-bottom:4px;color:#ffb8a6}.bootfail code{font-family:var(--mono);background:rgba(255,255,255,.08);padding:1px 6px;border-radius:5px}
+
+/* ===================== UI polish (v1.2.1) =====================
+   Warmer "lamplit glass" panels that match the home page, readable type (the display font only for
+   large titles), slim amber scrollbars, consistent buttons. Kept as one override block. */
+:root{--panel:rgba(12,17,14,.86);--panel-2:rgba(19,26,21,.97);--line:rgba(236,220,190,.13);--line-2:rgba(236,220,190,.27);--muted:#b0bcb2;--faint:#84948a}
+.panel{background:linear-gradient(180deg,rgba(255,238,205,.05),rgba(255,238,205,0) 120px),var(--panel);box-shadow:0 16px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,236,200,.08)}
+.iconbtn{color:#c3ccc4;transition:color .15s,background .15s}
+.iconbtn:hover{color:var(--ink);background:rgba(255,240,210,.06)}
+.iconbtn[aria-pressed="true"]{color:var(--lamp);background:rgba(240,178,90,.1)}
+/* slim scrollbars everywhere (the toolbar keeps its hidden one) */
+*{scrollbar-width:thin;scrollbar-color:rgba(240,178,90,.32) transparent}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(240,178,90,.3);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background-color:rgba(240,178,90,.55)}
+/* type: sans for everything small, display font only from ~20px up */
+.tabs button{font:600 14px/1 var(--body);letter-spacing:.1em}
+.settings h4{font:600 12.5px/1.2 var(--body);letter-spacing:.14em;color:var(--lamp);margin:4px 0 8px}
+.settings p,.diary,.sp .meta,.tool{font-size:12.5px}
+.item small,.tag,.subh,.gas .k,.log .go,table.zones th,.contract .t em,.flabel .st{font-size:12px}
+.sheet-head h3,.saves-head h3{font:400 24px/1.2 var(--display);letter-spacing:.14em;color:#f3ecdc}
+.flabel .nm{font:600 14px/1.1 var(--body);letter-spacing:.04em}
+.director{font:500 14px var(--body);letter-spacing:.12em}
+.saves-list .sn{font:600 15px/1.3 var(--body);letter-spacing:.02em}
+.saves-list .sm{font-size:12.5px}
+/* buttons and segmented controls */
+.btn{padding:8px 12px;border-radius:10px;border-color:var(--line-2);background:rgba(255,240,210,.04);font-size:13px;transition:border-color .15s,background .15s,color .15s}
+.btn:hover{border-color:rgba(240,178,90,.6);color:#fff;background:rgba(240,178,90,.08)}
+.btn.pri,.segm button[aria-pressed="true"]{background:var(--lamp);color:var(--lamp-ink);border-color:var(--lamp);font-weight:600}
+.segm{border-radius:10px;background:rgba(0,0,0,.18)}
+.segm button{padding:8px 4px;font-size:13px}
+.item{background:rgba(255,240,210,.03)}
+.item:hover{border-color:var(--line-2)}
+.item b{font-weight:600}
+/* dialogs (存档管理 · 缸中见闻录) */
+.saves{background:linear-gradient(180deg,#1a211c 0,#0f1511 160px);border-color:rgba(236,220,190,.2);box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,236,200,.08)}
+.saves-note{font-size:13px;line-height:1.6}
+.saves-x{color:var(--ink)}
+.jr-tabs button{font-size:13px;padding:6px 14px}
+.jr-tx b{font:600 14.5px/1.35 var(--body);letter-spacing:.02em}
+.jr-tx small{font-size:12.5px;line-height:1.5;color:#b9c3bb}
+.jr-tx em{font-size:11.5px}
+.jr-row{font-size:11px}
+.jr-tier{padding:1px 7px;border-radius:99px;background:color-mix(in srgb,var(--tc) 16%,transparent);letter-spacing:.06em}
+.jr-card{border-radius:12px;opacity:.72}
+.jr-card.got{background:linear-gradient(135deg,color-mix(in srgb,var(--tc) 9%,transparent),rgba(255,255,255,.02) 60%)}
+.jr-card.got:hover{border-color:color-mix(in srgb,var(--tc) 55%,transparent)}
+/* a recorded entry without a photo: an emblem that invites a photo instead of an empty dark box */
+.jr-ph1{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:1px solid color-mix(in srgb,var(--tc) 40%,transparent);background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--tc) 28%,transparent),transparent 70%),#0d130f;color:var(--tc);font:600 10.5px var(--body);letter-spacing:.06em}
+.jr-ph1 svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+.toast{font-size:13px;background:linear-gradient(180deg,#1d251f,#151b17);border-color:rgba(236,220,190,.22)}
+.toast small{font-size:12px}
+@media (max-width:860px){
+  /* the animal card sits above the toolbar so it never covers the top-right buttons */
+  .inspect{top:auto;bottom:calc(84px + env(safe-area-inset-bottom,0px));max-height:44%}
+  .tool{font-size:11.5px}
+}
 </style>
 
 <div id="app">
@@ -336,6 +448,8 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
       <button class="iconbtn panel" id="soundBtn" aria-pressed="false" title="声音开关：雨声、蛙鸣、蟋蟀振翅" aria-label="声音"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></button>
       <button class="iconbtn panel" id="glassBtn" aria-pressed="false" title="隐藏玻璃和缸架（G）：去掉遮挡，看缸内更清楚" aria-label="隐藏玻璃"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8l3-3M8 13l8-8M13 19l6-6" opacity=".7"/><path d="M3 21 21 3" class="slash"/></svg></button>
       <button class="iconbtn panel" id="zenBtn" aria-pressed="false" title="沉浸模式：隐藏所有界面，只留下方工具栏（H），适合挂机观赏" aria-label="沉浸模式"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button class="iconbtn panel" id="camBtn" title="拍照（P）：刚发生的见闻还在画面里时拍下，可以升级为金星" aria-label="拍照"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.3" r="3.4"/></svg></button>
+      <button class="iconbtn panel jr-btn" id="jrBtn" title="缸中见闻录（J）" aria-label="缸中见闻录"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg><span class="jr-badge" id="jrBadge" hidden></span></button>
       <button class="iconbtn panel" id="setBtn" aria-pressed="false" title="设置：画质（低/中/高）、冷凝水效果" aria-label="设置"><svg viewBox="0 0 24 24"><path d="M4 7h8M17 7h3M4 17h3M12 17h8"/><circle cx="14.5" cy="7" r="2.2"/><circle cx="9.5" cy="17" r="2.2"/></svg></button>
       <button class="iconbtn panel" id="leftToggle" aria-pressed="false" title="委托与生态日志" aria-label="委托与日志"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></button>
       <button class="iconbtn panel" id="rightToggle" aria-pressed="false" title="缸况与食物网" aria-label="缸况与物种"><svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg></button>
@@ -346,6 +460,7 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
     <div class="tabs" role="tablist">
       <button role="tab" data-tab="contracts" aria-selected="true">委托<small id="ctCount"></small></button>
       <button role="tab" data-tab="log" aria-selected="false">生态日志</button>
+      <button class="sheet-x" type="button" data-close="left" aria-label="关闭">×</button>
     </div>
     <div class="tabbody" id="tab-contracts"></div>
     <div class="tabbody" id="tab-log" hidden><ul class="log" id="logList"></ul></div>
@@ -355,6 +470,7 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
     <div class="tabs" role="tablist">
       <button role="tab" data-tab="env" aria-selected="true">缸况</button>
       <button role="tab" data-tab="species" aria-selected="false">食物网<small id="spCount"></small></button>
+      <button class="sheet-x" type="button" data-close="right" aria-label="关闭">×</button>
     </div>
     <div class="tabbody" id="tab-env">
       <div class="gas">
@@ -371,7 +487,9 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
 
   <div class="hud toasts" id="toasts" aria-live="polite"></div>
   <aside class="hud panel inspect live" id="inspect" hidden></aside>
+  <div class="scrim" id="scrim" hidden></div>
   <aside class="hud panel settings live" id="settings" hidden>
+    <div class="sheet-head"><h3>设置</h3><button class="sheet-x" type="button" data-close="settings" aria-label="关闭">×</button></div>
     <h4>画质</h4>
     <div class="segm" id="qualSeg"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div>
     <p>手机默认“低”：关闭实时阴影和后期，草的密度降到三成。高画质开启泛光、景深和高分辨率阴影。</p>
@@ -408,9 +526,18 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
     </nav>
   </div>
 
+  <div class="flash" id="flash"></div>
+  <dialog class="saves journal" id="journal" aria-labelledby="jrTitle">
+    <div class="saves-head"><h3 id="jrTitle">缸中见闻录</h3><button class="saves-x" id="jrClose" type="button" aria-label="关闭">×</button></div>
+    <p class="saves-note">只记录你亲眼看到的瞬间：事情发生时，主角要在画面里。趁它还在画面里按相机拍下来，可以升级为金星。整座方舟共用一本见闻录。</p>
+    <div class="jr-prog"><span id="jrProg"></span><i><b id="jrBar"></b></i></div>
+    <div class="jr-tabs" id="jrTabs" role="group" aria-label="筛选"><button data-t="0">全部</button><button data-t="1">常见</button><button data-t="2">少见</button><button data-t="3">罕见</button><button data-t="4">传说</button><button data-t="5">稀有变异</button></div>
+    <ul class="jr-list" id="jrList"></ul>
+  </dialog>
   <div class="home" id="home">
     <header class="hero">
       <picture class="hero-art"><source media="(max-width:760px)" srcset="assets/home/hero-tall.webp"><img src="assets/home/hero-wide.webp" alt="夜里书桌上的一只玻璃生态缸：沙漠、草甸、睡莲水塘和雨林瀑布连成一片" width="1536" height="1024" fetchpriority="high"></picture>
+      <video class="hero-vid" id="heroVid" muted loop playsinline preload="none" aria-hidden="true" disablepictureinpicture></video>
       <canvas id="homeBg" aria-hidden="true"></canvas>
       <div class="hero-copy">
         <div class="eyebrow">GLASS ARK · 微缩生态模拟</div>
@@ -421,7 +548,7 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
       </div>
     </header>
     <section class="shelf" id="shelf" aria-label="选择生态缸">
-      <div class="shelf-head"><h2>选一只缸</h2><p>每只缸的进度会自动保存在这台设备上</p><button class="save-open" id="saveOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>存档管理</button></div>
+      <div class="shelf-head"><h2>选一只缸</h2><p>每只缸的进度会自动保存在这台设备上</p><button class="save-open" data-open-journal type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>缸中见闻录</button><button class="save-open" id="saveOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>存档管理</button></div>
       <div class="modes">
         <button class="mode" data-mode="mixed">
           <span class="mode-img"><img src="assets/home/card-mixed.webp" alt="玻璃缸里四种气候连成一片：沙漠、开花的草甸、睡莲水塘和带瀑布的雨林" width="960" height="640" loading="lazy" decoding="async"></span>
@@ -691,6 +818,11 @@ function runHome(){return new Promise(resolve=>{
       const bl=Math.pow(Math.max(0,Math.sin(t*p.v*1.4+p.ph)),5),r=p.s*(2+bl*4),x=p.x*W,y=p.y*H;
       const gr=g.createRadialGradient(x,y,0,x,y,r*4);gr.addColorStop(0,`rgba(232,255,150,${0.08+0.75*bl})`);gr.addColorStop(1,'rgba(200,255,120,0)');g.fillStyle=gr;g.fillRect(x-r*4,y-r*4,r*8,r*8);}
     g.globalCompositeOperation='source-over';}
+  /* desktop: play the looping hero video; its own fireflies replace the canvas ones */
+  const vid=$('#heroVid');let vidOn=false;
+  if(vid&&!still&&matchMedia('(min-width:761px)').matches&&!(navigator.connection&&navigator.connection.saveData)){
+    vid.addEventListener('playing',()=>{if(vidOn)return;vidOn=true;vid.classList.add('on');setTimeout(()=>{flies.length=0;g.clearRect(0,0,W,H);},1400);},{once:true});
+    vid.src=vid.canPlayType('video/webm; codecs="vp9"')?'assets/home/hero-loop.webm':'assets/home/hero-loop.mp4';const p=vid.play();if(p&&p.catch)p.catch(()=>{});}
   rs();addEventListener('resize',rs);if(!still)requestAnimationFrame(draw);
   const rq=()=>$$('#homeQual button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.q===QK));rq();
   $$('#homeQual button').forEach(b=>b.addEventListener('click',()=>{QK=b.dataset.q;Q=QUAL[QK];try{localStorage.setItem('ark-quality',QK);}catch(e){}rq();}));
@@ -1567,7 +1699,7 @@ const isNight=()=>env.daylight<0.18;
 const clockStr=()=>{const t=env.time*24,h=Math.floor(t),m=Math.floor((t-h)*60);return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;};
 const LOG=[];let logDirty=true;
 const stats={hunts:0,emerged:0,metamorph:0,hatched:0,births:0,webs:0,mush:0,planted:{},placed:{}};
-function logEvent(kind,text,who,prio){const e={id:++UID,day:env.day,t:clockStr(),kind,text,who:who&&who.id?who:null,x:who?who.x:0,z:who?who.z:0,prio:prio||1};LOG.unshift(e);if(LOG.length>80)LOG.pop();logDirty=true;if(typeof onDirectorEvent==='function')onDirectorEvent(e);}
+function logEvent(kind,text,who,prio){const e={id:++UID,day:env.day,t:clockStr(),kind,text,who:who&&who.id?who:null,x:who?who.x:0,z:who?who.z:0,prio:prio||1};LOG.unshift(e);if(LOG.length>80)LOG.pop();logDirty=true;if(typeof onDirectorEvent==='function')onDirectorEvent(e);jLog(e);}
 function bumpExcite(v){env.excite=Math.min(40,env.excite+v);}
 
 const pop={};const AGS=2,AG=new Map();
@@ -1582,7 +1714,7 @@ class Agent{
     this.state='idle';this.st=0;this.speed=0;this.ph=rand(0,10);this.alive=true;this.scale=o.scale!=null?o.scale:1;this.name=o.name||(this.S.noName?`${this.S.name} #${this.id}`:pick(NAMES));
     this.kills=0;this.kids=0;this.diary=[];this.wz=0;this.tt=rand(0,1);this.stageT=0;this.m=null;
     pop[sp].push(this);if(this.S.init)this.S.init(this,o);this.buildModel();}
-  buildModel(){this.disposeModel();const b=this.S.model?this.S.model(this):null;this.m=b;if(b&&b.root)agentGroup.add(b.root);}
+  buildModel(){this.disposeModel();const b=this.S.model?this.S.model(this):null;this.m=b;if(b&&b.root)agentGroup.add(b.root);if(this.mut)applyMut(this);}
   disposeModel(){const m=this.m;if(!m)return;if(m.root){agentGroup.remove(m.root);m.root.traverse(o=>{if(o.geometry&&!o.isSprite&&!SHARED_GEO.has(o.geometry))o.geometry.dispose();if(o.isSprite)o.material.dispose();});}
     if(m.tip){agentGroup.remove(m.tip);m.tip.geometry.dispose();}this.m=null;}
   setStage(s){this.stage=s;this.stageT=0;this.buildModel();}
@@ -1607,10 +1739,10 @@ class Agent{
     this.disposeModel();
     if(reason!=='eaten'&&reason!=='hatched'&&this.S.corpse)addDetritus(this.x,this.z,this.S.corpse*this.scale,'corpse');
     if((reason==='starved'||reason==='old')&&this.S.lvl>=2)logEvent('warn',`${this.S.name}「${this.name}」${reason==='old'?'寿终正寝':'饿死了'}`,this,1);
-    if(typeof onEntityGone==='function')onEntityGone(this);}
+    if(typeof onEntityGone==='function')onEntityGone(this);jDeath(this,reason);}
 }
 function tryBreed(a,prob,dt,x,z,o){const S=a.S;if(a.scale<1||a.energy<0.8||a.age<S.life*0.12||count(a.sp)>=capOf(a.sp)||Math.random()>prob*dt)return null;
-  a.energy-=0.35;const n=new Agent(a.sp,x==null?a.x+rand(-0.3,0.3):x,z==null?a.z+rand(-0.3,0.3):z,Object.assign({scale:0.5,age:0,energy:0.7},o||{}));a.kids++;stats.births++;
+  a.energy-=0.35;const n=new Agent(a.sp,x==null?a.x+rand(-0.3,0.3):x,z==null?a.z+rand(-0.3,0.3):z,Object.assign({scale:0.5,age:0,energy:0.7},o||{}));a.kids++;stats.births++;born(n,a);
   a.note(`生下了「${n.name}」`);if(S.lvl>=2||Math.random()<0.2)logEvent('life',`${S.name}「${a.name}」繁殖了，新成员「${n.name}」`,n,2);return n;}
 const count=sp=>pop[sp].length;
 const capOf=sp=>Math.round(SPEC[sp].cap*(sp==='ant'?(QK==='low'?0.6:1):1));
@@ -1622,7 +1754,7 @@ function huntTick(a,dt){const H=a.S.hunt;
   if(a.state==='eat'){a.st-=dt;a.speed=0;if(a.st<=0)finishEat(a);return true;}
   if(a.state==='strike'){a.st-=dt;a.speed=0;const prog=1-a.st/H.strikeT;if(H.lunge&&prog<0.45)a.step(H.lunge,dt);
     if(!a.struck&&prog>=H.hitAt){a.struck=true;const p=a.prey;if(p&&p.alive&&!p.heldBy&&!p.stuck&&dist3(a,p)<(H.reach*a.scale+0.08)*1.5&&Math.random()<H.success*(p.flee?0.55:1)){catchPrey(a,p);return true;}a.missed=true;if(p&&p.alive&&p.S.flee)startFlee(p,a);}
-    if(a.st<=0&&a.state==='strike'){a.state='recover';a.st=a.missed?0.8:0.2;if(a.missed&&Math.random()<0.25)logEvent('hunt',`${a.S.name}「${a.name}」扑空了`,a,1);}
+    if(a.st<=0&&a.state==='strike'){a.state='recover';a.st=a.missed?0.8:0.2;if(a.missed)jot('miss',a);if(a.missed&&Math.random()<0.25)logEvent('hunt',`${a.S.name}「${a.name}」扑空了`,a,1);}
     return true;}
   if(a.state==='recover'){a.st-=dt;a.speed=0;if(a.st<=0)a.state='idle';return true;}
   if(a.energy>H.hungry&&a.state!=='stalk'&&a.state!=='chase')return false;
@@ -1635,7 +1767,7 @@ function huntTick(a,dt){const H=a.S.hunt;
   return true;}
 function catchPrey(a,p){if(a.sp==='snake')stats.snakeHunts=(stats.snakeHunts||0)+1;p.heldBy=a;p.state='caught';p.flee=null;p.hop=null;a.held=p;a.state='eat';a.st=a.S.hunt.eatT;stats.hunts++;bumpExcite(3);
   const nm=p.S.stageNames&&p.stage!=='adult'?p.S.stageNames[p.stage]:p.S.name;a.note(`捕获了一只${nm}`);if(p.name&&!p.S.noName)p.note(`被${a.S.name}「${a.name}」捉住了`);
-  logEvent('hunt',`${a.S.name}「${a.name}」捕获了${nm}${p.S.noName?'':'「'+p.name+'」'}`,a,3);}
+  logEvent('hunt',`${a.S.name}「${a.name}」捕获了${nm}${p.S.noName?'':'「'+p.name+'」'}`,a,3);jHunt(a,p);}
 function finishEat(a){const p=a.held;a.held=null;a.state='idle';if(p&&p.alive){a.energy=Math.min(1,a.energy+(a.S.diet[p.sp].v||0.2));a.kills++;p.die('eaten');}if(a.S.onAte)a.S.onAte(a);}
 function startFlee(p,from){const F=p.S.flee;if(!F||p.heldBy||p.stuck)return;if(F.mode==='roll'){if(!p.rolled){p.rolled=true;p.rollT=rand(4,8);}return;}if(F.mode==='retract'){p.retracted=true;p.rollT=rand(6,12);return;}p.flee={from,t:rand(F.dur*0.7,F.dur*1.2)};}
 function fleeTick(p,dt){if(p.rolled||p.retracted){p.rollT-=dt;p.speed=0;p.state=p.rolled?'rolled':'retracted';if(p.rollT<=0){p.rolled=false;p.retracted=false;p.state='idle';}return true;}
@@ -1719,7 +1851,7 @@ const SPEC={
   fact:'吃草叶和腐殖质，是很多捕食者的主食。夜里雄性摩擦前翅鸣叫，受惊时一跳就是体长的十几倍。',
   model:()=>buildCricket(),
   update(a,dt){if(a.hop){hopTick(a,dt);return;}if(fleeTick(a,dt))return;alertTick(a,dt);
-    if(a.chirp>0){a.chirp-=dt;a.state='chirp';a.speed=0;a.chirpS=(a.chirpS||0)-dt;if(a.chirpS<=0){a.chirpS=0.55;sfx('chirp',a);}return;}
+    if(a.chirp>0){a.chirp-=dt;a.state='chirp';a.speed=0;a.chirpS=(a.chirpS||0)-dt;if(a.chirpS<=0){a.chirpS=0.55;sfx('chirp',a);if(isNight())jot('chirp',a);}return;}
     if(isNight()&&a.scale>=1&&Math.random()<0.03*dt){a.chirp=rand(2,4);return;}
     if(a.energy<0.88){const c=tcell(a.x,a.z);if(turf[c]>0.15){a.state='graze';a.speed=0;turf[c]-=0.003*dt;a.energy=Math.min(1,a.energy+0.03*dt);if(Math.random()<0.12*dt)startHop(a,a.h+rand(-1,1),rand(0.2,0.5));return;}
       const d=nearestDet(a.x,a.z,1.5);if(d){a.state='forage';if(a.seek(d.x,d.z,0.12,dt)<0.12){const e=Math.min(d.amount,0.02*dt);d.amount-=e;a.energy+=e*1.5;}return;}
@@ -1769,7 +1901,7 @@ const SPEC={
     if(isNight()&&!env.lamp){if(!a.perch||!a.perch.alive)a.perch=nearestPlant(a.x,a.z,8,p=>p.h*plantScale(p)>0.3&&!p.T.water);
       if(a.perch){const ty=plantTop(a.perch);const d=Math.hypot(a.perch.x-a.x,a.perch.z-a.z);if(d>0.08){a.seek(a.perch.x,a.perch.z,Math.min(0.9,d*2+0.05),dt,4);a.state='fly';}else{a.state='rest';a.speed=0;}a.y+=(ty-a.y)*Math.min(1,dt*2);}return;}
     a.perch=null;
-    if(a.state==='sip'||a.state==='rest'||a.state==='lay'){a.st-=dt;a.speed=0;if(a.state==='lay'&&a.st<=0&&a.target&&a.target.alive){const t=a.target;const e=new Agent('butterfly',t.x+rand(-0.08,0.08),t.z+rand(-0.08,0.08),{stage:'egg',variant:a.variant,energy:0.8,age:0,scale:1,host:t});e.y=plantBaseY(t)+t.h*plantScale(t)*0.35;a.kids++;a.note('在'+t.T.name+'上产卵');a.energy-=0.25;}
+    if(a.state==='sip'||a.state==='rest'||a.state==='lay'){a.st-=dt;a.speed=0;if(a.state==='lay'&&a.st<=0&&a.target&&a.target.alive){const t=a.target;const e=new Agent('butterfly',t.x+rand(-0.08,0.08),t.z+rand(-0.08,0.08),{stage:'egg',variant:a.variant,energy:0.8,age:0,scale:1,host:t});born(e,a);e.y=plantBaseY(t)+t.h*plantScale(t)*0.35;a.kids++;a.note('在'+t.T.name+'上产卵');a.energy-=0.25;}
       if(a.st<=0){a.state='fly';a.target=null;}return;}
     a.state='fly';a.tt-=dt;
     const wantLay=a.energy>0.7&&a.age>0.3&&count('butterfly')<capOf('butterfly')&&pop.butterfly.filter(b=>b.stage!=='adult').length<18&&Math.random()<0.0035*dt*60;
@@ -1877,17 +2009,17 @@ const SPEC={
   model:a=>a.stage==='egg'?buildSpawn():a.stage==='tadpole'?buildTadpole():buildFrog(),
   init(a){if(a.stage==='tadpole')a.trail=new Trail(0.22,a.x,a.z,a.h);a.croak=0;},
   update(a,dt){const st=a.stage;
-    if(st==='egg'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.35){const n=irand(5,9);for(let i=0;i<n;i++){const t=new Agent('frog',a.x+rand(-0.25,0.25),a.z+rand(-0.25,0.25),{stage:'tadpole',scale:0.6,age:0,energy:0.7});}stats.hatched+=n;logEvent('life',`水塘里孵出了 ${n} 只蝌蚪`,a,3);bumpExcite(3);a.die('hatched');}return;}
+    if(st==='egg'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.35){const n=irand(5,9);for(let i=0;i<n;i++){const t=new Agent('frog',a.x+rand(-0.25,0.25),a.z+rand(-0.25,0.25),{stage:'tadpole',scale:0.6,age:0,energy:0.7});born(t,a,'hatch');}stats.hatched+=n;logEvent('life',`水塘里孵出了 ${n} 只蝌蚪`,a,3);bumpExcite(3);a.die('hatched');}return;}
     if(st==='tadpole'){a.stageT+=dt/DAY;a.scale=Math.min(1,0.6+a.stageT*0.4);a.state='swim';a.roam(0.16,dt);const al=env.algae;if(al>0.03){env.algae-=0.00004*dt;a.energy=Math.min(1,a.energy+0.012*dt);}
       if(a.stageT>1.2&&a.energy>0.4){a.scale=0.45;a.setStage('adult');a.age=0;stats.metamorph++;bumpExcite(3);a.note('长出四肢，爬上了岸');logEvent('life',`蝌蚪「${a.name}」变成了小雨蛙`,a,3);}return;}
     const zi=zoneAt(a.x,a.z);if(env.zones[zi].h<0.45&&!inWater(a.x,a.z))a.energy-=0.005*dt;
-    a.croak=Math.max(0,a.croak-dt);if(isNight()&&a.scale>=0.9&&a.croak<=0&&Math.random()<(rain.intensity>0.2?0.35:0.12)*dt){a.croak=1.8;sfx('frog',a);}
+    a.croak=Math.max(0,a.croak-dt);if(isNight()&&a.scale>=0.9&&a.croak<=0&&Math.random()<(rain.intensity>0.2?0.35:0.12)*dt){a.croak=1.8;sfx('frog',a);if(jSeen(a))JR_LAST_CROAK=performance.now();jot('frog_call',a);}
     if(a.hop&&a.state!=='stalk'){hopTick(a,dt);return;}
     if(fleeTick(a,dt))return;alertTick(a,dt);
     if(huntTick(a,dt))return;
     a.state=inWater(a.x,a.z)?'swim':'idle';a.speed=0;a.idle=(a.idle||rand(1,3))-dt;
     if(a.idle<=0){a.idle=rand(1,3.5);let ang,len;const far=pondD(a.x,a.z)>2.2;if(far||env.zones[zi].h<0.55){ang=Math.atan2(POND.z-a.z,POND.x-a.x)+rand(-0.6,0.6);len=rand(0.5,0.9);}else{ang=a.h+rand(-1.6,1.6);len=rand(0.3,0.9);}startHop(a,ang,len);}
-    if(isNight()&&a.scale>=1&&env.zones[2].h>0.6&&count('frog')<capOf('frog')&&pop.frog.filter(f=>f.stage==='adult').length<11&&a.energy>0.75&&Math.random()<0.0012*dt){const an=rand(0,6.28);const r=pondR(an)*0.85;const x=POND.x+Math.cos(an)*r,z=POND.z+Math.sin(an)*r;if(inPond(x,z,0.05)){new Agent('frog',x,z,{stage:'egg',age:0,energy:1});a.energy-=0.3;a.kids++;a.note('在水塘里产下卵块');logEvent('life',`雨蛙「${a.name}」在水塘里产卵了`,a,3);}}},
+    if(isNight()&&a.scale>=1&&env.zones[2].h>0.6&&count('frog')<capOf('frog')&&pop.frog.filter(f=>f.stage==='adult').length<11&&a.energy>0.75&&Math.random()<0.0012*dt){const an=rand(0,6.28);const r=pondR(an)*0.85;const x=POND.x+Math.cos(an)*r,z=POND.z+Math.sin(an)*r;if(inPond(x,z,0.05)){born(new Agent('frog',x,z,{stage:'egg',age:0,energy:1}),a,'egg');a.energy-=0.3;a.kids++;a.note('在水塘里产下卵块');logEvent('life',`雨蛙「${a.name}」在水塘里产卵了`,a,3);}}},
   anim(a,dt){const m=a.m,st=a.stage;
     if(st==='egg'){m.root.position.set(a.x,env.waterY-0.01,a.z);m.root.rotation.y=a.ph*0.05;return;}
     if(st==='tadpole'){a.trail.push(a.x,a.z);a.trail.sample(a.x,a.z,14,0.22*a.scale,m.pts);const wy=waterSurf(a.x,a.z)-0.12;for(let i=0;i<14;i++){const p=m.pts[i];const s=Math.sin(a.ph*14-i*0.8)*0.02*(i/13)*a.scale;const B=i>0?m.pts[i-1]:p;const dx=p.x-B.x,dz=p.z-B.z,l=Math.hypot(dx,dz)||1;p.x+=-dz/l*s;p.z+=dx/l*s;p.y=wy;}
@@ -2154,10 +2286,10 @@ function simStep(dt){
   for(const k of SPK)if(pop[k].some(a=>!a.alive))pop[k]=pop[k].filter(a=>a.alive);
   webAcc+=dt;if(webAcc>0.2){webCatch();webAcc=0;}
   if(DECOR.length)decorSim(dt);
-  if(colony&&colony.store>=3.5+count('ant')*0.06&&count('ant')<capOf('ant')){colony.store-=3.5;new Agent('ant',colony.x+rand(-0.15,0.15),colony.z+rand(-0.15,0.15),{energy:0.8,age:0});}
+  if(colony&&colony.store>=3.5+count('ant')*0.06&&count('ant')<capOf('ant')){colony.store-=3.5;jot('ant_hatch',new Agent('ant',colony.x+rand(-0.15,0.15),colony.z+rand(-0.15,0.15),{energy:0.8,age:0}));}
   if(colony)colony.store=Math.min(colony.store,50);
   for(const d of detritus){if(!d.alive)continue;const e=Math.min(d.amount,0.0012*dt);d.amount-=e;if(OCEAN)env.nut+=e*0.06;else env.zones[zoneAt(d.x,d.z)].fert+=e*0.5;R+=0.25*Math.min(1,d.amount);if(d.amount<=0.01){removeDet(d);continue;}
-    if(!OCEAN&&d.sub!=='pellet'&&env.zones[zoneAt(d.x,d.z)].h>0.62&&Math.random()<0.004*dt&&plants.filter(p=>p.type==='mushroom').length<45){const x=d.x+rand(-0.3,0.3),z=d.z+rand(-0.3,0.3);if(!inWater(x,z)&&spacingOK(x,z,0.2)){addPlant('mushroom',x,z,0.15,irand(0,2));stats.mush++;}}}
+    if(!OCEAN&&d.sub!=='pellet'&&env.zones[zoneAt(d.x,d.z)].h>0.62&&Math.random()<0.004*dt&&plants.filter(p=>p.type==='mushroom').length<45){const x=d.x+rand(-0.3,0.3),z=d.z+rand(-0.3,0.3);if(!inWater(x,z)&&spacingOK(x,z,0.2)){addPlant('mushroom',x,z,0.15,irand(0,2));stats.mush++;jot('mushroom',{x,z});}}}
   if(detritus.some(d=>!d.alive))for(let i=detritus.length-1;i>=0;i--)if(!detritus[i].alive)detritus.splice(i,1);
   const P=(env.plantP||0)+env.turfP*L*Math.min(1,co2f);env.P=P;env.R=R;const net=P-R;
   env.o2+=net*0.00022*dt;env.co2-=net*0.07*dt;const leak=env.vent>0?30:1;if(OCEAN){env.nut=clamp(env.nut+R*0.00004*dt,0.02,1.5);const sat=20.9*(1-(env.temp-25)*0.02);env.o2+=(sat-env.o2)*0.0025*dt*(env.pump?2.5:0.8)*(1+(env.airstones||0)*0.7);}else env.o2+=(20.9-env.o2)*0.0025*dt*leak;env.co2+=(420-env.co2)*0.016*dt*leak;env.o2=clamp(env.o2,12,30);env.co2=clamp(env.co2,60,6000);
@@ -2395,7 +2527,7 @@ addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==
 
 /* =================== selection =================== */
 let selected=null;
-function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');if(!auto||!narrowUI())$('#inspect').hidden=false;inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
+function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');if(!auto||!narrowUI()){$('#inspect').hidden=false;if(narrowUI()&&anyOverlay())closeOverlays();}inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
 function deselect(){selected=null;$('#inspect').hidden=true;selRing.visible=false;stopFollow();}
 function showZone(h){selected={kind:'zone',zi:zoneAt(h.x,h.z),alive:true,x:h.x,z:h.z};$('#inspect').hidden=false;inspDirty=true;renderInspect();}
 function onEntityGone(e){if(selected===e){const was=e;if(was.kind==='animal'&&cam.follow===was){toast(`「${was.name}」的故事结束了`);}selected=null;$('#inspect').hidden=true;}if(cam.follow===e)cam.follow=null;if(moveSel===e)moveSel=null;}
@@ -2500,7 +2632,7 @@ function digPlant(p){if(!p.alive)return;const g=PT[p.type].cost*0.3;shovelRef+=g
 function shovelToast(){clearTimeout(shovelT);shovelT=setTimeout(()=>{if(shovelN)toast(`铲除了 ${shovelN} 株植物　+${Math.round(shovelRef)} 孢子`);shovelN=0;shovelRef=0;},350);}
 function decorSim(dt){for(const d of DECOR){
     if(d.fount&&env.pump){const z=env.zones[zoneAt(d.x,d.z)];z.m=Math.min(1,z.m+(0.82-z.m)*0.0015*dt);z.h=Math.min(1,z.h+(0.85-z.h)*0.0012*dt);}
-    if(d.rot&&!OCEAN&&Math.random()<0.0015*dt){const z=env.zones[zoneAt(d.x,d.z)];z.fert=Math.min(1.2,z.fert+0.01);if(z.h>0.6&&plants.filter(p=>p.type==='mushroom').length<45){const a=rand(0,6.28),x=d.x+Math.cos(a)*d.r*0.9,zz=d.z+Math.sin(a)*d.r*0.9;if(!inWater(x,zz)&&!blocked(x,zz,0)&&spacingOK(x,zz,0.2)){addPlant('mushroom',x,zz,0.15,irand(0,2));stats.mush++;flushPlants();}}}}}
+    if(d.rot&&!OCEAN&&Math.random()<0.0015*dt){const z=env.zones[zoneAt(d.x,d.z)];z.fert=Math.min(1.2,z.fert+0.01);if(z.h>0.6&&plants.filter(p=>p.type==='mushroom').length<45){const a=rand(0,6.28),x=d.x+Math.cos(a)*d.r*0.9,zz=d.z+Math.sin(a)*d.r*0.9;if(!inWater(x,zz)&&!blocked(x,zz,0)&&spacingOK(x,zz,0.2)){addPlant('mushroom',x,zz,0.15,irand(0,2));stats.mush++;jot('mushroom',{x,z:zz});flushPlants();}}}}}
 /* bubbles (ocean) */
 const BN=OCEAN?500:1,bubPos=new Float32Array(BN*3).fill(-100),bubs=[];for(let i=0;i<BN;i++)bubs.push({t:1,x:0,y:-100,z:0,v:0,w:0});
 const bubGeo=new THREE.BufferGeometry();bubGeo.setAttribute('position',new THREE.BufferAttribute(bubPos,3));
@@ -2551,7 +2683,8 @@ $('#leftToggle').addEventListener('click',()=>setPanel('left'));
 $('#rightToggle').addEventListener('click',()=>setPanel('right'));
 function setTool(t){tool=t;moveSel=null;$$('.tool[data-tool]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.tool===t?'true':'false'));canvas.classList.toggle('paint',t!=='observe');renderPalette();cursor.visible=false;
   const hints={observe:'点击生物查看、跟随 · 点击地面查看区域',rain:'在缸内按住并拖动，云跟着指针下雨',plant:'绿色圈=适合，黄色=湿度不合适，红色=不能种',animal:'点击地面投放',feed:'饲料会被蚂蚁、蟋蟀和鼠妇吃掉',move:'先点一只动物，再点放下的位置',shovel:'点击铲掉一株植物或布景（返还部分孢子）· 按住拖动可以连续铲',decor:'选一种布景，点击地面摆放 · 用铲除工具可以移走'};if(OCEAN){hints.rain='在水面按住拖动，补充淡水、降低盐度';hints.feed='浮游饵料喂鱼和珊瑚，剩下的沉底给螃蟹和虾';}$('#hint').textContent=hints[t]||'';$('#hint').style.opacity=1;}
-$$('.tool[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
+/* tapping the active tool again folds its list away and goes back to observing */
+$$('.tool[data-tool]').forEach(b=>b.addEventListener('click',()=>setTool(tool===b.dataset.tool&&tool!=='observe'?'observe':b.dataset.tool)));
 function setSpeed(s){env.speed=s;if(s>=3)tutDone('fast');$$('[data-speed]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.speed===s?'true':'false'));}
 $$('[data-speed]').forEach(b=>b.addEventListener('click',()=>setSpeed(+b.dataset.speed)));
 function updateToggles(){$('#lampBtn').setAttribute('aria-pressed',env.lamp);$('#pumpBtn').setAttribute('aria-pressed',env.pump);}
@@ -2560,7 +2693,7 @@ $('#lampBtn').addEventListener('click',()=>{env.lamp=!env.lamp;updateToggles();t
 $('#pumpBtn').addEventListener('click',()=>{env.pump=!env.pump;updateToggles();if(OCEAN){toast(env.pump?'造浪泵开启：水流带来氧气，珊瑚和海葵随波摆动。每天约 −5 孢子':'造浪泵关闭：水流停了，溶氧会慢慢下降');return;}toast(env.pump?'水泵开启：瀑布和溪流恢复，雨林和溪沼更湿润，藻类减少。每天约 −5 孢子':'水泵关闭：溪流断流，雨林会慢慢变干');});
 $('#dirBtn').addEventListener('click',()=>{director.on=!director.on;$('#dirBtn').setAttribute('aria-pressed',director.on);if(director.on){director.lockUntil=0;director.next=0;toast('导演模式开启：镜头会自动追踪捕猎、羽化和孵化');}else{caption('');stopFollow();}});
 $('#soundBtn').addEventListener('click',()=>{snd.on=!snd.on;$('#soundBtn').setAttribute('aria-pressed',snd.on);if(snd.on){initSound();if(snd.ctx&&snd.ctx.state==='suspended')snd.ctx.resume();}if(snd.master)snd.master.gain.value=snd.on?snd.vol:0;});
-$('#setBtn').addEventListener('click',()=>{const s=$('#settings');s.hidden=!s.hidden;$('#setBtn').setAttribute('aria-pressed',!s.hidden);});
+$('#setBtn').addEventListener('click',()=>{const s=$('#settings');s.hidden=!s.hidden;$('#setBtn').setAttribute('aria-pressed',!s.hidden);if(!s.hidden&&narrowUI()){setPanel('left',false);setPanel('right',false);}syncOverlay();});
 function renderQual(){$$('#qualSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.q===QK));}
 $$('#qualSeg button').forEach(b=>b.addEventListener('click',()=>{QK=b.dataset.q;Q=QUAL[QK];try{localStorage.setItem('ark-quality',QK);}catch(e){}applyQuality();renderQual();}));
 $('#vol').addEventListener('input',e=>{snd.vol=e.target.value/100;if(snd.master&&snd.on)snd.master.gain.value=snd.vol;});
@@ -2578,7 +2711,8 @@ function renderPalette(){const pal=$('#palette');let h='';
   else if(tool==='decor'){for(const k in DECOR_T){const T=DECOR_T[k];h+=`<button class="item" data-decor="${k}" aria-pressed="${sub.decor===k}"><i style="background:${T.color}"></i><b>${T.name}</b><small><span class="c">${T.cost}</span> · ${T.hint}</small></button>`;}}
   else if(tool==='feed')h+=`<div class="item" style="cursor:default"><i style="background:#b07a3c"></i><b>昆虫饲料</b><small><span class="c">2</span> · 点击地面投放</small></div>`;
   else if(tool==='move')h+=`<div class="item" style="cursor:default"><i style="background:var(--lamp)"></i><b>上帝之手</b><small>把动物搬到别的地方，免费</small></div>`;
-  pal.innerHTML=h;pal.hidden=!h;
+  if(h)h=`<button class="pal-x" id="palClose" type="button" aria-label="收起，回到观察">×<small>收起</small></button>`+h;
+  pal.innerHTML=h;pal.hidden=!h;const pc=$('#palClose');if(pc)pc.addEventListener('click',()=>setTool('observe'));
   pal.querySelectorAll('[data-plant]').forEach(b=>b.addEventListener('click',()=>{sub.plant=b.dataset.plant;renderPalette();}));
   pal.querySelectorAll('[data-decor]').forEach(b=>b.addEventListener('click',()=>{sub.decor=b.dataset.decor;renderPalette();}));
   pal.querySelectorAll('[data-animal]').forEach(b=>b.addEventListener('click',()=>{sub.animal=b.dataset.animal;renderPalette();}));
@@ -2598,7 +2732,7 @@ function renderInspect(){const s=selected,box=$('#inspect');if(!s||!s.alive){box
       <dl class="kv"><dt>健康</dt><dd>${bar(s.health,s.health<0.4?'var(--bad)':'')}</dd><dd class="num">${Math.round(s.health*100)}%</dd><dt>生长</dt><dd>${bar(s.growth)}</dd><dd class="num">${Math.round(s.growth*100)}%</dd>${s.pollen>0?`<dt>授粉</dt><dd>${'●'.repeat(s.pollen)}</dd><dd></dd>`:''}</dl>
       <p class="fact">${OCEAN?(s.T.coral?`珊瑚靠共生藻光合作用，也滤食浮游生物。水温超过 29°C 或被藻类覆盖会白化。现在水温 ${env.temp.toFixed(1)}°C。`:s.T.host?'小丑鱼的家：触手会蜇伤别的鱼，却保护小丑鱼。':'海草和海带吸收营养盐、释放氧气，是小鱼的育婴场。'):s.T.water?(m?'漂浮在水塘上。':'水塘干了，它正在枯萎！'):s.T.fungus?'从腐烂的落叶和尸体上长出来，加快分解，也是蜗牛和鼠妇的食物。':`土壤湿度 ${Math.round(m*100)}%，它喜欢 ${Math.round(s.T.moist[0]*100)}–${Math.round(s.T.moist[1]*100)}%。`}</p><div class="row"><button class="btn" data-a="close">关闭</button></div>`;}
   else{const S=s.S,fm=cam.follow===s?cam.fmode:null;const st=stageTxt(s);const days=(s.age).toFixed(1);
-    box.innerHTML=`<h3><i style="background:${S.color}"></i><span>${s.name}</span>${S.noName?'':'<button class="rn" data-a="rename">改名</button>'}</h3>
+    box.innerHTML=`<h3><i style="background:${S.color}"></i><span>${s.name}</span>${S.noName?'':'<button class="rn" data-a="rename">改名</button>'}</h3>${s.mut?`<div class="mut-badge">★ 稀有变异 · ${mutLabel(s)}</div>`:''}
       <span class="tag">${S.name}${s.sp==='butterfly'&&s.stage==='adult'&&S.VAR&&S.VAR[s.variant]!=null?' · '+S.VAR[s.variant]:''}</span>${st&&s.stage!=='adult'?`<span class="tag">${st}</span>`:''}${s.scale<0.95&&s.stage!=='egg'&&s.stage!=='pupa'?'<span class="tag">幼体</span>':''}<span class="tag">${lvlOf(S)}</span><span class="tag">${ZONES[zoneAt(s.x,s.z)].name}</span>
       <div class="state"><b>●</b> ${reasonTxt(s)}</div>
       <div class="segm"><button data-f="orbit" aria-pressed="${fm==='orbit'}">环绕跟随</button><button data-f="chase" aria-pressed="${fm==='chase'}">追尾镜头</button><button data-f="eye" aria-pressed="${fm==='eye'}">它的视角</button></div>
@@ -2705,10 +2839,11 @@ function tutDone(k){const t=TUT.find(x=>x.k===k);if(!t||t.done)return;t.done=tru
 let glassHidden=false,zen=false;const GLASSY=[];
 tank.traverse(o=>{if(!o.isMesh||!o.material)return;const m=o.material;if(m===glassMat||m===sheenMat||o===lid||(m.map&&m.map===TX.streak)||(m.color&&m.color.getHex()===0x151816&&o.position.y>BOT+0.5)||o.position.y>TOP+0.1)GLASSY.push(o);});
 function setGlass(h){glassHidden=h;GLASSY.forEach(o=>o.visible=!h);HEATROCKS.forEach(r=>r.parts&&r.parts.slice(1).forEach(o=>o.visible=!h));condT=1;$('#glassBtn').setAttribute('aria-pressed',h);try{localStorage.setItem('ark-glass',h?1:0);}catch(e){}}
-function setZen(z){zen=z;document.body.classList.toggle('zen',z);$('#zenBtn').setAttribute('aria-pressed',z);if(z){$('#settings').hidden=true;$('#setBtn').setAttribute('aria-pressed','false');}}
+function setZen(z){zen=z;document.body.classList.toggle('zen',z);$('#zenBtn').setAttribute('aria-pressed',z);if(z){closeOverlays();const zx=$('#zenExit');zx.classList.remove('pulse');void zx.offsetWidth;zx.classList.add('pulse');if(!zenToasted){zenToasted=true;toast('已进入沉浸模式，只留下方工具栏。点左上角 <b>退出沉浸</b> 恢复界面');}}}
+var zenToasted=false;
 $('#glassBtn').addEventListener('click',()=>{setGlass(!glassHidden);toast(glassHidden?'玻璃和缸架已隐藏':'玻璃已恢复');});
 $('#zenBtn').addEventListener('click',()=>setZen(true));$('#zenExit').addEventListener('click',()=>setZen(false));
-addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.ctrlKey||e.metaKey)return;const k=e.key.toLowerCase();if(k==='g')$('#glassBtn').click();else if(k==='h')setZen(!zen);else if(k==='escape'&&zen)setZen(false);});
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.ctrlKey||e.metaKey)return;const k=e.key.toLowerCase();if(k==='g')$('#glassBtn').click();else if(k==='h')setZen(!zen);else if(k==='escape'){if(anyOverlay())closeOverlays();else if(tool!=='observe')setTool('observe');else if(zen)setZen(false);}});
 try{if(localStorage.getItem('ark-glass')==='1')setGlass(true);}catch(e){}
 let uwT=9;let condLevel=1;try{const v=localStorage.getItem('ark-cond');if(v!=null)condLevel=+v;}catch(e){}
 function renderCond(){$$('#condSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.c===condLevel));}$$('#condSeg button').forEach(b=>b.addEventListener('click',()=>{condLevel=+b.dataset.c;try{localStorage.setItem('ark-cond',condLevel);}catch(e){}renderCond();condT=1;}));renderCond();
@@ -2737,7 +2872,7 @@ function renderFrame(dt){const p=usePost();HDR_CLAMP.value=p?1:65504;HDR_ALPHA.v
 let GLASS_POST_ALPHA=0.35;  // calibrated: mean brightness with post on matches rendering without post
 function frame(now){requestAnimationFrame(frame);if(window.__freeze){last=now;return;}const rdt=Math.min(0.05,(now-last)/1000);last=now;const gdt=rdt*env.speed;
   if(gdt>0){const n=Math.ceil(gdt/0.1),st=gdt/n;for(let i=0;i<n;i++)simStep(st);o2T+=gdt;if(o2T>3){o2T=0;O2H.push(env.o2);if(O2H.length>240)O2H.shift();}}
-  updateVisuals(rdt,gdt);introTick(rdt);applyCam(rdt);directorTick();updateLabels();sndListener();
+  updateVisuals(rdt,gdt);introTick(rdt);applyCam(rdt);directorTick();jTick(rdt);updateLabels();sndListener();
   renderFrame(rdt);
   scoreT+=rdt;if(scoreT>1){scoreT=0;computeScore();checkContracts();refreshLocks();}
   uiT+=rdt;if(uiT>0.3){uiT=0;updateHUD();if(selected&&!$('#inspect').hidden&&!inspHover)renderInspect();if(logDirty&&!$('#tab-log').hidden){renderLog();logDirty=false;}}
@@ -2838,7 +2973,21 @@ function setPanel(side,on){const el=$('#'+side),v=on==null?!el.classList.contain
   if(v&&narrowUI())$('#'+(side==='left'?'right':'left')).classList.remove('open');
   const lo=$('#left').classList.contains('open');document.body.classList.toggle('left-open',lo);
   $('#leftToggle').setAttribute('aria-pressed',lo);$('#rightToggle').setAttribute('aria-pressed',$('#right').classList.contains('open'));
+  syncOverlay();
   if(!narrowUI())try{localStorage.setItem('ark-panels',JSON.stringify({l:$('#left').classList.contains('open'),r:$('#right').classList.contains('open')}));}catch(e){}}
+/* phones: one panel at a time over a dim backdrop. The × inside each panel, a tap on the backdrop
+   and the system back gesture all close it (back would otherwise leave the game). */
+var histArmed=false,histSkip=false;
+function anyOverlay(){return !$('#settings').hidden||$('#left').classList.contains('open')||$('#right').classList.contains('open');}
+function closeOverlays(){const s=$('#settings');if(!s.hidden){s.hidden=true;$('#setBtn').setAttribute('aria-pressed','false');}
+  if($('#left').classList.contains('open'))setPanel('left',false);if($('#right').classList.contains('open'))setPanel('right',false);syncOverlay();}
+function syncOverlay(){const sc=$('#scrim');if(!sc)return;const on=narrowUI()&&anyOverlay();sc.hidden=!on;if(on)$('#inspect').hidden=true;
+  if(on&&!histArmed){try{history.pushState({arkOverlay:1},'');histArmed=true;}catch(e){}}
+  else if(!on&&histArmed){histArmed=false;histSkip=true;try{history.back();}catch(e){histSkip=false;}}}
+addEventListener('popstate',()=>{if(histSkip){histSkip=false;return;}if(histArmed){histArmed=false;closeOverlays();}});
+$('#scrim').addEventListener('click',closeOverlays);
+$$('.sheet-x[data-close]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const w=b.dataset.close;
+  if(w==='settings'){$('#settings').hidden=true;$('#setBtn').setAttribute('aria-pressed','false');syncOverlay();}else setPanel(w,false);}));
 function restorePanels(){if(narrowUI())return;try{const s=JSON.parse(localStorage.getItem('ark-panels')||'null');if(s){setPanel('left',!!s.l);setPanel('right',!!s.r);}}catch(e){}}
 
 /* onboarding chip: the next 上手任务 stays visible even with the panels closed */
@@ -2854,10 +3003,10 @@ function saveKey(k){return 'ark-save-'+(k||MK);}
 function readSave(k){try{const s=localStorage.getItem(saveKey(k));if(!s)return null;const o=JSON.parse(s);return o&&o.v===1&&o.mk===(k||MK)?o:null;}catch(e){return null;}}
 function saveMeta(k){try{const s=localStorage.getItem('ark-meta-'+k);return s?JSON.parse(s):null;}catch(e){return null;}}
 function serializeWorld(){const r=v=>Math.round(v*1000)/1000;const E={};
-  for(const k of['time','day','o2','co2','coins','lamp','pump','vent','pond','algae','heat','score','balanceDays','dayOk','sal','nut','plank','temp','visit'])if(env[k]!==undefined)E[k]=env[k];
+  for(const k of['time','day','o2','co2','coins','lamp','pump','vent','pond','algae','heat','score','balanceDays','dayOk','sal','nut','plank','temp','visit','jx'])if(env[k]!==undefined)E[k]=env[k];
   E.zones=env.zones.map(z=>Object.assign({},z));
   const P=plants.filter(p=>p.alive).map(p=>[p.type,r(p.x),r(p.z),p.v,r(p.growth),r(p.health),r(p.size),r(p.rot),p.by!=null?r(p.by):null]);
-  const A=[];for(const k of SPK)for(const a of pop[k]){if(!a.alive)continue;A.push({sp:k,x:r(a.x),z:r(a.z),y:r(a.y||0),h:r(a.h),st:a.stage,sc:r(a.scale),e:r(a.energy),ag:r(a.age),l:r(a.life),n:a.name,k:a.kills,d:a.kids,t:r(a.stageT||0)});}
+  const A=[];for(const k of SPK)for(const a of pop[k]){if(!a.alive)continue;A.push({sp:k,x:r(a.x),z:r(a.z),y:r(a.y||0),h:r(a.h),st:a.stage,sc:r(a.scale),e:r(a.energy),ag:r(a.age),l:r(a.life),n:a.name,k:a.kills,d:a.kids,t:r(a.stageT||0),id:a.id,mu:a.mut?1:0,g:a.gen||0,pa:a.par,ga:a.gpar,pm:a.pmut?1:0});}
   return{v:1,mk:MK,ts:Date.now(),E,P,A,turf:Array.from(turf,v=>Math.round(v*100)/100),D:DECOR.map(d=>[d.type,r(d.x),r(d.z)]),
     C:contracts.map(c=>({k:c.tpl.k,n:c.n,b:c.base,r:c.reward,u:c.due})),S:stats,T:TUT.filter(t=>t.done).map(t=>t.k),col:colony?{x:colony.x,z:colony.z,store:colony.store}:null};}
 let saveOff=false;
@@ -2867,8 +3016,9 @@ function clearSave(k){try{localStorage.removeItem(saveKey(k));localStorage.remov
 function restoreEnv(S){const E=S.E||{};for(const k in E)if(k!=='zones')env[k]=E[k];if(E.zones)env.zones.forEach((z,i)=>E.zones[i]&&Object.assign(z,E.zones[i]));
   env.waterY=waterLevelY();if(S.S)for(const k in S.S)stats[k]=S.S[k];if(S.turf)S.turf.forEach((v,i)=>{if(i<turf.length)turf[i]=v;});}
 function restorePlants(S){for(const q of S.P||[]){if(!PT[q[0]])continue;const p=addPlant(q[0],q[1],q[2],q[4],q[3]);if(!p)continue;p.health=q[5];p.size=q[6];p.rot=q[7];if(q[8]!=null)p.by=q[8];placePlant(p);}}
-function restoreAnimals(S){for(const q of S.A||[]){if(!SPK.includes(q.sp))continue;let a;try{a=new Agent(q.sp,q.x,q.z,{stage:q.st,scale:q.sc,energy:q.e,age:q.ag,name:q.n,h:q.h});}catch(e){continue;}
+function restoreAnimals(S){const idMap={};for(const q of S.A||[]){if(!SPK.includes(q.sp))continue;let a;try{a=new Agent(q.sp,q.x,q.z,{stage:q.st,scale:q.sc,energy:q.e,age:q.ag,name:q.n,h:q.h});}catch(e){continue;}
     a.life=q.l||a.life;a.kills=q.k||0;a.kids=q.d||0;if(q.t)a.stageT=q.t;if(a.flying&&q.y)a.y=q.y;
+    a.gen=q.g||0;if(q.pa!=null)a.par=idMap[q.pa]!=null?idMap[q.pa]:-1;if(q.ga!=null)a.gpar=idMap[q.ga]!=null?idMap[q.ga]:-1;if(q.pm)a.pmut=1;if(q.mu)a.mut=1;if(q.id!=null)idMap[q.id]=a.id;
     if(q.sp==='butterfly'&&a.stage==='larva'&&!a.trail)a.trail=new Trail(0.45,a.x,a.z,a.h);}
   if(OCEAN)formSchools();}
 /* damselfish share a waypoint per school so the shoal moves as one */
@@ -2892,8 +3042,8 @@ function fmtWhen(ts){if(!ts)return '';const d=new Date(ts),p=n=>String(n).padSta
 async function downloadJSON(obj,name){const txt=JSON.stringify(obj);
   if(window.claude&&typeof window.claude.use==='function'){const dl=await window.claude.use('downloads').catch(()=>null);if(dl){await dl.save({filename:name,data:txt});return;}}
   const b=new Blob([txt],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
-function exportSaves(keys){const out={format:'glass-ark-saves',v:1,exported:Date.now(),saves:{}};for(const k of keys){const r=saveRecord(k);if(r)out.saves[k]=r;}
-  const n=Object.keys(out.saves).length;if(!n)return Promise.resolve(0);const d=new Date(),p=x=>String(x).padStart(2,'0');
+function exportSaves(keys){const out={format:'glass-ark-saves',v:1,exported:Date.now(),saves:{}};try{const j=localStorage.getItem('ark-journal');if(j){out.journal=JSON.parse(j);out.journalPhotos={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('ark-jp-'))out.journalPhotos[k.slice(7)]=localStorage.getItem(k);}}}catch(e){}for(const k of keys){const r=saveRecord(k);if(r)out.saves[k]=r;}
+  const n=Object.keys(out.saves).length;if(!n&&!out.journal)return Promise.resolve(0);const d=new Date(),p=x=>String(x).padStart(2,'0');
   return downloadJSON(out,`glass-ark-${keys.length===1?keys[0]:'saves'}-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.json`).then(()=>n);}
 function importSaves(text){let o;try{o=JSON.parse(text);}catch(e){return{err:'文件不是有效的 JSON'};}
   if(!o||o.format!=='glass-ark-saves'||!o.saves||typeof o.saves!=='object')return{err:'这不是玻璃方舟的存档文件'};
@@ -2901,6 +3051,9 @@ function importSaves(text){let o;try{o=JSON.parse(text);}catch(e){return{err:'�
     if(!MODES[k]||!d||d.v!==1||d.mk!==k||!Array.isArray(d.P)||!Array.isArray(d.A)||!d.E){bad.push(k);continue;}
     const m=r.meta||{};const meta={day:+(d.E.day||m.day||1),ts:+(d.ts||m.ts||Date.now()),a:d.A.length,p:d.P.length,name:typeof m.name==='string'?m.name.slice(0,24):''};
     try{localStorage.setItem(saveKey(k),JSON.stringify(d));localStorage.setItem('ark-meta-'+k,JSON.stringify(meta));ok.push(k);}catch(e){return{err:'浏览器存储空间不足，导入失败'};}}
+  if(o.journal&&o.journal.v===1&&o.journal.e){try{const cur=JSON.parse(localStorage.getItem('ark-journal')||'null')||{v:1,e:{},mut:{},fresh:0};
+    for(const k in o.journal.e){const a=cur.e[k],b=o.journal.e[k];if(!a||(b.star||1)>(a.star||1))cur.e[k]=b;}Object.assign(cur.mut=cur.mut||{},o.journal.mut||{});localStorage.setItem('ark-journal',JSON.stringify(cur));
+    for(const k in o.journalPhotos||{}){const v=o.journalPhotos[k];if(typeof v==='string'&&v.startsWith('data:image/jpeg')&&v.length<60000&&!localStorage.getItem('ark-jp-'+k))localStorage.setItem('ark-jp-'+k,v);}ok.push('journal');}catch(e){}}
   return{ok,bad};}
 function initSaveManager(){const dlg=$('#saves'),list=$('#savesList'),msg=$('#savesMsg'),file=$('#saveFile');if(!dlg||dlg.dataset.ready)return;dlg.dataset.ready='1';
   const say=t=>{msg.textContent=t;};
@@ -2926,15 +3079,289 @@ function initSaveManager(){const dlg=$('#saves'),list=$('#savesList'),msg=$('#sa
   $('#saveExportAll').addEventListener('click',()=>{exportSaves(Object.keys(MODES)).then(n=>say(n?`已导出 ${n} 个存档`:'没有可以导出的存档'),e=>say(e&&e.code==='declined'?'已取消导出':'这里不能下载文件'));});
   $('#saveImport').addEventListener('click',()=>file.click());
   file.addEventListener('change',()=>{const f=file.files&&file.files[0];file.value='';if(!f)return;if(f.size>5e6){say('文件太大，不像是存档');return;}
-    f.text().then(t=>{const r=importSaves(t);if(r.err){say(r.err);return;}
-      say(r.ok.length?`已导入：${r.ok.map(k=>MODES[k].name).join('、')}${r.bad.length?`；跳过 ${r.bad.length} 个无效存档`:''}`:'文件里没有可用的存档');render();homeDecorate();});});}
+    f.text().then(t=>{const r=importSaves(t);J=null;if(r.err){say(r.err);return;}
+      say(r.ok.length?`已导入：${r.ok.map(k=>k==='journal'?'缸中见闻录':MODES[k].name).join('、')}${r.bad.length?`；跳过 ${r.bad.length} 个无效存档`:''}`:'文件里没有可用的存档');render();homeDecorate();});});}
 /* home page: "存档 · 第 N 天" badges on the cards, and the main button continues the mixed tank if it has a save */
 function homeDecorate(){$$('#home .mode[data-mode]').forEach(b=>{const k=b.dataset.mode,m=saveMeta(k);const old=b.querySelector('.mode-save');if(old)old.remove();if(!m)return;
     const s=document.createElement('span');s.className='mode-save';s.textContent=`${m.name||'存档'} · 第 ${m.day} 天`;const im=b.querySelector('.mode-img');(im||b).appendChild(s);b.setAttribute('aria-label',`${b.querySelector('.mode-name')?.firstChild?.textContent||k}，继续第 ${m.day} 天`);});
   const m=saveMeta('mixed'),l=$('#ctaLabel');if(l)l.textContent=m?`继续混合生态缸 · 第 ${m.day} 天`:'打开混合生态缸';
-  initSaveManager();
+  initSaveManager();initJournal();
   try{const go=sessionStorage.getItem('ark-go');if(go){sessionStorage.removeItem('ark-go');const b=document.querySelector(`#home .mode[data-mode="${go}"]`);if(b)setTimeout(()=>b.click(),0);}}catch(e){}}
 
 introStart();
+
+/* =================== 缸中见闻录 · rare mutations ===================
+   The journal records moments the player actually saw: the subject had to be on screen (or followed)
+   when it happened. Tank-wide milestones count automatically. A photo taken while the moment is still on
+   screen upgrades an entry to a gold star. The journal is shared by every tank on this device.
+   Everything here is var/function so other files may call jot()/born() before this file has run. */
+
+var JR_READY = false, J = null, JR_RECENT = {}, JR_LAST_CROAK = null, JR_T = 0, JR_DAY = -1, JR_HEAT = false;
+var JR, JR_BY, MUT, JR_TIER;
+/* data is built lazily: the home page opens the journal before this file's top level has run */
+function jrInit() {
+  if (JR) return;
+  JR_TIER = [null, { n: '常见', c: '#8fb39a', r: 5 }, { n: '少见', c: '#7fb3e0', r: 12 }, { n: '罕见', c: '#c39ae8', r: 25 }, { n: '传说', c: '#f0b25a', r: 60 }];
+/* k, tier, where (land|ocean|any), name, hint shown before discovery, note shown after, auto = no subject needed */
+JR = [
+  ['ant_carry', 1, 'land', '搬叶回巢', '切叶蚁总是很忙。跟着一只扛着东西的蚂蚁走。', '切叶蚁把叶片和草籽搬回土丘，巢里的储粮够了就会孵出新蚂蚁。'],
+  ['ant_hatch', 1, 'land', '新蚂蚁出巢', '蚁巢储粮充足时，盯着土丘看一会儿。', '储粮攒够时，蚁巢会孵出一只新工蚁。'],
+  ['firefly_glow', 1, 'land', '第一盏萤火', '天黑以后，潮湿的地方会亮起来。', '萤火虫只在夜里飞，尾部一明一暗，每只的节奏都不一样。'],
+  ['chirp', 1, 'land', '蟋蟀夜鸣', '夜里草丛中传来声音，找到正在振翅的那一只。', '蟋蟀靠摩擦前翅发声，停下来振翅的时候最好找。'],
+  ['frog_call', 1, 'land', '水边蛙鸣', '夜里去水边，下雨时更热闹。', '雨蛙鼓起声囊鸣叫，雨夜里叫得最勤。'],
+  ['shower', 1, 'land', '午后阵雨', '缸里的天气也会变。', '午后有时会下一场阵雨，各区域一起变湿。', 1],
+  ['mushroom', 1, 'land', '腐殖质里的蘑菇', '潮湿处的落叶、沉木和尸体下面会长出东西。', '蘑菇从腐烂的有机物里长出来，是分解者工作的痕迹。'],
+  ['web_built', 1, 'land', '织网', '园蛛会在植物之间工作。', '园蛛从中心向外一圈圈织网，织好后就守在网中央。'],
+  ['lizard_bask', 1, 'land', '清晨晒背', '沙漠的早晨很冷，沙蜥需要一块热的石头。', '沙蜥是冷血动物，清晨要趴在加热岩上晒热身体才能捕猎。'],
+  ['bf_sip', 1, 'land', '花间采蜜', '蝴蝶会停在开花的植物上。', '蝴蝶落在花上吸食花蜜，顺便替植物传粉。'],
+  ['clown_home', 1, 'ocean', '海葵里的家', '小丑鱼从不远离它的海葵。', '小丑鱼身上有黏液保护，海葵的触手蜇不到它们。'],
+  ['jelly_glow', 1, 'ocean', '夜里的水母', '天黑以后看看水中央。', '海月水母在夜里发出幽蓝的光，随水流慢慢漂。'],
+  ['school', 1, 'ocean', '成群游过', '让一大群雀鲷同时出现在画面里。', '蓝魔雀鲷成群游动，同一群鱼会朝同一个方向转弯。'],
+  ['cat_hatch', 2, 'land', '毛毛虫出生', '蝴蝶把卵产在寄主植物上，过些时候再回来看看。', '蝴蝶卵孵出毛毛虫，它们一出生就开始啃寄主植物的叶子。'],
+  ['pupate', 2, 'land', '化蛹', '吃饱的毛毛虫会停下来，安静一段时间。', '毛毛虫吃够了就挂在植物上化蛹，外表静止，里面正在重组身体。'],
+  ['emerge', 2, 'land', '破蛹羽化', '盯住一个蛹，它总有一天会打开。', '成虫从蛹里爬出来，先晾干翅膀，再第一次起飞。'],
+  ['bf_lay', 2, 'land', '产卵', '雌蝶会挑选特定的植物。', '蝴蝶只把卵产在幼虫能吃的寄主植物上。'],
+  ['frog_catch', 2, 'land', '弹舌捕虫', '雨蛙安静地蹲着，然后……', '雨蛙的舌头又长又黏，一瞬间就能把虫子卷进嘴里。'],
+  ['mantis_catch', 2, 'land', '螳螂伏击', '螳螂常常一动不动地伏在花枝上。', '螳螂伪装成植物等猎物靠近，前足一合就抓住了。'],
+  ['lizard_catch', 2, 'land', '沙蜥捕食', '晒暖之后的沙蜥会开始巡视。', '沙蜥追上蟋蟀和蚂蚁，一口咬住。'],
+  ['web_stuck', 2, 'land', '撞上蛛网', '飞行的小虫不一定看得见丝线。', '蛛网上的丝很黏，飞虫一碰就被粘住，蛛网的主人会马上赶来。'],
+  ['web_wrap', 2, 'land', '裹成茧', '园蛛抓到猎物后会做一件事。', '园蛛用丝把猎物一圈圈裹起来，留着慢慢吃。'],
+  ['web_escape', 2, 'land', '挣脱蛛网', '不是每只被粘住的虫子都会被吃掉。', '力气够大、运气够好的猎物，有时能在园蛛赶到之前挣脱。'],
+  ['frog_spawn', 2, 'land', '水塘产卵', '夜里，成年雨蛙会去水塘。', '雨蛙把卵块产在水里，一团卵里有好几颗。'],
+  ['tadpole_hatch', 2, 'land', '蝌蚪出世', '水里的卵块过一段时间会有变化。', '卵块孵化，一群蝌蚪游进水塘，开始啃藻类。'],
+  ['metamorph', 2, 'land', '长腿上岸', '蝌蚪不会永远是蝌蚪。', '蝌蚪长出四肢、尾巴缩短，爬上岸变成小雨蛙。'],
+  ['miss', 2, 'any', '扑空', '捕食者也会失手。', '不是每次出击都能成功，猎物有时会在最后一刻逃走。'],
+  ['grouper_catch', 2, 'ocean', '石斑鱼出击', '石斑鱼喜欢在礁石边上等待。', '石斑鱼张大嘴猛地一吸，小鱼就被吸了进去。'],
+  ['crab_threat', 2, 'ocean', '举钳示威', '螃蟹遇到危险时不会马上逃跑。', '螃蟹高举双钳，摆出最大的架势吓退对手。'],
+  ['clown_hide', 2, 'ocean', '躲进海葵', '捕食者靠近的时候看看小丑鱼。', '遇到危险时，小丑鱼会钻进海葵的触手深处。'],
+  ['plankton', 2, 'ocean', '浮游生物爆发', '海缸里的营养有时会突然变多。', '浮游生物爆发，滤食的鱼和水母迎来一场盛宴。', 1],
+  ['visit', 2, 'any', '参观日', '缸养得够漂亮，会有人来看。', '参观日这天，观赏值越高，门票收入越多。', 1],
+  ['snake_hunt', 3, 'land', '顶级捕食者', '食物链最顶端的那条蛇需要你先把它的猎物养起来。', '玉米蛇缠住猎物，再整只吞下去，之后要很久才会再饿。'],
+  ['moray_hunt', 3, 'ocean', '海鳗出洞捕食', '海鳗白天只露出一个头。', '海鳗在夜里离开岩缝，悄无声息地游到猎物身边。'],
+  ['moray_out', 3, 'ocean', '夜巡的海鳗', '天黑以后，礁石缝里的东西会出来。', '海鳗白天守在洞口，入夜后整条游出来巡视礁石。'],
+  ['hunter_hunted', 3, 'any', '螳螂捕蝉', '捕食者也可能成为别人的猎物。', '一只捕猎过的动物，自己也成了更大捕食者的食物。'],
+  ['coral_save', 3, 'ocean', '救回珊瑚', '水太热时珊瑚会变白。白了之后，还来得及吗？', '水温降下来之后，共生藻回到珊瑚里，颜色慢慢恢复。', 1],
+  ['algae_fix', 3, 'ocean', '水清了', '藻类爆发会把珊瑚盖住。', '营养盐降下来，啃藻的海胆和海星把礁石重新清理干净。', 1],
+  ['mold_fix', 3, 'land', '霉斑消退', '太潮湿会长霉。试试打开顶盖通风。', '你打开顶盖通风，霉斑慢慢消失了。', 1],
+  ['heat_survive', 3, 'any', '平安度过热浪', '热浪来的时候，别让任何一只动物死去。', '整场热浪里没有一只动物死亡。', 1],
+  ['old_age', 3, 'any', '寿终正寝', '让一只在你缸里出生的捕食者安稳地活完一生。', '它在你的缸里出生，没有被吃掉，也没有饿死，一直活到了生命的尽头。', 1],
+  ['frog_cycle', 3, 'land', '生生不息 · 雨蛙', '一只在你的缸里出生的雨蛙，长大后会做什么？', '这只雨蛙从卵块里出生、变态上岸，长大后又在水塘里产下了自己的卵。'],
+  ['bf_cycle', 3, 'land', '生生不息 · 蝴蝶', '一只在你的缸里出生的蝴蝶，长大后会做什么？', '这只蝴蝶在你的缸里从卵长大，又把自己的卵产在了寄主植物上。'],
+  ['coral_reef', 3, 'ocean', '珊瑚花园', '让礁石上的健康珊瑚比开缸时多一半。', '健康的珊瑚比开缸时多了一半，礁石上长满了珊瑚。', 1],
+  ['night_chorus', 3, 'land', '雨夜合唱', '下雨的夜里，水边会同时有光和声音。', '雨夜里萤火虫在水边闪烁，雨蛙在同一时刻鸣叫。'],
+  ['mutant_found', 3, 'any', '找到变异个体', '极少数新生命生来就与众不同。', '你在缸里找到了一只稀有变异个体。它的颜色是天生的，商店里买不到。'],
+  ['chain7', 4, 'any', '完整的食物链', '让食物链的每一级都有动物活着，并且坚持一周。', '从食草者到顶级捕食者，每一级都有动物活着，整整 7 天。', 1],
+  ['three_gen', 4, 'any', '三代同堂', '捕食者也能祖孙三代同时活着吗？', '一只捕食者出生时，它的父母和祖父母都还在你的缸里活着。', 1],
+  ['day100', 4, 'any', '第 100 天', '让一只缸一直运转下去。', '这只缸已经运转了 100 天。', 1],
+  ['balance30', 4, 'any', '月度平衡', '生态平衡，连续很多天。', '连续 30 天生态平衡。', 1],
+  ['mutant_born', 4, 'any', '目睹变异诞生', '亲眼看到一只稀有变异个体出生。', '你正好看着它来到这个世界。'],
+  ['mutant_line', 4, 'any', '变异的传承', '稀有变异会遗传吗？', '一只稀有变异个体的后代，也生来带着同样的变异。', 1],
+  ['mutant3', 4, 'any', '变异图谱', '找到三种不同的稀有变异。', '你已经在缸里找到了三种不同的稀有变异。', 1],
+  ['apex_old', 4, 'any', '王者寿终', '让一只顶级捕食者活完一生。', '一只顶级捕食者在你的缸里活到了寿终。', 1],
+].map(r => ({ k: r[0], t: r[1], w: r[2], n: r[3], h: r[4], d: r[5], auto: !!r[6] }));
+JR_BY = {}; JR.forEach(e => JR_BY[e.k] = e);
+
+/* rare mutations: tint (rgb) and how strongly the original colours are replaced */
+MUT = {
+  frog: { n: '白化雨蛙', c: [1, 0.92, 0.9], a: 0.88 }, lizard: { n: '蓝色沙蜥', c: [0.32, 0.58, 1], a: 0.8 }, butterfly: { n: '黑翅蝴蝶', c: [0.13, 0.12, 0.16], a: 0.85 },
+  snail: { n: '粉壳蜗牛', c: [1, 0.55, 0.78], a: 0.65 }, cricket: { n: '白化蟋蟀', c: [1, 0.95, 0.86], a: 0.85 }, firefly: { n: '蓝光萤火虫', c: [0.4, 0.62, 1], a: 0.35, glow: 0x6ab8ff },
+  mantis: { n: '兰花螳螂', c: [1, 0.74, 0.9], a: 0.8 }, spider: { n: '金色园蛛', c: [1, 0.78, 0.25], a: 0.75 }, snake: { n: '白化玉米蛇', c: [1, 0.93, 0.88], a: 0.85 },
+  isopod: { n: '橙色鼠妇', c: [1, 0.55, 0.2], a: 0.75 }, clown: { n: '黑化小丑鱼', c: [0.17, 0.16, 0.2], a: 0.8 }, damsel: { n: '金色雀鲷', c: [1, 0.8, 0.22], a: 0.85 },
+  starfish: { n: '金色海星', c: [1, 0.8, 0.25], a: 0.8 }, crab: { n: '蓝色螃蟹', c: [0.3, 0.55, 1], a: 0.75 }, shrimp: { n: '雪白清洁虾', c: [1, 1, 1], a: 0.7 },
+  grouper: { n: '金色石斑鱼', c: [1, 0.78, 0.3], a: 0.75 }, jelly: { n: '粉色水母', c: [1, 0.62, 0.85], a: 0.7 }, moray: { n: '金色海鳗', c: [1, 0.85, 0.3], a: 0.8 },
+  };
+  const SN = { frog: '雨蛙', lizard: '沙蜥', butterfly: '蝴蝶', snail: '蜗牛', cricket: '蟋蟀', firefly: '萤火虫', mantis: '螳螂', spider: '园蛛', snake: '玉米蛇', isopod: '鼠妇', clown: '小丑鱼', damsel: '蓝魔雀鲷', starfish: '海星', crab: '螃蟹', shrimp: '清洁虾', grouper: '石斑鱼', jelly: '海月水母', moray: '海鳗' };
+  for (const k in MUT) MUT[k].sn = SN[k];
+}
+var JR_PHOTO_BONUS = 5, MUT_P = 0.005, MUT_INHERIT = 0.35;
+
+/* ---------- storage ---------- */
+function jLoad() { try { const o = JSON.parse(localStorage.getItem('ark-journal') || 'null'); if (o && o.v === 1) return Object.assign({ e: {}, mut: {}, fresh: 0 }, o); } catch (e) {} return { v: 1, e: {}, mut: {}, fresh: 0 }; }
+function jSave() { try { localStorage.setItem('ark-journal', JSON.stringify(J)); } catch (e) {} }
+function jPhoto(k) { try { return localStorage.getItem('ark-jp-' + k); } catch (e) { return null; } }
+
+/* ---------- witnessing ---------- */
+var _jv = null;
+function jSeen(s) {
+  if (!s) return true; if (typeof cam !== 'undefined' && cam.follow === s) return true;
+  if (!_jv) _jv = new THREE.Vector3();
+  const y = (s.y != null ? s.y : heightAt(s.x, s.z)) + 0.05; _jv.set(s.x, y, s.z);
+  const d = camera.position.distanceTo(_jv); if (d > 26) return false;
+  _jv.project(camera); return _jv.z < 1 && Math.abs(_jv.x) < 0.94 && Math.abs(_jv.y) < 0.94;
+}
+function jDist(s) { if (!s) return 99; if (!_jv) _jv = new THREE.Vector3(); _jv.set(s.x, (s.y != null ? s.y : heightAt(s.x, s.z)), s.z); return camera.position.distanceTo(_jv); }
+/* jot(key, subject): record a moment. subject null = tank-wide milestone. */
+function jot(k, s) {
+  if (!JR_READY || !J) return; jrInit(); const E = JR_BY[k]; if (!E) return;
+  if (!E.auto && !jSeen(s)) return;
+  if (s) JR_RECENT[k] = { t: performance.now(), s };
+  if (J.e[k]) return;
+  J.e[k] = { day: env.day, mk: MK, ts: Date.now(), star: 1 }; J.fresh = (J.fresh || 0) + 1; jSave();
+  const T = JR_TIER[E.t]; env.coins += T.r;
+  toast(`<span class="jr-toast" style="--tc:${T.c}">《缸中见闻录》${E.t >= 3 ? '稀有' : ''}新记录 · ${T.n}</span><b>${E.n}</b>　+${T.r} 孢子${E.auto ? '' : '<br><small>趁它还在画面里，按右上角相机拍下来，可以升级为金星</small>'}`);
+  if (typeof logEvent === 'function') logEvent('life', `见闻录新记录：${E.n}`, s && s.kind ? s : null, E.t >= 3 ? 3 : 1);
+  jBadge(); if (typeof sfx === 'function' && typeof snd !== 'undefined' && snd.on && snd.ctx) jChime(E.t);
+}
+function jChime(t) { try { const c = snd.ctx, t0 = c.currentTime; [0, 4, 7, 12].slice(0, 2 + Math.min(2, t - 1)).forEach((st, i) => { const o = c.createOscillator(), g = c.createGain(); o.frequency.value = 880 * Math.pow(2, st / 12); g.gain.setValueAtTime(0, t0 + i * 0.09); g.gain.linearRampToValueAtTime(0.05, t0 + i * 0.09 + 0.01); g.gain.exponentialRampToValueAtTime(0.0008, t0 + i * 0.09 + 0.7); o.connect(g); g.connect(snd.master); o.start(t0 + i * 0.09); o.stop(t0 + i * 0.09 + 0.75); }); } catch (e) {} }
+
+/* hooks called from the simulation */
+function jLog(e) {
+  if (!JR_READY) return; jrInit(); const x = e.text, w = e.who;
+  const R = [[/一只毛毛虫孵化了/, 'cat_hatch'], [/化蛹了/, 'pupate'], [/破蛹羽化了/, 'emerge'], [/孵出了 \d+ 只蝌蚪/, 'tadpole_hatch'], [/变成了小雨蛙/, 'metamorph'],
+    [/在水塘里产卵了/, 'frog_spawn'], [/织好了一张新网/, 'web_built'], [/裹成了茧/, 'web_wrap'], [/撞上了蛛网/, 'web_stuck'], [/挣脱了蛛网/, 'web_escape'],
+    [/午后阵雨/, 'shower'], [/浮游生物爆发/, 'plankton'], [/参观日门票/, 'visit']];
+  for (const [re, k] of R) if (re.test(x)) jot(k, JR_BY[k].auto ? null : w);
+  if (/在水塘里产卵了/.test(x) && w && (w.gen || 0) >= 1) jot('frog_cycle', w);
+  if (/开始长霉/.test(x)) env.jx.mold = 1;
+  if (/珊瑚开始白化/.test(x)) env.jx.bleach = 1;
+  if (/藻类爆发/.test(x)) env.jx.alg = 1;
+}
+function jHunt(a, p) {
+  if (!JR_READY) return; const m = { frog: 'frog_catch', mantis: 'mantis_catch', lizard: 'lizard_catch', snake: 'snake_hunt', grouper: 'grouper_catch', moray: 'moray_hunt' }[a.sp];
+  if (m) jot(m, a); if (p.kills > 0) jot('hunter_hunted', a);
+}
+function jDeath(a, reason) {
+  if (!JR_READY) return; if (reason !== 'eaten' && reason !== 'hatched') env.jx.deaths = (env.jx.deaths || 0) + 1;
+  if (reason === 'old') { if ((a.gen || 0) >= 1 && a.S.lvl >= 2) jot('old_age', null); if (a.S.lvl >= 4) jot('apex_old', null); }
+}
+function jById(id) { if (id == null) return null; for (const k of SPK) for (const a of pop[k]) if (a.id === id) return a; return null; }
+/* born(child, parent, how): generations and mutations. how: undefined = normal birth,
+   'egg' = a frog egg mass (traits decided per tadpole), 'hatch' = a tadpole from that egg mass */
+function born(c, p, how) {
+  if (!c || !p) return c; jrInit();
+  let pm, gen, par, gpar;
+  if (how === 'hatch') { pm = p.pmut; gen = p.gen || 1; par = p.par; gpar = p.gpar; }
+  else { pm = p.mut; gen = (p.gen || 0) + 1; par = p.id; gpar = p.par; }
+  c.gen = gen; c.par = par; c.gpar = gpar;
+  if (how === 'egg') { c.pmut = pm; return c; }
+  if (MUT[c.sp] && Math.random() < (pm ? MUT_INHERIT : MUT_P)) {
+    c.mut = 1; if (c.name && c.name[0] !== '★') c.name = '★' + c.name; applyMut(c);
+    if (JR_READY) {
+      toast(`<span class="jr-toast" style="--tc:#f0b25a">稀有变异诞生</span><b>${MUT[c.sp].n}「${c.name}」</b> <button class="tlink" data-follow="${c.id}">去看看</button>`);
+      logEvent('life', `稀有变异诞生：${MUT[c.sp].n}「${c.name}」`, c, 4);
+      jot('mutant_born', p); if (pm) jot('mutant_line', null);
+    }
+  }
+  if (JR_READY && gpar != null && c.S && c.S.lvl >= 2) { const g = jById(gpar), q = jById(par); if (g && g.alive && q && q.alive) jot('three_gen', null); }
+  if (JR_READY && c.sp === 'butterfly' && c.stage === 'egg') { jot('bf_lay', p); if ((p.gen || 0) >= 1) jot('bf_cycle', p); }
+  return c;
+}
+/* recolour one animal: its own copies of the materials, with the colour pulled toward the variant tint */
+function applyMut(a) {
+  jrInit(); const V = MUT[a.sp]; if (!V || !a.mut || !a.m || !a.m.root || a.stage === 'egg') return;
+  const tint = new THREE.Vector3(...V.c);
+  a.m.root.traverse(o => {
+    if (o.isSprite && V.glow) { o.material = o.material.clone(); o.material.color.setHex(V.glow); return; }
+    if (!o.isMesh || !o.material) return;
+    const conv = m => { if (!m || m.userData.mutOf) return m; const c = m.clone(); c.userData = Object.assign({}, m.userData, { mutOf: 1 }); const prev = m.onBeforeCompile, pk = m.customProgramCacheKey ? m.customProgramCacheKey() : '';
+      c.onBeforeCompile = (sh, r) => { if (prev && prev !== THREE.Material.prototype.onBeforeCompile) prev.call(c, sh, r); sh.uniforms.uMutT = { value: tint }; sh.uniforms.uMutA = { value: V.a };
+        sh.fragmentShader = 'uniform vec3 uMutT;\nuniform float uMutA;\n' + sh.fragmentShader.replace('#include <color_fragment>', '#include <color_fragment>\n\tdiffuseColor.rgb=mix(diffuseColor.rgb,dot(diffuseColor.rgb,vec3(0.299,0.587,0.114))*uMutT*1.7,uMutA);'); };
+      c.customProgramCacheKey = () => pk + '|mut-' + a.sp; c.needsUpdate = true; return c; };
+    o.material = Array.isArray(o.material) ? o.material.map(conv) : conv(o.material);
+  });
+}
+function mutLabel(a) { jrInit(); return a && a.mut && MUT[a.sp] ? MUT[a.sp].n : ''; }
+
+/* ---------- per-frame polling for states and milestones (cheap, ~3 times a second) ---------- */
+function jTick(dt) {
+  if (!JR_READY) return; JR_T += dt; if (JR_T < 0.35) return; JR_T = 0;
+  const night = isNight(), vis = (sp, f) => (pop[sp] || []).find(a => a.alive && (!f || f(a)) && jSeen(a));
+  if (!OCEAN) {
+    if (colony) { const a = vis('ant', a => a.state === 'carry' && Math.hypot(a.x - colony.x, a.z - colony.z) < 3); if (a) jot('ant_carry', a); }
+    if (night) { const f = vis('firefly', f => f.flying && f.glow > 0.6); if (f) jot('firefly_glow', f); }
+    { const a = vis('lizard', a => a.state === 'bask'); if (a) jot('lizard_bask', a); }
+    { const a = vis('butterfly', a => a.state === 'sip'); if (a) jot('bf_sip', a); }
+    if (night && rain.intensity > 0.2 && JR_LAST_CROAK && performance.now() - JR_LAST_CROAK < 4000) { const n = (pop.firefly || []).filter(f => f.alive && f.flying && f.glow > 0.3 && jSeen(f)).length; if (n >= 3) jot('night_chorus', null); }
+    if (env.jx.mold && env.vent > 0) env.jx.moldVent = 1;
+    if (env.jx.mold && env.zones.every(z => z.mold <= 0)) { if (env.jx.moldVent) jot('mold_fix', null); env.jx.mold = 0; env.jx.moldVent = 0; }
+  } else {
+    { const a = vis('clown', a => a.host && a.host.alive && Math.hypot(a.x - a.host.x, a.z - a.host.z) < 0.5); if (a) jot('clown_home', a); }
+    { const a = vis('clown', a => a.state === 'hide'); if (a) jot('clown_hide', a); }
+    if (night) { const a = vis('jelly'); if (a) jot('jelly_glow', a); }
+    { const n = (pop.damsel || []).filter(a => a.alive && jSeen(a)).length; if (n >= 15) jot('school', (pop.damsel || []).find(a => a.alive && jSeen(a))); }
+    { const a = vis('crab', a => a.state === 'threat'); if (a) jot('crab_threat', a); }
+    if (night) { const a = vis('moray', a => a.state === 'roam'); if (a) jot('moray_out', a); }
+    const corals = plants.filter(p => p.alive && p.T.coral); const healthy = corals.filter(p => p.health > 0.6).length;
+    if (env.jx.c0 == null) env.jx.c0 = healthy;
+    if (healthy >= Math.max(30, env.jx.c0 * 1.5)) jot('coral_reef', null);
+    if (env.jx.bleach && env.temp < 28.5 && corals.length >= 8 && healthy / corals.length > 0.75) { env.jx.bleach = 0; jot('coral_save', null); }
+    if (env.jx.alg && env.algae < 0.35) { env.jx.alg = 0; jot('algae_fix', null); }
+  }
+  /* rare mutants anywhere on screen and close enough to make out */
+  for (const k of SPK) for (const a of pop[k]) if (a.alive && a.mut && jSeen(a) && jDist(a) < 14) { if (!J.mut[k]) { J.mut[k] = Date.now(); jSave(); } jot('mutant_found', a); if (Object.keys(J.mut).length >= 3) jot('mutant3', null); }
+  /* heat waves: no deaths from start to end */
+  if (env.heat > 0 && !JR_HEAT) { JR_HEAT = true; env.jx.hd = env.jx.deaths || 0; }
+  else if (env.heat <= 0 && JR_HEAT) { JR_HEAT = false; if ((env.jx.deaths || 0) === env.jx.hd) jot('heat_survive', null); }
+  /* daily milestones */
+  if (env.day !== JR_DAY) { const first = JR_DAY < 0; JR_DAY = env.day;
+    if (!first) { const lv = new Set(SPK.map(k => SPEC[k].lvl).filter(l => l >= 1)); const ok = [...lv].every(l => SPK.some(k => SPEC[k].lvl === l && count(k) > 0)) && lv.has(4);
+      env.jx.chain = ok ? (env.jx.chain || 0) + 1 : 0; if (env.jx.chain >= 7) jot('chain7', null); }
+    if (env.day >= 100) jot('day100', null); if (env.balanceDays >= 30) jot('balance30', null); }
+}
+
+/* ---------- photo: upgrades entries whose moment is on screen right now ---------- */
+function takePhoto() {
+  const shutter = performance.now(); renderFrame(0.016); let url; try { url = renderer.domElement.toDataURL('image/jpeg', 0.92); } catch (e) { toast('这台设备不能截图'); return; }
+  const fl = $('#flash'); if (fl) { fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go'); }
+  const now = shutter, up = [];
+  for (const k in JR_RECENT) { const r = JR_RECENT[k], E = JR_BY[k]; if (now - r.t > 12000 || !r.s || (r.s.alive === false) || !jSeen(r.s) || jDist(r.s) > 12) continue;
+    const e = J.e[k]; if (!e || e.star >= 2) continue; e.star = 2; up.push(E); }
+  const thumb = jThumb(); window.__lastPhoto = url;
+  if (up.length) { for (const E of up) { try { localStorage.setItem('ark-jp-' + E.k, thumb); } catch (e) {} env.coins += JR_PHOTO_BONUS; } jSave(); jBadge();
+    toast(`拍到了！<b>${up.map(E => E.n).join('、')}</b> 升级为金星　+${JR_PHOTO_BONUS * up.length} 孢子 <button class="tlink" data-photo="1">保存照片</button>`); }
+  else toast(`已拍照。镜头里没有可以升级的见闻：要在发生后 12 秒内、离主角足够近 <button class="tlink" data-photo="1">保存照片</button>`);
+}
+function jThumb() { const s = renderer.domElement, w = 240, h = Math.round(w * 2 / 3), c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+  const r = s.width / s.height, tr = w / h; let sw = s.width, sh = s.height, sx = 0, sy = 0; if (r > tr) { sw = s.height * tr; sx = (s.width - sw) / 2; } else { sh = s.width / tr; sy = (s.height - sh) / 2; }
+  g.drawImage(s, sx, sy, sw, sh, 0, 0, w, h); return c.toDataURL('image/jpeg', 0.72); }
+async function savePhoto() { const url = window.__lastPhoto; if (!url) return; const d = new Date(), p = x => String(x).padStart(2, '0'), name = `glass-ark-${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}.jpg`;
+  /* decode the data URL directly: fetch() on data: URLs is blocked by some hosts' security policies */
+  let blob; try { const b64 = url.slice(url.indexOf(',') + 1), bin = atob(b64), u8 = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i); blob = new Blob([u8], { type: 'image/jpeg' }); } catch (e) { toast('照片保存失败'); return; }
+  if (window.claude && typeof window.claude.use === 'function') { const dl = await window.claude.use('downloads').catch(() => null); if (dl) { try { await dl.save({ filename: name, data: blob }); toast('照片已保存'); } catch (e) { if (e && e.code !== 'declined') toast('这里不能保存文件'); } return; } }
+  const u = URL.createObjectURL(blob), a = document.createElement('a'); a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
+
+/* ---------- journal window ---------- */
+function jBadge() { const b = $('#jrBadge'); if (!b || !J) return; const n = J.fresh || 0; b.hidden = !n; b.textContent = n > 9 ? '9+' : n; }
+function jStats() { const got = Object.keys(J.e).filter(k => JR_BY[k]).length, gold = Object.values(J.e).filter(e => e.star >= 2).length; return { got, gold, total: JR.length }; }
+var JR_FILTER = 0;
+function openJournal() {
+  jrInit(); if (!J) J = jLoad(); const dlg = $('#journal'); if (!dlg) return;
+  J.fresh = 0; jSave(); jBadge(); renderJournal();
+  if (dlg.showModal) { if (!dlg.open) dlg.showModal(); } else dlg.setAttribute('open', '');
+}
+function renderJournal() {
+  const st = jStats(), MKN = k => (typeof MODES !== 'undefined' && MODES[k] ? MODES[k].name : '');
+  $('#jrProg').innerHTML = `已记录 <b>${st.got}</b> / ${st.total} · 金星 <b>${st.gold}</b> · 变异 <b>${Object.keys(J.mut).length}</b> / ${Object.keys(MUT).length}`;
+  $('#jrBar').style.width = (st.got / st.total * 100).toFixed(1) + '%';
+  $$('#jrTabs button').forEach(b => b.setAttribute('aria-pressed', +b.dataset.t === JR_FILTER));
+  const list = $('#jrList'); let h = '';
+  if (JR_FILTER === 5) {
+    for (const sp in MUT) { const got = !!J.mut[sp], V = MUT[sp];
+      h += `<li class="jr-card jr-mut ${got ? 'got' : ''}" style="--tc:#f0b25a"><div class="jr-sw" style="${got ? `background:rgb(${V.c.map(v => Math.round(v * 255)).join(',')})` : ''}">${got ? '' : '?'}</div><div class="jr-tx"><b>${got ? V.n : '？？？'}</b><small>${got ? `${V.sn}的稀有变异 · 在你的缸里找到` : `${V.sn}的一种稀有颜色。只会在你的缸里自然出生`}</small></div></li>`; }
+    list.innerHTML = h; return;
+  }
+  for (const E of JR) { if (JR_FILTER && E.t !== JR_FILTER) continue; const e = J.e[E.k], T = JR_TIER[E.t], ph = e && e.star >= 2 ? jPhoto(E.k) : null;
+    const where = E.w === 'land' ? '陆地缸' : E.w === 'ocean' ? '海洋缸' : '任意缸';
+    const stars = e ? (E.auto ? '<span class="jr-st on" title="已达成">✓</span>' : `<span class="jr-st on">★</span><span class="jr-st ${e.star >= 2 ? 'on gold' : ''}" title="${e.star >= 2 ? '拍到了照片' : '拍下它的照片可以升级'}">★</span>`) : '';
+    h += `<li class="jr-card ${e ? 'got' : ''}" style="--tc:${T.c}">${ph ? `<img class="jr-ph" src="${ph}" alt="">` : e ? (E.auto ? `<div class="jr-ph jr-ph1"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>已达成</div>` : `<div class="jr-ph jr-ph1"><svg viewBox="0 0 24 24"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.3" r="3.4"/></svg>待拍照</div>`) : `<div class="jr-ph jr-ph0">?</div>`}
+      <div class="jr-tx"><div class="jr-row"><span class="jr-tier">${T.n}</span><span class="jr-where">${where}</span><span class="jr-stars">${stars}</span></div>
+      <b>${e ? E.n : '？？？'}</b><small>${e ? E.d : E.h}</small>${e ? `<em>第 ${e.day} 天 · ${MKN(e.mk)}</em>` : ''}</div></li>`; }
+  list.innerHTML = h;
+}
+function initJournal() {
+  jrInit(); const dlg = $('#journal'); if (!dlg || dlg.dataset.ready) return; dlg.dataset.ready = '1'; if (!J) J = jLoad();
+  $('#jrClose').addEventListener('click', () => dlg.close()); dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  $$('#jrTabs button').forEach(b => b.addEventListener('click', () => { JR_FILTER = +b.dataset.t; renderJournal(); }));
+  $$('[data-open-journal]').forEach(b => b.addEventListener('click', openJournal)); jBadge();
+}
+/* game-side setup, runs once the tank exists */
+jrInit(); if (!env.jx || typeof env.jx !== 'object') env.jx = {};
+J = jLoad(); initJournal(); JR_READY = true; JR_DAY = env.day;
+for (const k of SPK) for (const a of pop[k]) if (a.mut) applyMut(a);
+$('#camBtn').addEventListener('click', takePhoto);
+$('#jrBtn').addEventListener('click', openJournal);
+$('#toasts').addEventListener('click', e => { const b = e.target.closest('.tlink'); if (!b) return; e.stopPropagation();
+  if (b.dataset.photo) savePhoto().catch(() => toast('照片保存失败')); else if (b.dataset.follow) { const a = jById(+b.dataset.follow); if (a && a.alive) { selectEntity(a); startFollow(a, 'orbit'); directorOff(); } else toast('它已经离开了'); } });
+addEventListener('keydown', e => { if (e.target.tagName === 'INPUT' || e.ctrlKey || e.metaKey || e.altKey) return; const k = e.key.toLowerCase(); if (k === 'p') takePhoto(); else if (k === 'j') { const d = $('#journal'); if (d.open) d.close(); else openJournal(); } });
 </script>
 </html>

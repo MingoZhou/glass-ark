@@ -167,6 +167,17 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .settings h4{margin:0 0 8px;font:400 15px var(--display);letter-spacing:.1em}
 .settings p{font-size:11.5px;color:var(--muted);margin:6px 0 12px;line-height:1.5}
 .settings input[type=range]{width:100%}
+/* close buttons and the phone backdrop: every panel can be closed from inside itself */
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin:-4px -4px 10px 0}
+.sheet-head h3{margin:0;font:400 18px/1.2 var(--display);letter-spacing:.14em}
+.sheet-x{flex:none;width:34px;height:34px;display:grid;place-items:center;border-radius:99px;border:1px solid var(--line-2);background:rgba(255,255,255,.04);color:var(--ink);font:300 22px/1 var(--body);cursor:pointer;pointer-events:auto}
+.sheet-x:hover,.sheet-x:focus-visible{border-color:rgba(240,178,90,.7);color:var(--lamp)}
+.tabs .sheet-x{flex:0 0 30px;width:30px;height:30px;padding:0;margin:5px 6px 5px 4px;border:1px solid var(--line-2);border-radius:99px;font:300 20px/1 var(--body);letter-spacing:0;color:var(--ink)}
+.pal-x{position:sticky;left:-8px;z-index:1;flex:0 0 auto;align-self:stretch;min-width:46px;margin:-8px 0 -8px -8px;padding:0 4px;border-radius:14px 0 0 14px;border-right:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:300 22px/1 var(--body);cursor:pointer}
+.pal-x small{font-size:10px;color:var(--muted);letter-spacing:.06em}
+.scrim{position:fixed;inset:0;z-index:3;background:rgba(3,6,4,.45);-webkit-tap-highlight-color:transparent}
+@keyframes zpulse{0%,100%{box-shadow:0 0 0 0 rgba(240,178,90,.0)}50%{box-shadow:0 0 0 6px rgba(240,178,90,.35)}}
+.zen-exit.pulse{animation:zpulse 1.2s ease-in-out 3;border-color:rgba(240,178,90,.8)}
 
 .toasts{top:calc(74px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:min(440px,calc(100% - 32px))}
 .toast{padding:8px 14px;border-radius:10px;font-size:12.5px;background:var(--panel-2);border:1px solid var(--line-2);box-shadow:0 8px 24px rgba(0,0,0,.4);animation:tin .35s ease-out}
@@ -190,6 +201,9 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .hero{position:relative;min-height:clamp(560px,92vh,940px);display:flex;align-items:center;overflow:hidden;isolation:isolate}
 .hero-art,.hero-art img{position:absolute;inset:0;width:100%;height:100%;display:block}
 .hero-art img{object-fit:cover;object-position:72% 50%;z-index:-2}
+/* living hero: a 9 s seamless loop made from the hero art; fades in over the still image once it is actually playing */
+.hero-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 50%;z-index:-2;opacity:0;transition:opacity 1.4s ease;pointer-events:none}
+.hero-vid.on{opacity:1}
 .hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
   background:linear-gradient(90deg,rgba(8,12,10,.96) 0%,rgba(8,12,10,.82) 26%,rgba(8,12,10,.25) 52%,rgba(8,12,10,0) 70%),linear-gradient(0deg,var(--bg) 0%,rgba(8,12,10,0) 22%)}
 #homeBg{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:-1;pointer-events:none}
@@ -229,6 +243,45 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .home-foot .keys-touch{display:none}@media (hover:none) and (pointer:coarse){.home-foot .keys-desk{display:none}.home-foot .keys-touch{display:block}}
 .home-foot .keys{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em}
 
+/* ---- 缸中见闻录 ---- */
+.save-open+.save-open{margin-left:8px}
+.shelf-head .save-open:first-of-type{margin-left:auto}
+@media (max-width:760px){.shelf-head .save-open:first-of-type{margin-left:0}}
+.journal{width:min(760px,calc(100vw - 24px))}
+.jr-prog{display:flex;flex-direction:column;gap:6px;margin:0 0 12px;color:var(--muted);font-size:12.5px}
+.jr-prog b{color:var(--ink);font-weight:600}
+.jr-prog i{display:block;height:4px;border-radius:9px;background:rgba(255,255,255,.07);overflow:hidden}
+.jr-prog i b{display:block;height:100%;background:linear-gradient(90deg,#8fb39a,#f0b25a)}
+.jr-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.jr-tabs button{padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:none;color:var(--muted);font:13px var(--body);cursor:pointer}
+.jr-tabs button[aria-pressed="true"]{color:var(--lamp-ink);background:var(--lamp);border-color:var(--lamp)}
+.jr-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.jr-card{display:flex;gap:10px;padding:10px;border:1px solid var(--line);border-left:3px solid color-mix(in srgb,var(--tc) 35%,transparent);border-radius:12px;background:rgba(255,255,255,.015);opacity:.62}
+.jr-card.got{opacity:1;border-left-color:var(--tc);background:rgba(255,255,255,.035)}
+.jr-ph{flex:none;width:72px;height:48px;border-radius:7px;object-fit:cover;background:#0a0f0c}
+.jr-ph0{display:grid;place-items:center;color:var(--faint);font:400 20px var(--display);border:1px dashed var(--line)}
+.jr-card.got .jr-ph0{border-style:solid;background:linear-gradient(135deg,color-mix(in srgb,var(--tc) 30%,#0a0f0c),#0a0f0c)}
+.jr-tx{min-width:0;display:flex;flex-direction:column;gap:2px}
+.jr-tx b{font:400 15px/1.3 var(--display);letter-spacing:.06em;color:var(--ink)}
+.jr-tx small{font-size:11.5px;line-height:1.45;color:var(--muted)}
+.jr-tx em{font-style:normal;font-size:11px;color:var(--faint);margin-top:2px}
+.jr-row{display:flex;align-items:center;gap:6px;font-size:10.5px}
+.jr-tier{color:var(--tc);font-weight:600;letter-spacing:.08em}
+.jr-where{color:var(--faint)}
+.jr-stars{margin-left:auto;display:flex;gap:1px}
+.jr-st{color:rgba(255,255,255,.18);font-size:12px}.jr-st.on{color:#c9d3cc}.jr-st.gold{color:#f0b25a;text-shadow:0 0 6px rgba(240,178,90,.6)}
+.jr-sw{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:var(--faint);font:400 20px var(--display);border:1px dashed var(--line);box-shadow:inset 0 -6px 12px rgba(0,0,0,.35)}
+.jr-btn{position:relative}
+.jr-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;padding:0 4px;box-sizing:border-box;border-radius:99px;background:#d9534a;color:#fff;font:600 10px/16px var(--body);text-align:center}
+.jr-toast{display:block;font-size:11px;letter-spacing:.08em;color:var(--tc,#f0b25a);margin-bottom:2px}
+.toast small{color:var(--muted);font-size:11px}
+.tlink{margin-left:6px;padding:2px 8px;border-radius:99px;border:1px solid rgba(240,178,90,.6);background:none;color:var(--lamp);font:12px var(--body);cursor:pointer;pointer-events:auto}
+.toasts .toast{pointer-events:auto}
+.mut-badge{display:inline-block;margin:-4px 0 8px;padding:2px 9px;border-radius:99px;border:1px solid rgba(240,178,90,.55);color:var(--lamp);font-size:11.5px}
+.flash{position:fixed;inset:0;z-index:20;background:#fff;opacity:0;pointer-events:none}
+.flash.go{animation:flash .45s ease-out}
+@keyframes flash{0%{opacity:.75}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.flash.go{animation:none}}
 /* ---- save manager ---- */
 .save-open{margin-left:auto;display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:99px;border:1px solid var(--line-2);background:rgba(8,12,10,.5);color:var(--ink);font:400 13px var(--body);letter-spacing:.06em;cursor:pointer}
 .save-open:hover,.save-open:focus-visible{border-color:rgba(240,178,90,.6);color:var(--lamp)}
@@ -282,7 +335,9 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
   .hint{display:none}
   .tool{min-width:50px;font-size:10.5px}
   .chip span{display:none}
-  .settings{right:12px;left:12px;width:auto}
+  .settings{right:12px;left:12px;width:auto;max-height:calc(100% - 170px - env(safe-area-inset-bottom,0px));overflow:auto}
+  .side,.settings{z-index:4}
+  .toasts{top:calc(112px + env(safe-area-inset-top,0px));left:12px;right:72px;width:auto;transform:none;align-items:flex-start}
 }
 @media (max-width:520px){ .seg button{min-width:28px} .brand .clock .pill:last-child{display:none} }
 @media (prefers-reduced-motion:reduce){ .toast{animation:none} }
@@ -298,9 +353,66 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .zen-exit svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 body.zen .zen-exit{display:inline-flex}
 [hidden]{display:none!important}
-body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{display:none!important}
+body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.zen #hint{display:none!important}
 .bootfail{position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:50;max-width:min(560px,calc(100vw - 32px));padding:14px 18px;border-radius:14px;background:rgba(40,16,12,.92);border:1px solid rgba(231,117,93,.6);color:#f3e6e1;font-size:13.5px;line-height:1.7;box-shadow:0 12px 40px rgba(0,0,0,.5)}
 .bootfail b{display:block;font-size:15px;margin-bottom:4px;color:#ffb8a6}.bootfail code{font-family:var(--mono);background:rgba(255,255,255,.08);padding:1px 6px;border-radius:5px}
+
+/* ===================== UI polish (v1.2.1) =====================
+   Warmer "lamplit glass" panels that match the home page, readable type (the display font only for
+   large titles), slim amber scrollbars, consistent buttons. Kept as one override block. */
+:root{--panel:rgba(12,17,14,.86);--panel-2:rgba(19,26,21,.97);--line:rgba(236,220,190,.13);--line-2:rgba(236,220,190,.27);--muted:#b0bcb2;--faint:#84948a}
+.panel{background:linear-gradient(180deg,rgba(255,238,205,.05),rgba(255,238,205,0) 120px),var(--panel);box-shadow:0 16px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,236,200,.08)}
+.iconbtn{color:#c3ccc4;transition:color .15s,background .15s}
+.iconbtn:hover{color:var(--ink);background:rgba(255,240,210,.06)}
+.iconbtn[aria-pressed="true"]{color:var(--lamp);background:rgba(240,178,90,.1)}
+/* slim scrollbars everywhere (the toolbar keeps its hidden one) */
+*{scrollbar-width:thin;scrollbar-color:rgba(240,178,90,.32) transparent}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-track,::-webkit-scrollbar-corner{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(240,178,90,.3);border-radius:99px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background-color:rgba(240,178,90,.55)}
+/* type: sans for everything small, display font only from ~20px up */
+.tabs button{font:600 14px/1 var(--body);letter-spacing:.1em}
+.settings h4{font:600 12.5px/1.2 var(--body);letter-spacing:.14em;color:var(--lamp);margin:4px 0 8px}
+.settings p,.diary,.sp .meta,.tool{font-size:12.5px}
+.item small,.tag,.subh,.gas .k,.log .go,table.zones th,.contract .t em,.flabel .st{font-size:12px}
+.sheet-head h3,.saves-head h3{font:400 24px/1.2 var(--display);letter-spacing:.14em;color:#f3ecdc}
+.flabel .nm{font:600 14px/1.1 var(--body);letter-spacing:.04em}
+.director{font:500 14px var(--body);letter-spacing:.12em}
+.saves-list .sn{font:600 15px/1.3 var(--body);letter-spacing:.02em}
+.saves-list .sm{font-size:12.5px}
+/* buttons and segmented controls */
+.btn{padding:8px 12px;border-radius:10px;border-color:var(--line-2);background:rgba(255,240,210,.04);font-size:13px;transition:border-color .15s,background .15s,color .15s}
+.btn:hover{border-color:rgba(240,178,90,.6);color:#fff;background:rgba(240,178,90,.08)}
+.btn.pri,.segm button[aria-pressed="true"]{background:var(--lamp);color:var(--lamp-ink);border-color:var(--lamp);font-weight:600}
+.segm{border-radius:10px;background:rgba(0,0,0,.18)}
+.segm button{padding:8px 4px;font-size:13px}
+.item{background:rgba(255,240,210,.03)}
+.item:hover{border-color:var(--line-2)}
+.item b{font-weight:600}
+/* dialogs (存档管理 · 缸中见闻录) */
+.saves{background:linear-gradient(180deg,#1a211c 0,#0f1511 160px);border-color:rgba(236,220,190,.2);box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,236,200,.08)}
+.saves-note{font-size:13px;line-height:1.6}
+.saves-x{color:var(--ink)}
+.jr-tabs button{font-size:13px;padding:6px 14px}
+.jr-tx b{font:600 14.5px/1.35 var(--body);letter-spacing:.02em}
+.jr-tx small{font-size:12.5px;line-height:1.5;color:#b9c3bb}
+.jr-tx em{font-size:11.5px}
+.jr-row{font-size:11px}
+.jr-tier{padding:1px 7px;border-radius:99px;background:color-mix(in srgb,var(--tc) 16%,transparent);letter-spacing:.06em}
+.jr-card{border-radius:12px;opacity:.72}
+.jr-card.got{background:linear-gradient(135deg,color-mix(in srgb,var(--tc) 9%,transparent),rgba(255,255,255,.02) 60%)}
+.jr-card.got:hover{border-color:color-mix(in srgb,var(--tc) 55%,transparent)}
+/* a recorded entry without a photo: an emblem that invites a photo instead of an empty dark box */
+.jr-ph1{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:1px solid color-mix(in srgb,var(--tc) 40%,transparent);background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--tc) 28%,transparent),transparent 70%),#0d130f;color:var(--tc);font:600 10.5px var(--body);letter-spacing:.06em}
+.jr-ph1 svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
+.toast{font-size:13px;background:linear-gradient(180deg,#1d251f,#151b17);border-color:rgba(236,220,190,.22)}
+.toast small{font-size:12px}
+@media (max-width:860px){
+  /* the animal card sits above the toolbar so it never covers the top-right buttons */
+  .inspect{top:auto;bottom:calc(84px + env(safe-area-inset-bottom,0px));max-height:44%}
+  .tool{font-size:11.5px}
+}
 </style>
 
 <div id="app">
@@ -331,6 +443,8 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
       <button class="iconbtn panel" id="soundBtn" aria-pressed="false" title="声音开关：雨声、蛙鸣、蟋蟀振翅" aria-label="声音"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></button>
       <button class="iconbtn panel" id="glassBtn" aria-pressed="false" title="隐藏玻璃和缸架（G）：去掉遮挡，看缸内更清楚" aria-label="隐藏玻璃"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8l3-3M8 13l8-8M13 19l6-6" opacity=".7"/><path d="M3 21 21 3" class="slash"/></svg></button>
       <button class="iconbtn panel" id="zenBtn" aria-pressed="false" title="沉浸模式：隐藏所有界面，只留下方工具栏（H），适合挂机观赏" aria-label="沉浸模式"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+      <button class="iconbtn panel" id="camBtn" title="拍照（P）：刚发生的见闻还在画面里时拍下，可以升级为金星" aria-label="拍照"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.3" r="3.4"/></svg></button>
+      <button class="iconbtn panel jr-btn" id="jrBtn" title="缸中见闻录（J）" aria-label="缸中见闻录"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg><span class="jr-badge" id="jrBadge" hidden></span></button>
       <button class="iconbtn panel" id="setBtn" aria-pressed="false" title="设置：画质（低/中/高）、冷凝水效果" aria-label="设置"><svg viewBox="0 0 24 24"><path d="M4 7h8M17 7h3M4 17h3M12 17h8"/><circle cx="14.5" cy="7" r="2.2"/><circle cx="9.5" cy="17" r="2.2"/></svg></button>
       <button class="iconbtn panel" id="leftToggle" aria-pressed="false" title="委托与生态日志" aria-label="委托与日志"><svg viewBox="0 0 24 24"><path d="M6 4h12v16H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></button>
       <button class="iconbtn panel" id="rightToggle" aria-pressed="false" title="缸况与食物网" aria-label="缸况与物种"><svg viewBox="0 0 24 24"><path d="M4 19V11M10 19V5M16 19v-6M22 19H2"/></svg></button>
@@ -341,6 +455,7 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
     <div class="tabs" role="tablist">
       <button role="tab" data-tab="contracts" aria-selected="true">委托<small id="ctCount"></small></button>
       <button role="tab" data-tab="log" aria-selected="false">生态日志</button>
+      <button class="sheet-x" type="button" data-close="left" aria-label="关闭">×</button>
     </div>
     <div class="tabbody" id="tab-contracts"></div>
     <div class="tabbody" id="tab-log" hidden><ul class="log" id="logList"></ul></div>
@@ -350,6 +465,7 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
     <div class="tabs" role="tablist">
       <button role="tab" data-tab="env" aria-selected="true">缸况</button>
       <button role="tab" data-tab="species" aria-selected="false">食物网<small id="spCount"></small></button>
+      <button class="sheet-x" type="button" data-close="right" aria-label="关闭">×</button>
     </div>
     <div class="tabbody" id="tab-env">
       <div class="gas">
@@ -366,7 +482,9 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
 
   <div class="hud toasts" id="toasts" aria-live="polite"></div>
   <aside class="hud panel inspect live" id="inspect" hidden></aside>
+  <div class="scrim" id="scrim" hidden></div>
   <aside class="hud panel settings live" id="settings" hidden>
+    <div class="sheet-head"><h3>设置</h3><button class="sheet-x" type="button" data-close="settings" aria-label="关闭">×</button></div>
     <h4>画质</h4>
     <div class="segm" id="qualSeg"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div>
     <p>手机默认“低”：关闭实时阴影和后期，草的密度降到三成。高画质开启泛光、景深和高分辨率阴影。</p>
@@ -403,9 +521,18 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
     </nav>
   </div>
 
+  <div class="flash" id="flash"></div>
+  <dialog class="saves journal" id="journal" aria-labelledby="jrTitle">
+    <div class="saves-head"><h3 id="jrTitle">缸中见闻录</h3><button class="saves-x" id="jrClose" type="button" aria-label="关闭">×</button></div>
+    <p class="saves-note">只记录你亲眼看到的瞬间：事情发生时，主角要在画面里。趁它还在画面里按相机拍下来，可以升级为金星。整座方舟共用一本见闻录。</p>
+    <div class="jr-prog"><span id="jrProg"></span><i><b id="jrBar"></b></i></div>
+    <div class="jr-tabs" id="jrTabs" role="group" aria-label="筛选"><button data-t="0">全部</button><button data-t="1">常见</button><button data-t="2">少见</button><button data-t="3">罕见</button><button data-t="4">传说</button><button data-t="5">稀有变异</button></div>
+    <ul class="jr-list" id="jrList"></ul>
+  </dialog>
   <div class="home" id="home">
     <header class="hero">
       <picture class="hero-art"><source media="(max-width:760px)" srcset="assets/home/hero-tall.webp"><img src="assets/home/hero-wide.webp" alt="夜里书桌上的一只玻璃生态缸：沙漠、草甸、睡莲水塘和雨林瀑布连成一片" width="1536" height="1024" fetchpriority="high"></picture>
+      <video class="hero-vid" id="heroVid" muted loop playsinline preload="none" aria-hidden="true" disablepictureinpicture></video>
       <canvas id="homeBg" aria-hidden="true"></canvas>
       <div class="hero-copy">
         <div class="eyebrow">GLASS ARK · 微缩生态模拟</div>
@@ -416,7 +543,7 @@ body.zen .hud:not(.dock),body.zen #labels,body.zen .director,body.zen #hint{disp
       </div>
     </header>
     <section class="shelf" id="shelf" aria-label="选择生态缸">
-      <div class="shelf-head"><h2>选一只缸</h2><p>每只缸的进度会自动保存在这台设备上</p><button class="save-open" id="saveOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>存档管理</button></div>
+      <div class="shelf-head"><h2>选一只缸</h2><p>每只缸的进度会自动保存在这台设备上</p><button class="save-open" data-open-journal type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg>缸中见闻录</button><button class="save-open" id="saveOpen" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>存档管理</button></div>
       <div class="modes">
         <button class="mode" data-mode="mixed">
           <span class="mode-img"><img src="assets/home/card-mixed.webp" alt="玻璃缸里四种气候连成一片：沙漠、开花的草甸、睡莲水塘和带瀑布的雨林" width="960" height="640" loading="lazy" decoding="async"></span>

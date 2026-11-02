@@ -99,7 +99,7 @@ function digPlant(p){if(!p.alive)return;const g=PT[p.type].cost*0.3;shovelRef+=g
 function shovelToast(){clearTimeout(shovelT);shovelT=setTimeout(()=>{if(shovelN)toast(`铲除了 ${shovelN} 株植物　+${Math.round(shovelRef)} 孢子`);shovelN=0;shovelRef=0;},350);}
 function decorSim(dt){for(const d of DECOR){
     if(d.fount&&env.pump){const z=env.zones[zoneAt(d.x,d.z)];z.m=Math.min(1,z.m+(0.82-z.m)*0.0015*dt);z.h=Math.min(1,z.h+(0.85-z.h)*0.0012*dt);}
-    if(d.rot&&!OCEAN&&Math.random()<0.0015*dt){const z=env.zones[zoneAt(d.x,d.z)];z.fert=Math.min(1.2,z.fert+0.01);if(z.h>0.6&&plants.filter(p=>p.type==='mushroom').length<45){const a=rand(0,6.28),x=d.x+Math.cos(a)*d.r*0.9,zz=d.z+Math.sin(a)*d.r*0.9;if(!inWater(x,zz)&&!blocked(x,zz,0)&&spacingOK(x,zz,0.2)){addPlant('mushroom',x,zz,0.15,irand(0,2));stats.mush++;flushPlants();}}}}}
+    if(d.rot&&!OCEAN&&Math.random()<0.0015*dt){const z=env.zones[zoneAt(d.x,d.z)];z.fert=Math.min(1.2,z.fert+0.01);if(z.h>0.6&&plants.filter(p=>p.type==='mushroom').length<45){const a=rand(0,6.28),x=d.x+Math.cos(a)*d.r*0.9,zz=d.z+Math.sin(a)*d.r*0.9;if(!inWater(x,zz)&&!blocked(x,zz,0)&&spacingOK(x,zz,0.2)){addPlant('mushroom',x,zz,0.15,irand(0,2));stats.mush++;jot('mushroom',{x,z:zz});flushPlants();}}}}}
 /* bubbles (ocean) */
 const BN=OCEAN?500:1,bubPos=new Float32Array(BN*3).fill(-100),bubs=[];for(let i=0;i<BN;i++)bubs.push({t:1,x:0,y:-100,z:0,v:0,w:0});
 const bubGeo=new THREE.BufferGeometry();bubGeo.setAttribute('position',new THREE.BufferAttribute(bubPos,3));

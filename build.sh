@@ -2,7 +2,7 @@
 # 把 src/ 下的分段源码拼成一个 index.html（three.js 从本仓库 vendor/ 加载，不依赖 CDN）
 set -euo pipefail
 cd "$(dirname "$0")"
-FILES="js1.js js2.js js3.js js4.js js4o.js js5.js js5o.js js6.js js7.js js7d.js js8.js js9.js"
+FILES="js1.js js2.js js3.js js4.js js4o.js js5.js js5o.js js6.js js7.js js7d.js js8.js js9.js js10.js"
 CDN='https://cdn.jsdelivr.net/npm/three@0.165.0/'
 {
   printf '<!doctype html>\n<html lang="zh-CN">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'

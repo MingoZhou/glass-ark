@@ -87,7 +87,21 @@ function setPanel(side,on){const el=$('#'+side),v=on==null?!el.classList.contain
   if(v&&narrowUI())$('#'+(side==='left'?'right':'left')).classList.remove('open');
   const lo=$('#left').classList.contains('open');document.body.classList.toggle('left-open',lo);
   $('#leftToggle').setAttribute('aria-pressed',lo);$('#rightToggle').setAttribute('aria-pressed',$('#right').classList.contains('open'));
+  syncOverlay();
   if(!narrowUI())try{localStorage.setItem('ark-panels',JSON.stringify({l:$('#left').classList.contains('open'),r:$('#right').classList.contains('open')}));}catch(e){}}
+/* phones: one panel at a time over a dim backdrop. The × inside each panel, a tap on the backdrop
+   and the system back gesture all close it (back would otherwise leave the game). */
+var histArmed=false,histSkip=false;
+function anyOverlay(){return !$('#settings').hidden||$('#left').classList.contains('open')||$('#right').classList.contains('open');}
+function closeOverlays(){const s=$('#settings');if(!s.hidden){s.hidden=true;$('#setBtn').setAttribute('aria-pressed','false');}
+  if($('#left').classList.contains('open'))setPanel('left',false);if($('#right').classList.contains('open'))setPanel('right',false);syncOverlay();}
+function syncOverlay(){const sc=$('#scrim');if(!sc)return;const on=narrowUI()&&anyOverlay();sc.hidden=!on;if(on)$('#inspect').hidden=true;
+  if(on&&!histArmed){try{history.pushState({arkOverlay:1},'');histArmed=true;}catch(e){}}
+  else if(!on&&histArmed){histArmed=false;histSkip=true;try{history.back();}catch(e){histSkip=false;}}}
+addEventListener('popstate',()=>{if(histSkip){histSkip=false;return;}if(histArmed){histArmed=false;closeOverlays();}});
+$('#scrim').addEventListener('click',closeOverlays);
+$$('.sheet-x[data-close]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();const w=b.dataset.close;
+  if(w==='settings'){$('#settings').hidden=true;$('#setBtn').setAttribute('aria-pressed','false');syncOverlay();}else setPanel(w,false);}));
 function restorePanels(){if(narrowUI())return;try{const s=JSON.parse(localStorage.getItem('ark-panels')||'null');if(s){setPanel('left',!!s.l);setPanel('right',!!s.r);}}catch(e){}}
 
 /* onboarding chip: the next 上手任务 stays visible even with the panels closed */
@@ -103,10 +117,10 @@ function saveKey(k){return 'ark-save-'+(k||MK);}
 function readSave(k){try{const s=localStorage.getItem(saveKey(k));if(!s)return null;const o=JSON.parse(s);return o&&o.v===1&&o.mk===(k||MK)?o:null;}catch(e){return null;}}
 function saveMeta(k){try{const s=localStorage.getItem('ark-meta-'+k);return s?JSON.parse(s):null;}catch(e){return null;}}
 function serializeWorld(){const r=v=>Math.round(v*1000)/1000;const E={};
-  for(const k of['time','day','o2','co2','coins','lamp','pump','vent','pond','algae','heat','score','balanceDays','dayOk','sal','nut','plank','temp','visit'])if(env[k]!==undefined)E[k]=env[k];
+  for(const k of['time','day','o2','co2','coins','lamp','pump','vent','pond','algae','heat','score','balanceDays','dayOk','sal','nut','plank','temp','visit','jx'])if(env[k]!==undefined)E[k]=env[k];
   E.zones=env.zones.map(z=>Object.assign({},z));
   const P=plants.filter(p=>p.alive).map(p=>[p.type,r(p.x),r(p.z),p.v,r(p.growth),r(p.health),r(p.size),r(p.rot),p.by!=null?r(p.by):null]);
-  const A=[];for(const k of SPK)for(const a of pop[k]){if(!a.alive)continue;A.push({sp:k,x:r(a.x),z:r(a.z),y:r(a.y||0),h:r(a.h),st:a.stage,sc:r(a.scale),e:r(a.energy),ag:r(a.age),l:r(a.life),n:a.name,k:a.kills,d:a.kids,t:r(a.stageT||0)});}
+  const A=[];for(const k of SPK)for(const a of pop[k]){if(!a.alive)continue;A.push({sp:k,x:r(a.x),z:r(a.z),y:r(a.y||0),h:r(a.h),st:a.stage,sc:r(a.scale),e:r(a.energy),ag:r(a.age),l:r(a.life),n:a.name,k:a.kills,d:a.kids,t:r(a.stageT||0),id:a.id,mu:a.mut?1:0,g:a.gen||0,pa:a.par,ga:a.gpar,pm:a.pmut?1:0});}
   return{v:1,mk:MK,ts:Date.now(),E,P,A,turf:Array.from(turf,v=>Math.round(v*100)/100),D:DECOR.map(d=>[d.type,r(d.x),r(d.z)]),
     C:contracts.map(c=>({k:c.tpl.k,n:c.n,b:c.base,r:c.reward,u:c.due})),S:stats,T:TUT.filter(t=>t.done).map(t=>t.k),col:colony?{x:colony.x,z:colony.z,store:colony.store}:null};}
 let saveOff=false;
@@ -116,8 +130,9 @@ function clearSave(k){try{localStorage.removeItem(saveKey(k));localStorage.remov
 function restoreEnv(S){const E=S.E||{};for(const k in E)if(k!=='zones')env[k]=E[k];if(E.zones)env.zones.forEach((z,i)=>E.zones[i]&&Object.assign(z,E.zones[i]));
   env.waterY=waterLevelY();if(S.S)for(const k in S.S)stats[k]=S.S[k];if(S.turf)S.turf.forEach((v,i)=>{if(i<turf.length)turf[i]=v;});}
 function restorePlants(S){for(const q of S.P||[]){if(!PT[q[0]])continue;const p=addPlant(q[0],q[1],q[2],q[4],q[3]);if(!p)continue;p.health=q[5];p.size=q[6];p.rot=q[7];if(q[8]!=null)p.by=q[8];placePlant(p);}}
-function restoreAnimals(S){for(const q of S.A||[]){if(!SPK.includes(q.sp))continue;let a;try{a=new Agent(q.sp,q.x,q.z,{stage:q.st,scale:q.sc,energy:q.e,age:q.ag,name:q.n,h:q.h});}catch(e){continue;}
+function restoreAnimals(S){const idMap={};for(const q of S.A||[]){if(!SPK.includes(q.sp))continue;let a;try{a=new Agent(q.sp,q.x,q.z,{stage:q.st,scale:q.sc,energy:q.e,age:q.ag,name:q.n,h:q.h});}catch(e){continue;}
     a.life=q.l||a.life;a.kills=q.k||0;a.kids=q.d||0;if(q.t)a.stageT=q.t;if(a.flying&&q.y)a.y=q.y;
+    a.gen=q.g||0;if(q.pa!=null)a.par=idMap[q.pa]!=null?idMap[q.pa]:-1;if(q.ga!=null)a.gpar=idMap[q.ga]!=null?idMap[q.ga]:-1;if(q.pm)a.pmut=1;if(q.mu)a.mut=1;if(q.id!=null)idMap[q.id]=a.id;
     if(q.sp==='butterfly'&&a.stage==='larva'&&!a.trail)a.trail=new Trail(0.45,a.x,a.z,a.h);}
   if(OCEAN)formSchools();}
 /* damselfish share a waypoint per school so the shoal moves as one */
@@ -141,8 +156,8 @@ function fmtWhen(ts){if(!ts)return '';const d=new Date(ts),p=n=>String(n).padSta
 async function downloadJSON(obj,name){const txt=JSON.stringify(obj);
   if(window.claude&&typeof window.claude.use==='function'){const dl=await window.claude.use('downloads').catch(()=>null);if(dl){await dl.save({filename:name,data:txt});return;}}
   const b=new Blob([txt],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);}
-function exportSaves(keys){const out={format:'glass-ark-saves',v:1,exported:Date.now(),saves:{}};for(const k of keys){const r=saveRecord(k);if(r)out.saves[k]=r;}
-  const n=Object.keys(out.saves).length;if(!n)return Promise.resolve(0);const d=new Date(),p=x=>String(x).padStart(2,'0');
+function exportSaves(keys){const out={format:'glass-ark-saves',v:1,exported:Date.now(),saves:{}};try{const j=localStorage.getItem('ark-journal');if(j){out.journal=JSON.parse(j);out.journalPhotos={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('ark-jp-'))out.journalPhotos[k.slice(7)]=localStorage.getItem(k);}}}catch(e){}for(const k of keys){const r=saveRecord(k);if(r)out.saves[k]=r;}
+  const n=Object.keys(out.saves).length;if(!n&&!out.journal)return Promise.resolve(0);const d=new Date(),p=x=>String(x).padStart(2,'0');
   return downloadJSON(out,`glass-ark-${keys.length===1?keys[0]:'saves'}-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.json`).then(()=>n);}
 function importSaves(text){let o;try{o=JSON.parse(text);}catch(e){return{err:'文件不是有效的 JSON'};}
   if(!o||o.format!=='glass-ark-saves'||!o.saves||typeof o.saves!=='object')return{err:'这不是玻璃方舟的存档文件'};
@@ -150,6 +165,9 @@ function importSaves(text){let o;try{o=JSON.parse(text);}catch(e){return{err:'�
     if(!MODES[k]||!d||d.v!==1||d.mk!==k||!Array.isArray(d.P)||!Array.isArray(d.A)||!d.E){bad.push(k);continue;}
     const m=r.meta||{};const meta={day:+(d.E.day||m.day||1),ts:+(d.ts||m.ts||Date.now()),a:d.A.length,p:d.P.length,name:typeof m.name==='string'?m.name.slice(0,24):''};
     try{localStorage.setItem(saveKey(k),JSON.stringify(d));localStorage.setItem('ark-meta-'+k,JSON.stringify(meta));ok.push(k);}catch(e){return{err:'浏览器存储空间不足，导入失败'};}}
+  if(o.journal&&o.journal.v===1&&o.journal.e){try{const cur=JSON.parse(localStorage.getItem('ark-journal')||'null')||{v:1,e:{},mut:{},fresh:0};
+    for(const k in o.journal.e){const a=cur.e[k],b=o.journal.e[k];if(!a||(b.star||1)>(a.star||1))cur.e[k]=b;}Object.assign(cur.mut=cur.mut||{},o.journal.mut||{});localStorage.setItem('ark-journal',JSON.stringify(cur));
+    for(const k in o.journalPhotos||{}){const v=o.journalPhotos[k];if(typeof v==='string'&&v.startsWith('data:image/jpeg')&&v.length<60000&&!localStorage.getItem('ark-jp-'+k))localStorage.setItem('ark-jp-'+k,v);}ok.push('journal');}catch(e){}}
   return{ok,bad};}
 function initSaveManager(){const dlg=$('#saves'),list=$('#savesList'),msg=$('#savesMsg'),file=$('#saveFile');if(!dlg||dlg.dataset.ready)return;dlg.dataset.ready='1';
   const say=t=>{msg.textContent=t;};
@@ -175,13 +193,13 @@ function initSaveManager(){const dlg=$('#saves'),list=$('#savesList'),msg=$('#sa
   $('#saveExportAll').addEventListener('click',()=>{exportSaves(Object.keys(MODES)).then(n=>say(n?`已导出 ${n} 个存档`:'没有可以导出的存档'),e=>say(e&&e.code==='declined'?'已取消导出':'这里不能下载文件'));});
   $('#saveImport').addEventListener('click',()=>file.click());
   file.addEventListener('change',()=>{const f=file.files&&file.files[0];file.value='';if(!f)return;if(f.size>5e6){say('文件太大，不像是存档');return;}
-    f.text().then(t=>{const r=importSaves(t);if(r.err){say(r.err);return;}
-      say(r.ok.length?`已导入：${r.ok.map(k=>MODES[k].name).join('、')}${r.bad.length?`；跳过 ${r.bad.length} 个无效存档`:''}`:'文件里没有可用的存档');render();homeDecorate();});});}
+    f.text().then(t=>{const r=importSaves(t);J=null;if(r.err){say(r.err);return;}
+      say(r.ok.length?`已导入：${r.ok.map(k=>k==='journal'?'缸中见闻录':MODES[k].name).join('、')}${r.bad.length?`；跳过 ${r.bad.length} 个无效存档`:''}`:'文件里没有可用的存档');render();homeDecorate();});});}
 /* home page: "存档 · 第 N 天" badges on the cards, and the main button continues the mixed tank if it has a save */
 function homeDecorate(){$$('#home .mode[data-mode]').forEach(b=>{const k=b.dataset.mode,m=saveMeta(k);const old=b.querySelector('.mode-save');if(old)old.remove();if(!m)return;
     const s=document.createElement('span');s.className='mode-save';s.textContent=`${m.name||'存档'} · 第 ${m.day} 天`;const im=b.querySelector('.mode-img');(im||b).appendChild(s);b.setAttribute('aria-label',`${b.querySelector('.mode-name')?.firstChild?.textContent||k}，继续第 ${m.day} 天`);});
   const m=saveMeta('mixed'),l=$('#ctaLabel');if(l)l.textContent=m?`继续混合生态缸 · 第 ${m.day} 天`:'打开混合生态缸';
-  initSaveManager();
+  initSaveManager();initJournal();
   try{const go=sessionStorage.getItem('ark-go');if(go){sessionStorage.removeItem('ark-go');const b=document.querySelector(`#home .mode[data-mode="${go}"]`);if(b)setTimeout(()=>b.click(),0);}}catch(e){}}
 
 introStart();
