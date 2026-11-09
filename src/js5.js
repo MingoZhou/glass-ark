@@ -1,7 +1,7 @@
 
 /* =================== agents =================== */
 const SHARED_GEO=new Set([FROG_GEO,WING_GEO.fore,WING_GEO.hind]);
-const NAMES=['团子','豆豆','小满','阿布','芝麻','年糕','可乐','棉花','栗子','汤圆','麦穗','星星','米粒','布丁','青团','阿福','小雨','石头','乌龙','椰子','饭团','橙子','小鹿','糯米','小葵','雪糕','瓜子','山竹','阿翠','小灰','闪闪','点点','球球','豆包','花卷','奶茶','柚子','芋圆','小墨','阿金','大宝','二丫','泡泡','小九','阿呆','皮蛋','蘑菇','小可'];
+const NAMES=[TR`团子`,TR`豆豆`,TR`小满`,TR`阿布`,TR`芝麻`,TR`年糕`,TR`可乐`,TR`棉花`,TR`栗子`,TR`汤圆`,TR`麦穗`,TR`星星`,TR`米粒`,TR`布丁`,TR`青团`,TR`阿福`,TR`小雨`,TR`石头`,TR`乌龙`,TR`椰子`,TR`饭团`,TR`橙子`,TR`小鹿`,TR`糯米`,TR`小葵`,TR`雪糕`,TR`瓜子`,TR`山竹`,TR`阿翠`,TR`小灰`,TR`闪闪`,TR`点点`,TR`球球`,TR`豆包`,TR`花卷`,TR`奶茶`,TR`柚子`,TR`芋圆`,TR`小墨`,TR`阿金`,TR`大宝`,TR`二丫`,TR`泡泡`,TR`小九`,TR`阿呆`,TR`皮蛋`,TR`蘑菇`,TR`小可`];
 const isNight=()=>env.daylight<0.18;
 const clockStr=()=>{const t=env.time*24,h=Math.floor(t),m=Math.floor((t-h)*60);return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;};
 const LOG=[];let logDirty=true;
@@ -25,7 +25,7 @@ class Agent{
   disposeModel(){const m=this.m;if(!m)return;if(m.root){agentGroup.remove(m.root);m.root.traverse(o=>{if(o.geometry&&!o.isSprite&&!SHARED_GEO.has(o.geometry))o.geometry.dispose();if(o.isSprite)o.material.dispose();});}
     if(m.tip){agentGroup.remove(m.tip);m.tip.geometry.dispose();}this.m=null;}
   setStage(s){this.stage=s;this.stageT=0;this.buildModel();}
-  note(t){this.diary.unshift(`第${env.day}天 ${clockStr()} ${t}`);if(this.diary.length>6)this.diary.pop();}
+  note(t){this.diary.unshift(TR`第${env.day}天 ${clockStr()} ${t}`);if(this.diary.length>6)this.diary.pop();}
   turnTo(a,rate,dt){this.h+=clamp(angDiff(this.h,a),-rate*dt,rate*dt);}
   seek(tx,tz,sp,dt,rate){this.turnTo(Math.atan2(tz-this.z,tx-this.x),rate||5,dt);this.step(sp,dt);return Math.hypot(tx-this.x,tz-this.z);}
   roam(sp,dt){this.wz=clamp(this.wz+(Math.random()-0.5)*8*dt,-1.8,1.8);this.h+=this.wz*dt;const zp=this.S.zones[zoneAt(this.x,this.z)];
@@ -34,7 +34,7 @@ class Agent{
   step(sp,dt){this.speed=sp;if(sp<=0)return;const nx=this.x+Math.cos(this.h)*sp*dt,nz=this.z+Math.sin(this.h)*sp*dt;
     if(nx<-HW+0.4||nx>HW-0.4||nz<-HD+1.0||nz>HD-0.4){this.turnTo(Math.atan2(-this.z,-this.x),6,dt);return;}
     if(!this.flying){
-      if(this.S.swimOnly||this.stage==='tadpole'){if(!inWater(nx,nz,0.08)){this.turnTo(Math.atan2(POND.z-this.z,POND.x-this.x),6,dt);return;}}
+      if(this.S.swimOnly||this.stage==='tadpole'){if(!inWater(nx,nz,0.08)){const pc=pondCtr(this.x,this.z);this.turnTo(Math.atan2(pc.z-this.z,pc.x-this.x),6,dt);return;}}
       else if(!this.S.swim&&inWater(nx,nz,-0.02)){this.turnTo(this.h+Math.PI,4,dt);return;}
       const o=blocked(nx,nz,0.04);if(o){const a=Math.atan2(this.z-o.z,this.x-o.x);this.turnTo(a+Math.PI/2*(angDiff(a,this.h)>0?1:-1),7,dt);return;}}
     this.x=nx;this.z=nz;}
@@ -45,12 +45,12 @@ class Agent{
     if(this.stuck){const w=this.stuck;const i=w.stuck.indexOf(this);if(i>=0)w.stuck.splice(i,1);}
     this.disposeModel();
     if(reason!=='eaten'&&reason!=='hatched'&&this.S.corpse)addDetritus(this.x,this.z,this.S.corpse*this.scale,'corpse');
-    if((reason==='starved'||reason==='old')&&this.S.lvl>=2)logEvent('warn',`${this.S.name}「${this.name}」${reason==='old'?'寿终正寝':'饿死了'}`,this,1);
+    if((reason==='starved'||reason==='old')&&this.S.lvl>=2)logEvent('warn',TR`${this.S.name}「${this.name}」${reason==='old'?TR`寿终正寝`:TR`饿死了`}`,this,1);
     if(typeof onEntityGone==='function')onEntityGone(this);jDeath(this,reason);}
 }
 function tryBreed(a,prob,dt,x,z,o){const S=a.S;if(a.scale<1||a.energy<0.8||a.age<S.life*0.12||count(a.sp)>=capOf(a.sp)||Math.random()>prob*dt)return null;
   a.energy-=0.35;const n=new Agent(a.sp,x==null?a.x+rand(-0.3,0.3):x,z==null?a.z+rand(-0.3,0.3):z,Object.assign({scale:0.5,age:0,energy:0.7},o||{}));a.kids++;stats.births++;born(n,a);
-  a.note(`生下了「${n.name}」`);if(S.lvl>=2||Math.random()<0.2)logEvent('life',`${S.name}「${a.name}」繁殖了，新成员「${n.name}」`,n,2);return n;}
+  a.note(TR`生下了「${n.name}」`);if(S.lvl>=2||Math.random()<0.2)logEvent('life',TR`${S.name}「${a.name}」繁殖了，新成员「${n.name}」`,n,2);return n;}
 const count=sp=>pop[sp].length;
 const capOf=sp=>Math.round(SPEC[sp].cap*(sp==='ant'?(QK==='low'?0.6:1):1));
 
@@ -61,7 +61,7 @@ function huntTick(a,dt){const H=a.S.hunt;
   if(a.state==='eat'){a.st-=dt;a.speed=0;if(a.st<=0)finishEat(a);return true;}
   if(a.state==='strike'){a.st-=dt;a.speed=0;const prog=1-a.st/H.strikeT;if(H.lunge&&prog<0.45)a.step(H.lunge,dt);
     if(!a.struck&&prog>=H.hitAt){a.struck=true;const p=a.prey;if(p&&p.alive&&!p.heldBy&&!p.stuck&&dist3(a,p)<(H.reach*a.scale+0.08)*1.5&&Math.random()<H.success*(p.flee?0.55:1)){catchPrey(a,p);return true;}a.missed=true;if(p&&p.alive&&p.S.flee)startFlee(p,a);}
-    if(a.st<=0&&a.state==='strike'){a.state='recover';a.st=a.missed?0.8:0.2;if(a.missed)jot('miss',a);if(a.missed&&Math.random()<0.25)logEvent('hunt',`${a.S.name}「${a.name}」扑空了`,a,1);}
+    if(a.st<=0&&a.state==='strike'){a.state='recover';a.st=a.missed?0.8:0.2;if(a.missed)jot('miss',a);if(a.missed&&Math.random()<0.25)logEvent('hunt',TR`${a.S.name}「${a.name}」扑空了`,a,1);}
     return true;}
   if(a.state==='recover'){a.st-=dt;a.speed=0;if(a.st<=0)a.state='idle';return true;}
   if(a.energy>H.hungry&&a.state!=='stalk'&&a.state!=='chase')return false;
@@ -73,9 +73,9 @@ function huntTick(a,dt){const H=a.S.hunt;
   if(d<H.stalkR){a.state='stalk';a.seek(p.x,p.z,H.stalkSp*a.scale,dt,4);}else{a.state='chase';a.seek(p.x,p.z,H.chaseSp*a.scale,dt,5);}
   return true;}
 function catchPrey(a,p){if(a.sp==='snake')stats.snakeHunts=(stats.snakeHunts||0)+1;p.heldBy=a;p.state='caught';p.flee=null;p.hop=null;a.held=p;a.state='eat';a.st=a.S.hunt.eatT;stats.hunts++;bumpExcite(3);
-  const nm=p.S.stageNames&&p.stage!=='adult'?p.S.stageNames[p.stage]:p.S.name;a.note(`捕获了一只${nm}`);if(p.name&&!p.S.noName)p.note(`被${a.S.name}「${a.name}」捉住了`);
-  logEvent('hunt',`${a.S.name}「${a.name}」捕获了${nm}${p.S.noName?'':'「'+p.name+'」'}`,a,3);jHunt(a,p);}
-function finishEat(a){const p=a.held;a.held=null;a.state='idle';if(p&&p.alive){a.energy=Math.min(1,a.energy+(a.S.diet[p.sp].v||0.2));a.kills++;p.die('eaten');}if(a.S.onAte)a.S.onAte(a);}
+  const nm=p.S.stageNames&&p.stage!=='adult'?p.S.stageNames[p.stage]:p.S.name;a.note(TR`捕获了一只${nm}`);if(p.name&&!p.S.noName)p.note(TR`被${a.S.name}「${a.name}」捉住了`);
+  logEvent('hunt',TR`${a.S.name}「${a.name}」捕获了${nm}${p.S.noName?'':TR`「`+p.name+TR`」`}`,a,3);jHunt(a,p);}
+function finishEat(a){const p=a.held;a.held=null;a.state='idle';if(p&&p.alive){a.energy=Math.min(1,a.energy+((a.S.diet[p.sp]||{}).v||0.2));a.kills++;p.die('eaten');}if(a.S.onAte)a.S.onAte(a);}
 function startFlee(p,from){const F=p.S.flee;if(!F||p.heldBy||p.stuck)return;if(F.mode==='roll'){if(!p.rolled){p.rolled=true;p.rollT=rand(4,8);}return;}if(F.mode==='retract'){p.retracted=true;p.rollT=rand(6,12);return;}p.flee={from,t:rand(F.dur*0.7,F.dur*1.2)};}
 function fleeTick(p,dt){if(p.rolled||p.retracted){p.rollT-=dt;p.speed=0;p.state=p.rolled?'rolled':'retracted';if(p.rollT<=0){p.rolled=false;p.retracted=false;p.state='idle';}return true;}
   if(!p.flee)return false;const f=p.flee;f.t-=dt;if(f.t<=0||!f.from.alive){p.flee=null;return false;}
@@ -132,13 +132,13 @@ function webCatch(){for(const w of webs){if(w.progress<1)continue;
   for(const k of['butterfly','firefly','cricket']){for(const p of queryAgents(w.x,w.z,w.r+0.3)){if(p.sp!==k||p.stuck||p.heldBy||!p.alive)continue;if(k==='butterfly'&&(p.stage!=='adult'||p.emerge>0))continue;if(k==='firefly'&&!p.flying)continue;if(k==='cricket'&&!p.hop)continue;
     const dx=p.x-w.c.x,dy=(p.y||0)-w.c.y,dz=p.z-w.c.z;const along=dx*w.n.x+dz*w.n.z;const inx=dx-w.n.x*along,inz=dz-w.n.z*along;if(Math.abs(along)<0.07&&Math.hypot(inx,dy,inz)<w.r*0.95){
       p.stuck=w;p.state='stuck';p.hop=null;p.flee=null;p.stuckPos=new V3(p.x-w.n.x*along,p.y,p.z-w.n.z*along);w.stuck.push(p);p.stuckT=0;
-      logEvent('hunt',`${p.S.name}${p.S.noName?'':'「'+p.name+'」'}撞上了蛛网`,p,2);bumpExcite(2);}}}}}
+      logEvent('hunt',TR`${p.S.name}${p.S.noName?'':TR`「`+p.name+TR`」`}撞上了蛛网`,p,2);bumpExcite(2);}}}}}
 
 /* =================== species =================== */
 const SPEC={
- ant:{name:'切叶蚁',role:'采集者',lvl:1,cost:18,batch:8,life:6,burn:0.002,resp:0.03,zones:[0.6,1,0.6,0.6],color:'#b0502c',habitat:'草甸 · 沙漠边缘',cap:260,noName:true,
+ ant:{name:TR`切叶蚁`,role:TR`采集者`,lvl:1,cost:18,batch:8,life:6,burn:0.002,resp:0.03,zones:[0.6,1,0.6,0.6],color:'#b0502c',habitat:TR`草甸 · 沙漠边缘`,cap:260,noName:true,
   flee:{mode:'run',r:0.5,speed:0.9,dur:1},corpse:0,
-  fact:'工蚁把叶片碎片搬回巢里培养真菌。找到食物后，同伴会沿着气味路线跟过去。天黑后全部回巢。',
+  fact:TR`工蚁把叶片碎片搬回巢里培养真菌。找到食物后，同伴会沿着气味路线跟过去。天黑后全部回巢。`,
   init(a){a.carry=0;a.hidden=false;},
   update(a,dt){if(!colony){a.roam(0.35,dt);return;}if(fleeTick(a,dt))return;alertTick(a,dt);const S=0.55;
     if(a.state==='home'){a.hidden=true;a.speed=0;if(a.energy<0.6&&colony.store>0.3){colony.store-=0.3;a.energy+=0.45;}if(!isNight()&&Math.random()<0.3*dt){a.state='idle';a.hidden=false;a.x=colony.x+rand(-0.15,0.15);a.z=colony.z+rand(-0.15,0.15);}return;}
@@ -153,9 +153,9 @@ const SPEC={
       else{t.amount-=0.12;a.carry=0.4;a.energy=Math.min(1,a.energy+0.15);colony.spot={x:t.x,z:t.z};a.target=null;}}}
     else{a.target=null;a.state='idle';a.roam(S*0.7,dt);if(Math.hypot(a.x-colony.x,a.z-colony.z)>6)a.turnTo(Math.atan2(colony.z-a.z,colony.x-a.x),1.5,dt);}},
  },
- cricket:{name:'蟋蟀',role:'食草 · 夜鸣',lvl:1,cost:14,batch:4,life:5,burn:0.0028,resp:0.05,zones:[0.5,1,0.6,0.35],color:'#8a6238',habitat:'草甸',cap:70,hopDur:0.38,hopH:0.28,corpse:0.1,
+ cricket:{name:TR`蟋蟀`,role:TR`食草 · 夜鸣`,lvl:1,cost:14,batch:4,life:5,burn:0.0028,resp:0.05,zones:[0.5,1,0.6,0.35],color:'#8a6238',habitat:TR`草甸`,cap:70,hopDur:0.38,hopH:0.28,corpse:0.1,
   flee:{mode:'hop',r:0.9,dur:1.2},
-  fact:'吃草叶和腐殖质，是很多捕食者的主食。夜里雄性摩擦前翅鸣叫，受惊时一跳就是体长的十几倍。',
+  fact:TR`吃草叶和腐殖质，是很多捕食者的主食。夜里雄性摩擦前翅鸣叫，受惊时一跳就是体长的十几倍。`,
   model:()=>buildCricket(),
   update(a,dt){if(a.hop){hopTick(a,dt);return;}if(fleeTick(a,dt))return;alertTick(a,dt);
     if(a.chirp>0){a.chirp-=dt;a.state='chirp';a.speed=0;a.chirpS=(a.chirpS||0)-dt;if(a.chirpS<=0){a.chirpS=0.55;sfx('chirp',a);if(isNight())jot('chirp',a);}return;}
@@ -169,9 +169,9 @@ const SPEC={
     m.wings.rotation.x=a.state==='chirp'?Math.sin(performance.now()*0.09)*0.12:0;m.wings.position.y=a.state==='chirp'?0.012:0;},
   mouth(a,o){o.set(a.x+Math.cos(a.h)*0.16*a.scale,a.y+0.05,a.z+Math.sin(a.h)*0.16*a.scale);},
  },
- snail:{name:'蜗牛',role:'食草 · 慢行',lvl:1,cost:12,batch:2,life:10,burn:0.0011,resp:0.03,zones:[0,0.5,1,1],color:'#b98a52',habitat:'溪沼 · 雨林',cap:30,corpse:0.12,
+ snail:{name:TR`蜗牛`,role:TR`食草 · 慢行`,lvl:1,cost:12,batch:2,life:10,burn:0.0011,resp:0.03,zones:[0,0.5,1,1],color:'#b98a52',habitat:TR`溪沼 · 雨林`,cap:30,corpse:0.12,
   flee:{mode:'retract',r:0.5},
-  fact:'靠腹足慢慢爬，身后留下一道亮晶晶的黏液。空气太干时缩回壳里休眠，下雨后又会出来。',
+  fact:TR`靠腹足慢慢爬，身后留下一道亮晶晶的黏液。空气太干时缩回壳里休眠，下雨后又会出来。`,
   model:a=>buildSnail(a),init(a){a.trail=new Trail(0.34,a.x,a.z,a.h);a.ext=1;a.slT=0;},
   update(a,dt){if(fleeTick(a,dt))return;alertTick(a,dt);const zi=zoneAt(a.x,a.z),hum=env.zones[zi].h;
     if(hum<0.5&&!(rain.intensity>0.3&&Math.hypot(rain.cx-a.x,rain.cz-a.z)<3)){a.state='dormant';a.speed=0;return;}
@@ -186,19 +186,19 @@ const SPEC={
     _m4.makeBasis(B.T[0],B.Uv[0],B.S[0]);m.tent.quaternion.setFromRotationMatrix(_m4);m.tent.position.copy(B.C[0]);m.tent.scale.setScalar(Math.max(0.01,a.scale*Math.max(0,a.ext-0.3)/0.7));a.y=m.shell.position.y;},
   mouth(a,o){o.set(a.x,a.y,a.z);},
  },
- butterfly:{name:'蝴蝶',role:'传粉',lvl:1,stages:['egg','larva','pupa','adult'],stageNames:{egg:'卵',larva:'毛毛虫',pupa:'蛹',adult:'蝴蝶'},stageBurn:{egg:0,larva:0.0028,pupa:0,adult:0.005},
-  cost:24,batch:2,life:3,burn:0.005,resp:0.05,zones:[0.4,1,0.7,0.9],color:'#f0a040',habitat:'花丛',cap:30,corpse:0.08,
+ butterfly:{name:TR`蝴蝶`,role:TR`传粉`,lvl:1,stages:['egg','larva','pupa','adult'],stageNames:{egg:TR`卵`,larva:TR`毛毛虫`,pupa:TR`蛹`,adult:TR`蝴蝶`},stageBurn:{egg:0,larva:0.0028,pupa:0,adult:0.005},
+  cost:24,batch:2,life:3,burn:0.005,resp:0.05,zones:[0.4,1,0.7,0.9],color:'#f0a040',habitat:TR`花丛`,cap:30,corpse:0.08,
   flee:{mode:'fly',r:0.7,speed:1.5,dur:1.2},
-  fact:'完全变态：卵在寄主植物上孵出毛毛虫，毛毛虫吃叶子长大后化蛹，再羽化成蝴蝶。成虫吸花蜜时顺便传粉，被拜访过的花结籽更多。',
-  VAR:['君主斑蝶','大闪蝶','金凤蝶'],
+  fact:TR`完全变态：卵在寄主植物上孵出毛毛虫，毛毛虫吃叶子长大后化蛹，再羽化成蝴蝶。成虫吸花蜜时顺便传粉，被拜访过的花结籽更多。`,
+  VAR:[TR`君主斑蝶`,TR`大闪蝶`,TR`金凤蝶`],
   model:a=>a.stage==='egg'?buildEgg(0xe8d86a):a.stage==='larva'?buildCaterpillar():a.stage==='pupa'?buildChrysalis():buildButterfly(a.variant),
   init(a,o){a.variant=o.variant!=null?o.variant:pick([0,0,1,2]);if(a.stage==='adult'){a.flying=true;a.y=heightAt(a.x,a.z)+rand(0.8,2);}if(a.stage==='larva')a.trail=new Trail(0.45,a.x,a.z,a.h);if(a.stage==='egg'&&o.host){a.host=o.host;}},
   update(a,dt){const st=a.stage;
-    if(st==='egg'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.35){a.scale=0.4;a.trail=new Trail(0.45,a.x,a.z,a.h);a.setStage('larva');stats.hatched++;logEvent('life',`一只毛毛虫孵化了`,a,2);}return;}
-    if(st==='pupa'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.6){a.setStage('adult');a.flying=true;a.emerge=5;a.scale=1;a.energy=0.8;a.age=0;stats.emerged++;bumpExcite(4);a.note('破蛹而出');logEvent('life',`蝴蝶「${a.name}」破蛹羽化了`,a,4);}return;}
+    if(st==='egg'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.35){a.scale=0.4;a.trail=new Trail(0.45,a.x,a.z,a.h);a.setStage('larva');stats.hatched++;logEvent('life',TR`一只毛毛虫孵化了`,a,2);}return;}
+    if(st==='pupa'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.6){a.setStage('adult');a.flying=true;a.emerge=5;a.scale=1;a.energy=0.8;a.age=0;stats.emerged++;bumpExcite(4);a.note(TR`破蛹而出`);logEvent('life',TR`蝴蝶「${a.name}」破蛹羽化了`,a,4);}return;}
     if(st==='larva'){alertTick(a,dt);a.stageT+=dt/DAY*(a.energy>0.4?1:0.3);a.scale=Math.min(1,0.4+0.6*a.stageT/1.1);
       if(a.stageT>1.1&&a.energy>0.45){if(!a.perch||!a.perch.alive)a.perch=nearestPlant(a.x,a.z,3,p=>p.h*plantScale(p)>0.45&&!p.T.water);
-        if(a.perch){a.state='pupate';if(a.seek(a.perch.x,a.perch.z,0.06,dt,2)<0.15){a.y=plantBaseY(a.perch)+a.perch.h*plantScale(a.perch)*0.45;a.px=a.perch.x+rand(-0.05,0.05);a.pz=a.perch.z+rand(-0.05,0.05);a.x=a.px;a.z=a.pz;a.setStage('pupa');a.note('化蛹了');logEvent('life',`毛毛虫「${a.name}」化蛹了`,a,2);}return;}}
+        if(a.perch){a.state='pupate';if(a.seek(a.perch.x,a.perch.z,0.06,dt,2)<0.15){a.y=plantBaseY(a.perch)+a.perch.h*plantScale(a.perch)*0.45;a.px=a.perch.x+rand(-0.05,0.05);a.pz=a.perch.z+rand(-0.05,0.05);a.x=a.px;a.z=a.pz;a.setStage('pupa');a.note(TR`化蛹了`);logEvent('life',TR`毛毛虫「${a.name}」化蛹了`,a,2);}return;}}
       a.tt-=dt;if(a.tt<=0){a.tt=2;if(!a.target||!a.target.alive||a.target.growth<0.2)a.target=nearestPlant(a.x,a.z,3,p=>p.T.host&&p.growth>0.25);}
       if(a.target&&a.target.alive){const d=a.seek(a.target.x,a.target.z,0.055,dt,2);if(d<0.18){a.state='eat';a.speed=0;a.target.growth-=0.002*dt;a.target.eaten+=0.002*dt;a.energy=Math.min(1,a.energy+0.02*dt);}else a.state='forage';}
       else{a.state='idle';a.roam(0.04,dt);}return;}
@@ -208,7 +208,7 @@ const SPEC={
     if(isNight()&&!env.lamp){if(!a.perch||!a.perch.alive)a.perch=nearestPlant(a.x,a.z,8,p=>p.h*plantScale(p)>0.3&&!p.T.water);
       if(a.perch){const ty=plantTop(a.perch);const d=Math.hypot(a.perch.x-a.x,a.perch.z-a.z);if(d>0.08){a.seek(a.perch.x,a.perch.z,Math.min(0.9,d*2+0.05),dt,4);a.state='fly';}else{a.state='rest';a.speed=0;}a.y+=(ty-a.y)*Math.min(1,dt*2);}return;}
     a.perch=null;
-    if(a.state==='sip'||a.state==='rest'||a.state==='lay'){a.st-=dt;a.speed=0;if(a.state==='lay'&&a.st<=0&&a.target&&a.target.alive){const t=a.target;const e=new Agent('butterfly',t.x+rand(-0.08,0.08),t.z+rand(-0.08,0.08),{stage:'egg',variant:a.variant,energy:0.8,age:0,scale:1,host:t});born(e,a);e.y=plantBaseY(t)+t.h*plantScale(t)*0.35;a.kids++;a.note('在'+t.T.name+'上产卵');a.energy-=0.25;}
+    if(a.state==='sip'||a.state==='rest'||a.state==='lay'){a.st-=dt;a.speed=0;if(a.state==='lay'&&a.st<=0&&a.target&&a.target.alive){const t=a.target;const e=new Agent('butterfly',t.x+rand(-0.08,0.08),t.z+rand(-0.08,0.08),{stage:'egg',variant:a.variant,energy:0.8,age:0,scale:1,host:t});born(e,a);e.y=plantBaseY(t)+t.h*plantScale(t)*0.35;a.kids++;a.note(TR`在`+t.T.name+TR`上产卵`);a.energy-=0.25;}
       if(a.st<=0){a.state='fly';a.target=null;}return;}
     a.state='fly';a.tt-=dt;
     const wantLay=a.energy>0.7&&a.age>0.3&&count('butterfly')<capOf('butterfly')&&pop.butterfly.filter(b=>b.stage!=='adult').length<18&&Math.random()<0.0035*dt*60;
@@ -234,9 +234,9 @@ const SPEC={
     else f=1.2+Math.sin(a.ph*1.6)*0.28;
     m.R.pv.rotation.x=-f;m.L.pv.rotation.x=f;m.R.hp.rotation.x=0.12*Math.sin(a.ph*27-0.6);m.L.hp.rotation.x=-0.12*Math.sin(a.ph*27-0.6);},
  },
- isopod:{name:'鼠妇',role:'分解者',lvl:0.5,cost:10,batch:4,life:8,burn:0.0018,resp:0.03,zones:[0.1,0.5,1,1],color:'#8b949b',habitat:'潮湿地表',cap:60,corpse:0,
+ isopod:{name:TR`鼠妇`,role:TR`分解者`,lvl:0.5,cost:10,batch:4,life:8,burn:0.0018,resp:0.03,zones:[0.1,0.5,1,1],color:'#8b949b',habitat:TR`潮湿地表`,cap:60,corpse:0,
   flee:{mode:'roll',r:0.5},
-  fact:'分解者：吃落叶、尸体和蘑菇，把养分还给土壤。受到惊吓会蜷成一个球，大多数捕食者拿球没办法。怕干，夜里更活跃。',
+  fact:TR`分解者：吃落叶、尸体和蘑菇，把养分还给土壤。受到惊吓会蜷成一个球，大多数捕食者拿球没办法。怕干，夜里更活跃。`,
   model:()=>buildIsopod(),
   update(a,dt){if(fleeTick(a,dt))return;alertTick(a,dt);const m=localMoist(a.x,a.z,zoneAt(a.x,a.z));if(m<0.3)a.energy-=0.005*dt;const sp=isNight()?0.14:0.08;
     if(a.energy<0.92){a.tt-=dt;if(a.tt<=0){a.tt=2;if(!a.target||!a.target.alive)a.target=nearestDet(a.x,a.z,3.5)||nearestPlant(a.x,a.z,2.5,p=>p.T.isoFood&&p.growth>0.3);}
@@ -247,9 +247,9 @@ const SPEC={
     if(m>0.4)tryBreed(a,0.004,dt);},
   anim(a,dt){const m=a.m;poseGround(m.root,a,a.groundY()+0.004,a.scale*1.1);m.flat.visible=!a.rolled;m.ball.visible=!!a.rolled;if(a.rolled)m.ball.rotation.z=a.ph*0.3;},
  },
- firefly:{name:'萤火虫',role:'夜间发光',lvl:1,cost:26,batch:4,life:4.5,burn:0.0012,resp:0.03,zones:[0,0.5,1,1],color:'#d5f77a',habitat:'水边 · 雨林',cap:50,corpse:0,
+ firefly:{name:TR`萤火虫`,role:TR`夜间发光`,lvl:1,cost:26,batch:4,life:4.5,burn:0.0012,resp:0.03,zones:[0,0.5,1,1],color:'#d5f77a',habitat:TR`水边 · 雨林`,cap:50,corpse:0,
   flee:{mode:'fly',r:0.6,speed:1,dur:1},
-  fact:'白天趴在叶子背面休息，夜里升空，用腹部的冷光按固定节奏闪烁寻找伴侣。喜欢潮湿的水边和雨林。',
+  fact:TR`白天趴在叶子背面休息，夜里升空，用腹部的冷光按固定节奏闪烁寻找伴侣。喜欢潮湿的水边和雨林。`,
   model:()=>buildFirefly(),init(a){a.rate=rand(1.6,2.6);a.glow=0;a.flying=false;},
   update(a,dt){if(!isNight()){a.flying=false;a.state='rest';a.speed=0;a.energy=Math.min(1,a.energy+0.004*dt);return;}
     if(fleeTick(a,dt))return;alertTick(a,dt);if(!a.flying){a.flying=true;a.y=heightAt(a.x,a.z)+0.3;}
@@ -258,24 +258,24 @@ const SPEC={
   anim(a,dt){const m=a.m;a.glow=a.flying?Math.pow(Math.max(0,Math.sin(a.ph*a.rate)),6):0;m.sp.material.opacity=a.glow*0.95+(a.flying?0.06:0);m.sp.scale.setScalar(0.18+0.22*a.glow);
     if(a.flying){m.root.position.set(a.x,a.y,a.z);m.root.rotation.set(0,-a.h,0);}else{m.root.position.set(a.x,a.groundY()+0.015,a.z);}m.root.scale.setScalar(1.2);},
  },
- spider:{name:'园蛛',role:'结网猎手',lvl:2,cost:35,batch:1,life:8,burn:0.0012,resp:0.08,zones:[0.2,0.9,0.7,1],color:'#e0b43a',habitat:'草甸 · 雨林',cap:10,corpse:0.1,
-  diet:{butterfly:{v:0.45,stages:['adult']},firefly:{v:0.3},cricket:{v:0.35},ant:{v:0.12},mantis:{v:0.5}},
+ spider:{name:TR`园蛛`,role:TR`结网猎手`,lvl:2,cost:35,batch:1,life:8,burn:0.0012,resp:0.08,zones:[0.2,0.9,0.7,1],color:'#e0b43a',habitat:TR`草甸 · 雨林`,cap:10,corpse:0.1,
+  diet:{butterfly:{v:0.45,stages:['adult']},firefly:{v:0.3},cricket:{v:0.35},ant:{v:0.12},mantis:{v:0.5},isopod:{v:0.12}},
   hunt:{sense:0.6,stalkR:0.4,reach:0.12,strikeT:0.3,hitAt:0.5,success:0.8,eatT:6,hungry:0.8,stalkSp:0.2,chaseSp:0.3},
-  unlock:{need:()=>count('ant')>=25||count('cricket')>=10,text:'蚂蚁 25 只或蟋蟀 10 只后解锁'},
-  fact:'在植物之间织圆网，网中央有“之”字形的白色丝带。猎物撞网后，它冲过去用丝把猎物裹起来，再慢慢吃掉。',
+  unlock:{need:()=>count('ant')>=25||count('cricket')>=10,text:TR`蚂蚁 25 只或蟋蟀 10 只后解锁`},
+  fact:TR`在植物之间织圆网，网中央有“之”字形的白色丝带。猎物撞网后，它冲过去用丝把猎物裹起来，再慢慢吃掉。`,
   model:()=>buildSpider(),init(a){a.webY=0;},
   update(a,dt){const w=a.web&&a.web.alive?a.web:null;if(!w)a.web=null;
     if(!w){if(a.state==='eat'){a.st-=dt;if(a.st<=0)finishEat(a);return;}a.state='wander';a.flying=false;a.roam(0.25,dt);a.y=heightAt(a.x,a.z);a.tt-=dt;
-      if(a.tt<=0){a.tt=2;if(a.S.zones[zoneAt(a.x,a.z)]>0.5&&!inWater(a.x,a.z,-0.1)&&!webs.some(q=>Math.hypot(q.x-a.x,q.z-a.z)<2.2)){const host=nearestPlant(a.x,a.z,1.6,p=>p.h*plantScale(p)>0.55&&!p.T.water);if(host){a.web=makeWeb(a.x,a.z,rand(0,Math.PI),a);a.state='build';a.st=0;a.flying=true;a.note('开始织网');}}}return;}
+      if(a.tt<=0){a.tt=2;if(a.S.zones[zoneAt(a.x,a.z)]>0.5&&!inWater(a.x,a.z,-0.1)&&!webs.some(q=>Math.hypot(q.x-a.x,q.z-a.z)<2.2)){const host=nearestPlant(a.x,a.z,1.6,p=>p.h*plantScale(p)>0.55&&!p.T.water);if(host){a.web=makeWeb(a.x,a.z,rand(0,Math.PI),a);a.state='build';a.st=0;a.flying=true;a.note(TR`开始织网`);}}}return;}
     w.age+=dt/DAY;a.flying=true;
-    if(a.state==='build'){a.st+=dt;w.progress=Math.min(1,a.st/9);const an=w.progress*22*6.283,rr=w.r*(0.16+0.8*w.progress);const p=w.P(rr,an);a.x=p.x;a.y=p.y;a.z=p.z;if(w.progress>=1){a.state='wait';a.wait=0;w.zig.visible=true;logEvent('life',`园蛛「${a.name}」织好了一张新网`,a,2);}return;}
+    if(a.state==='build'){a.st+=dt;w.progress=Math.min(1,a.st/9);const an=w.progress*22*6.283,rr=w.r*(0.16+0.8*w.progress);const p=w.P(rr,an);a.x=p.x;a.y=p.y;a.z=p.z;if(w.progress>=1){a.state='wait';a.wait=0;w.zig.visible=true;logEvent('life',TR`园蛛「${a.name}」织好了一张新网`,a,2);}return;}
     const home=w.c;
     if(a.state==='wait'){a.wait+=dt;a.x=home.x;a.y=home.y;a.z=home.z;const p=w.stuck.find(q=>q.alive&&!q.wrapped);if(p){a.prey=p;a.state='toPrey';return;}
       if(a.energy<0.8){for(const q of queryAgents(w.x,w.z,0.8)){if((q.sp==='ant'||q.sp==='cricket'||q.sp==='isopod'&&!q.rolled)&&!q.hidden&&!q.heldBy&&!q.stuck&&!q.hop&&Math.random()<0.3*dt){a.prey=q;a.state='drop';a.dropY=a.y;return;}}}
       if(w.age>1.4&&!isNight()){removeWeb(w);a.web=null;a.state='wander';}else if(a.energy<0.3&&a.wait>DAY*0.8){removeWeb(w);a.web=null;a.state='wander';}
       tryBreed(a,0.0012,dt,w.x+rand(-1.5,1.5),w.z+rand(-1.5,1.5));return;}
     if(a.state==='toPrey'){const p=a.prey;if(!p||!p.alive||p.stuck!==w){a.state='return';return;}const tp=p.stuckPos;const dx=tp.x-a.x,dy=tp.y-a.y,dz=tp.z-a.z,d=Math.hypot(dx,dy,dz);const s=Math.min(d,0.5*dt);if(d>0.02){a.x+=dx/d*s;a.y+=dy/d*s;a.z+=dz/d*s;}a.speed=0.5;if(d<0.04){a.state='wrap';a.st=2.5;}return;}
-    if(a.state==='wrap'){a.st-=dt;a.speed=0;if(a.st<=0){const p=a.prey;if(p&&p.alive){p.wrapped=true;if(p.m&&p.m.root)p.m.root.visible=false;a.cocoon=buildCocoon();a.cocoon.position.copy(p.stuckPos);a.cocoon.scale.setScalar(p.sp==='cricket'||p.sp==='mantis'?1.3:1);tank.add(a.cocoon);a.state='feed';a.st=10;stats.hunts++;a.note(`用丝裹住了一只${p.S.name}`);logEvent('hunt',`园蛛「${a.name}」把${p.S.name}裹成了茧`,a,3);bumpExcite(3);}else a.state='return';}return;}
+    if(a.state==='wrap'){a.st-=dt;a.speed=0;if(a.st<=0){const p=a.prey;if(p&&p.alive){p.wrapped=true;if(p.m&&p.m.root)p.m.root.visible=false;a.cocoon=buildCocoon();a.cocoon.position.copy(p.stuckPos);a.cocoon.scale.setScalar(p.sp==='cricket'||p.sp==='mantis'?1.3:1);tank.add(a.cocoon);a.state='feed';a.st=10;stats.hunts++;a.note(TR`用丝裹住了一只${p.S.name}`);logEvent('hunt',TR`园蛛「${a.name}」把${p.S.name}裹成了茧`,a,3);bumpExcite(3);}else a.state='return';}return;}
     if(a.state==='feed'){a.st-=dt;a.speed=0;if(a.st<=0){const p=a.prey;if(p&&p.alive){a.energy=Math.min(1,a.energy+(a.S.diet[p.sp]?a.S.diet[p.sp].v:0.3));a.kills++;const i=w.stuck.indexOf(p);if(i>=0)w.stuck.splice(i,1);p.stuck=null;p.die('eaten');}if(a.cocoon){tank.remove(a.cocoon);a.cocoon.geometry.dispose();a.cocoon=null;}a.prey=null;a.state='return';}return;}
     if(a.state==='return'){const dx=home.x-a.x,dy=home.y-a.y,dz=home.z-a.z,d=Math.hypot(dx,dy,dz);const s=Math.min(d,0.45*dt);if(d>0.02){a.x+=dx/d*s;a.y+=dy/d*s;a.z+=dz/d*s;}if(d<0.03)a.state='wait';return;}
     if(a.state==='drop'){const p=a.prey;if(!p||!p.alive||p.heldBy||p.hidden){a.state='climb';return;}a.x+= (p.x-a.x)*Math.min(1,dt*3);a.z+=(p.z-a.z)*Math.min(1,dt*3);const gy=heightAt(a.x,a.z);a.y=Math.max(gy+0.03,a.y-dt*1.2);
@@ -289,11 +289,11 @@ const SPEC={
     else{const y=a.state==='drop'||a.state==='climb'?a.y:heightAt(a.x,a.z)+0.02;m.root.quaternion.identity();poseGround(m.root,a,y,a.scale*1.15);const walk=a.speed>0?1:0;m.legs.forEach(l=>{const o=Math.sin(a.ph*14+(l.k%2?Math.PI:0)+(l.s>0?0:Math.PI));l.piv.rotation.set(0,o*0.28*walk,Math.max(0,o)*0.3*walk);});}},
   mouth(a,o){o.set(a.x,a.y+0.02,a.z);},
  },
- mantis:{name:'螳螂',role:'伏击猎手',lvl:2,cost:45,batch:1,life:7,burn:0.002,resp:0.12,zones:[0.2,1,0.6,0.9],color:'#78b046',habitat:'花丛 · 草甸',cap:6,corpse:0.15,
+ mantis:{name:TR`螳螂`,role:TR`伏击猎手`,lvl:2,cost:45,batch:1,life:7,burn:0.002,resp:0.12,zones:[0.2,1,0.6,0.9],color:'#78b046',habitat:TR`花丛 · 草甸`,cap:6,corpse:0.15,
   diet:{butterfly:{v:0.45,stages:['adult','larva']},cricket:{v:0.4},firefly:{v:0.3},spider:{v:0.4,cond:p=>!p.web},ant:{v:0.08,w:0.3},isopod:{v:0.15,w:0.3}},
   hunt:{sense:2.0,stalkR:0.9,reach:0.4,strikeT:0.45,hitAt:0.35,success:0.75,eatT:9,hungry:0.72,stalkSp:0.05,chaseSp:0.12,move:(a,p,dt,mode)=>{a.state='stalk';if(a.perch&&a.energy<0.55&&Math.abs(p.y-a.y)>0.3){a.perch=null;a.onPerch=false;}if(a.perch){a.turnTo(Math.atan2(p.z-a.z,p.x-a.x),2,dt);a.speed=0;}else a.seek(p.x,p.z,mode==='stalk'?0.05:0.12,dt,3);}},
-  unlock:{need:()=>count('cricket')>=10&&pop.butterfly.filter(b=>b.stage==='adult').length>=4,text:'蟋蟀 10 只、蝴蝶成虫 4 只后解锁'},
-  fact:'停在花枝上左右摇晃、模仿被风吹动的叶子，等猎物靠近，再用带刺的前足在一瞬间夹住。',
+  unlock:{need:()=>count('cricket')>=10&&pop.butterfly.filter(b=>b.stage==='adult').length>=4,text:TR`蟋蟀 10 只、蝴蝶成虫 4 只后解锁`},
+  fact:TR`停在花枝上左右摇晃、模仿被风吹动的叶子，等猎物靠近，再用带刺的前足在一瞬间夹住。`,
   model:()=>buildMantis(),
   update(a,dt){if(huntTick(a,dt))return;
     if(!a.perch||!a.perch.alive){a.tt-=dt;if(a.tt<=0){a.tt=3;a.perch=nearestPlant(a.x,a.z,4,p=>(p.T.nectar||p.T.perch)&&p.h*plantScale(p)>0.3&&!p.T.water&&!p.T.single);a.onPerch=false;}}
@@ -307,28 +307,28 @@ const SPEC={
     if(a.state==='eat')m.head.rotation.z=Math.sin(a.ph*9)*0.15;else m.head.rotation.z=0;},
   mouth(a,o){o.set(a.x+Math.cos(a.h)*0.2*a.scale,a.y+0.2*a.scale,a.z+Math.sin(a.h)*0.2*a.scale);},
  },
- frog:{name:'雨蛙',role:'两栖捕食者',lvl:2,stages:['egg','tadpole','adult'],stageNames:{egg:'卵块',tadpole:'蝌蚪',adult:'雨蛙'},stageBurn:{egg:0,tadpole:0.0016,adult:0.0021},
-  cost:50,batch:1,life:9,burn:0.0021,resp:0.45,zones:[0,0.4,1,0.85],color:'#6aa83f',habitat:'溪沼 · 水边',cap:26,swim:true,hopDur:0.42,hopH:0.3,corpse:0.35,
+ frog:{name:TR`雨蛙`,role:TR`两栖捕食者`,lvl:2,stages:['egg','tadpole','adult'],stageNames:{egg:TR`卵块`,tadpole:TR`蝌蚪`,adult:TR`雨蛙`},stageBurn:{egg:0,tadpole:0.0016,adult:0.0021},
+  cost:50,batch:1,life:9,burn:0.0021,resp:0.45,zones:[0,0.4,1,0.85],color:'#6aa83f',habitat:TR`溪沼 · 水边`,cap:26,swim:true,hopDur:0.42,hopH:0.3,corpse:0.35,
   diet:{ant:{v:0.07,w:0.5},cricket:{v:0.3},isopod:{v:0.15},butterfly:{v:0.35,stages:['adult','larva'],cond:p=>p.stage!=='adult'||p.y-heightAt(p.x,p.z)<0.7},firefly:{v:0.2,cond:p=>p.flying&&p.y-heightAt(p.x,p.z)<0.8},spider:{v:0.3,cond:p=>!p.web},snail:{v:0.25,w:0.3}},
   hunt:{sense:2.2,stalkR:1.2,reach:0.7,strikeT:0.38,hitAt:0.45,success:0.8,eatT:1.8,hungry:0.7,move:(a,p,dt)=>{a.state='stalk';if(!a.hop){const d=Math.hypot(p.x-a.x,p.z-a.z);startHop(a,Math.atan2(p.z-a.z,p.x-a.x),Math.min(0.9,Math.max(0.25,d-0.5)));}else hopTick(a,dt);}},
   flee:{mode:'hop',r:1.3,dur:1.5},
-  fact:'卵块漂在水面，孵出的蝌蚪吃藻类，一天多后长出四肢爬上岸。成蛙靠弹射长舌头捕虫，夜里鼓起声囊鸣叫，下雨时最热闹。',
+  fact:TR`卵块漂在水面，孵出的蝌蚪吃藻类，一天多后长出四肢爬上岸。成蛙靠弹射长舌头捕虫，夜里鼓起声囊鸣叫，下雨时最热闹。`,
   model:a=>a.stage==='egg'?buildSpawn():a.stage==='tadpole'?buildTadpole():buildFrog(),
   init(a){if(a.stage==='tadpole')a.trail=new Trail(0.22,a.x,a.z,a.h);a.croak=0;},
   update(a,dt){const st=a.stage;
-    if(st==='egg'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.35){const n=irand(5,9);for(let i=0;i<n;i++){const t=new Agent('frog',a.x+rand(-0.25,0.25),a.z+rand(-0.25,0.25),{stage:'tadpole',scale:0.6,age:0,energy:0.7});born(t,a,'hatch');}stats.hatched+=n;logEvent('life',`水塘里孵出了 ${n} 只蝌蚪`,a,3);bumpExcite(3);a.die('hatched');}return;}
+    if(st==='egg'){a.speed=0;a.stageT+=dt/DAY;if(a.stageT>0.35){const n=irand(5,9);for(let i=0;i<n;i++){const t=new Agent('frog',a.x+rand(-0.25,0.25),a.z+rand(-0.25,0.25),{stage:'tadpole',scale:0.6,age:0,energy:0.7});born(t,a,'hatch');}stats.hatched+=n;logEvent('life',TR`水塘里孵出了 ${n} 只蝌蚪`,a,3);bumpExcite(3);a.die('hatched');}return;}
     if(st==='tadpole'){a.stageT+=dt/DAY;a.scale=Math.min(1,0.6+a.stageT*0.4);a.state='swim';a.roam(0.16,dt);const al=env.algae;if(al>0.03){env.algae-=0.00004*dt;a.energy=Math.min(1,a.energy+0.012*dt);}
-      if(a.stageT>1.2&&a.energy>0.4){a.scale=0.45;a.setStage('adult');a.age=0;stats.metamorph++;bumpExcite(3);a.note('长出四肢，爬上了岸');logEvent('life',`蝌蚪「${a.name}」变成了小雨蛙`,a,3);}return;}
+      if(a.stageT>1.2&&a.energy>0.4){a.scale=0.45;a.setStage('adult');a.age=0;stats.metamorph++;bumpExcite(3);a.note(TR`长出四肢，爬上了岸`);logEvent('life',TR`蝌蚪「${a.name}」变成了小雨蛙`,a,3);}return;}
     const zi=zoneAt(a.x,a.z);if(env.zones[zi].h<0.45&&!inWater(a.x,a.z))a.energy-=0.005*dt;
     a.croak=Math.max(0,a.croak-dt);if(isNight()&&a.scale>=0.9&&a.croak<=0&&Math.random()<(rain.intensity>0.2?0.35:0.12)*dt){a.croak=1.8;sfx('frog',a);if(jSeen(a))JR_LAST_CROAK=performance.now();jot('frog_call',a);}
     if(a.hop&&a.state!=='stalk'){hopTick(a,dt);return;}
     if(fleeTick(a,dt))return;alertTick(a,dt);
     if(huntTick(a,dt))return;
     a.state=inWater(a.x,a.z)?'swim':'idle';a.speed=0;a.idle=(a.idle||rand(1,3))-dt;
-    if(a.idle<=0){a.idle=rand(1,3.5);let ang,len;const far=pondD(a.x,a.z)>2.2;if(far||env.zones[zi].h<0.55){ang=Math.atan2(POND.z-a.z,POND.x-a.x)+rand(-0.6,0.6);len=rand(0.5,0.9);}else{ang=a.h+rand(-1.6,1.6);len=rand(0.3,0.9);}startHop(a,ang,len);}
-    if(isNight()&&a.scale>=1&&env.zones[2].h>0.6&&count('frog')<capOf('frog')&&pop.frog.filter(f=>f.stage==='adult').length<11&&a.energy>0.75&&Math.random()<0.0012*dt){const an=rand(0,6.28);const r=pondR(an)*0.85;const x=POND.x+Math.cos(an)*r,z=POND.z+Math.sin(an)*r;if(inPond(x,z,0.05)){born(new Agent('frog',x,z,{stage:'egg',age:0,energy:1}),a,'egg');a.energy-=0.3;a.kids++;a.note('在水塘里产下卵块');logEvent('life',`雨蛙「${a.name}」在水塘里产卵了`,a,3);}}},
+    if(a.idle<=0){a.idle=rand(1,3.5);let ang,len;const far=pondD(a.x,a.z)>2.2;if(far||env.zones[zi].h<0.55){const pc=pondCtr(a.x,a.z);ang=Math.atan2(pc.z-a.z,pc.x-a.x)+rand(-0.6,0.6);len=rand(0.5,0.9);}else{ang=a.h+rand(-1.6,1.6);len=rand(0.3,0.9);}startHop(a,ang,len);}
+    if(isNight()&&a.scale>=1&&env.zones[2].h>0.6&&count('frog')<capOf('frog')&&pop.frog.filter(f=>f.stage==='adult').length<11&&a.energy>0.75&&Math.random()<0.0012*dt){const ps=pondSpot(),x=ps.x,z=ps.z;if(inPond(x,z,0.05)){born(new Agent('frog',x,z,{stage:'egg',age:0,energy:1}),a,'egg');a.energy-=0.3;a.kids++;a.note(TR`在水塘里产下卵块`);logEvent('life',TR`雨蛙「${a.name}」在水塘里产卵了`,a,3);}}},
   anim(a,dt){const m=a.m,st=a.stage;
-    if(st==='egg'){m.root.position.set(a.x,env.waterY-0.01,a.z);m.root.rotation.y=a.ph*0.05;return;}
+    if(st==='egg'){m.root.position.set(a.x,(CREATE?waterSurf(a.x,a.z):env.waterY)-0.01,a.z);m.root.rotation.y=a.ph*0.05;return;}
     if(st==='tadpole'){a.trail.push(a.x,a.z);a.trail.sample(a.x,a.z,14,0.22*a.scale,m.pts);const wy=waterSurf(a.x,a.z)-0.12;for(let i=0;i<14;i++){const p=m.pts[i];const s=Math.sin(a.ph*14-i*0.8)*0.02*(i/13)*a.scale;const B=i>0?m.pts[i-1]:p;const dx=p.x-B.x,dz=p.z-B.z,l=Math.hypot(dx,dz)||1;p.x+=-dz/l*s;p.z+=dx/l*s;p.y=wy;}
       m.body.prof=(t,pp,o)=>{if(t<0.3){o.r=(0.034*Math.pow(Math.sin(Math.PI*(0.12+t/0.3*0.88)),0.6)+0.004)*a.scale;o.fy=0.8;o.fz=1;}else{o.r=(0.022*(1-(t-0.3)/0.7)+0.002)*a.scale;o.fy=2.3;o.fz=0.22;}};m.body.update(m.pts);a.y=wy;return;}
     let y=a.hop?hopY(a):a.groundY(),ext=0,pitch=0;if(a.hop&&!a.hop.swim){const t=a.hop.t;ext=Math.sin(Math.PI*Math.min(1,t*1.5));pitch=(0.45-t)*0.7;}else if(a.hop&&a.hop.swim)ext=Math.max(0,Math.sin(a.hop.t*Math.PI*3))*0.8;
@@ -343,11 +343,11 @@ const SPEC={
     else{m.tongue.visible=false;m.tip.visible=false;a.tipPos=null;}},
   mouth(a,o){if(a.tipPos)o.copy(a.tipPos);else o.set(a.x+Math.cos(a.h)*0.18*a.scale,a.y+0.08*a.scale,a.z+Math.sin(a.h)*0.18*a.scale);},
  },
- lizard:{name:'沙蜥',role:'捕食者',lvl:3,cost:70,batch:1,life:12,burn:0.002,resp:0.9,zones:[1,0.9,0.3,0.35],color:'#c9a066',habitat:'沙漠 · 加热岩',cap:8,corpse:0.6,
+ lizard:{name:TR`沙蜥`,role:TR`捕食者`,lvl:3,cost:70,batch:1,life:12,burn:0.002,resp:0.9,zones:[1,0.9,0.3,0.35],color:'#c9a066',habitat:TR`沙漠 · 加热岩`,cap:8,corpse:0.6,
   diet:{ant:{v:0.07,w:0.5},cricket:{v:0.3},isopod:{v:0.15},butterfly:{v:0.3,stages:['larva','adult'],cond:p=>p.stage==='larva'||p.y-heightAt(p.x,p.z)<0.35},mantis:{v:0.45,cond:p=>!p.onPerch},spider:{v:0.35,cond:p=>!p.web},snail:{v:0.3,w:0.5}},
   hunt:{sense:4.5,stalkR:1.1,reach:0.36,strikeT:0.35,hitAt:0.5,success:0.72,eatT:3,hungry:0.75,stalkSp:0.22,chaseSp:1.4,lunge:1.4},
   flee:{mode:'run',r:1.8,speed:2.0,dur:1.5},
-  fact:'变温动物。早上体温低时趴在加热岩上晒太阳，暖和了才去捕猎；偶尔做几个俯卧撑宣示领地。',
+  fact:TR`变温动物。早上体温低时趴在加热岩上晒太阳，暖和了才去捕猎；偶尔做几个俯卧撑宣示领地。`,
   model:()=>buildLizard(),init(a){a.trail=new Trail(1.2,a.x,a.z,a.h);a.bt=0;a.move=0;a.push=0;a.tflick=0;},
   update(a,dt){a.tflick=Math.max(0,a.tflick-dt);if(Math.random()<0.25*dt)a.tflick=0.35;
     if(isNight()&&!env.lamp){a.state='sleep';a.speed=0;return;}
@@ -370,11 +370,11 @@ const SPEC={
     a.y=B.C[0].y;a.headPos=B.C[0];},
   mouth(a,o){if(a.m&&a.m.body)o.copy(a.m.body.C[0]).addScaledVector(a.m.body.T[0],0.02);else o.set(a.x,a.y,a.z);},
  },
- snake:{name:'玉米蛇',role:'顶级捕食者',lvl:4,cost:140,batch:1,life:20,burn:0.0009,resp:1.2,zones:[0.8,0.8,0.6,1],color:'#df8a47',habitat:'全缸',cap:2,corpse:1,
+ snake:{name:TR`玉米蛇`,role:TR`顶级捕食者`,lvl:4,cost:140,batch:1,life:20,burn:0.0009,resp:1.2,zones:[0.8,0.8,0.6,1],color:'#df8a47',habitat:TR`全缸`,cap:2,corpse:1,
   diet:{frog:{v:0.7,stages:['adult'],cond:p=>p.scale>0.7},lizard:{v:0.8},cricket:{v:0.1,w:0.2}},
   hunt:{sense:4,stalkR:1.6,reach:0.45,strikeT:0.5,hitAt:0.4,success:0.65,eatT:16,hungry:0.45,stalkSp:0.12,chaseSp:0.5,lunge:2.2},
-  unlock:{need:()=>(!SPK.includes('lizard')||count('lizard')>=3)&&(!SPK.includes('frog')||pop.frog.filter(f=>f.stage==='adult').length>=5),get text(){return[SPK.includes('lizard')?'沙蜥 3 只':'',SPK.includes('frog')?'成年雨蛙 5 只':''].filter(Boolean).join('、')+'后解锁';}},
-  fact:'食物链的顶端。靠舌头收集气味追踪猎物，突袭后把猎物整只吞下，再找个温暖的地方慢慢消化好几天。',
+  unlock:{need:()=>(!SPK.includes('lizard')||count('lizard')>=3)&&(!SPK.includes('frog')||pop.frog.filter(f=>f.stage==='adult').length>=5),get text(){return[SPK.includes('lizard')?TR`沙蜥 3 只`:'',SPK.includes('frog')?TR`成年雨蛙 5 只`:''].filter(Boolean).join(TR`、`)+TR`后解锁`;}},
+  fact:TR`食物链的顶端。靠舌头收集气味追踪猎物，突袭后把猎物整只吞下，再找个温暖的地方慢慢消化好几天。`,
   model:()=>buildSnake(),init(a){a.trail=new Trail(2.8,a.x,a.z,a.h);a.bulge=0;a.bt=0.1;a.tflick=0;},
   onAte(a){a.bulge=1;a.bt=0.12;a.state='digest';a.digest=DAY*0.8;},
   update(a,dt){a.tflick=Math.max(0,a.tflick-dt);if(Math.random()<0.4*dt)a.tflick=0.5;

@@ -6,8 +6,8 @@
 // Any input skips the intro. Rotating/zooming only pauses the director; navigating (WASD, panning) hands
 // the camera to the player.
 var INTRO=null;
-const INTRO_LINE={mixed:'沙漠、草甸、溪沼、雨林连成一片',desert:'沙丘、仙人掌和晒太阳的沙蜥',meadow:'野花与蟋蟀，蝴蝶完成变态发育',
-  marsh:'大水塘、香蒲和合唱的雨蛙',jungle:'瀑布、雾气、蕨类和夜里的萤火虫',ocean:'珊瑚礁、小丑鱼、螃蟹和伏击的海鳗'};
+const INTRO_LINE={mixed:TR`沙漠、草甸、溪沼、雨林连成一片`,desert:TR`沙丘、仙人掌和晒太阳的沙蜥`,meadow:TR`野花与蟋蟀，蝴蝶完成变态发育`,
+  marsh:TR`大水塘、香蒲和合唱的雨蛙`,jungle:TR`瀑布、雾气、蕨类和夜里的萤火虫`,ocean:TR`珊瑚礁、小丑鱼、螃蟹和伏击的海鳗`};
 const HERO_PREF=['frog','clown','lizard','butterfly','mantis','crab','snail','grouper','cricket','damsel','shrimp','spider','isopod','ant'];
 const HERO_FIRST={meadow:'butterfly',desert:'lizard',ocean:'clown'};  // the species each tank's card promises
 const INTRO_PHI=0.98;  // arrival angle: a little overhead so dunes and plants don't hide the animal
@@ -53,7 +53,7 @@ function introTick(dt){const I=INTRO;if(!I)return;I.t+=dt;
   else cam.theta+=dt*0.05;  // nothing alive to visit: slow turntable
   cam.tT.copy(cam.t);cam.tR=cam.r;cam.tTheta=cam.theta;cam.tPhi=cam.phi;
   if(!I.capOff&&I.t>INTRO_GLIDE-1.4){I.capOff=true;$('#introCap').classList.add('off');}
-  if(!I.named&&I.t>=INTRO_GLIDE&&h){I.named=true;caption(`${h.S.name}「${h.name}」`);}
+  if(!I.named&&I.t>=INTRO_GLIDE&&h){I.named=true;caption(TR`${h.S.name}「${h.name}」`);}
   if(I.t>=INTRO_END)introEnd(false);}
 
 // like setGlass() but temporary: doesn't touch the saved preference
@@ -62,11 +62,11 @@ function introGlass(h){glassHidden=h;GLASSY.forEach(o=>o.visible=!h);HEATROCKS.f
 function introEnd(byUser){const I=INTRO;if(!I)return;INTRO=null;document.body.classList.remove('intro');introGlass(I.glass0);
   const h=I.hero&&I.hero.alive&&!I.hero.hidden?I.hero:null;
   director.on=true;$('#dirBtn').setAttribute('aria-pressed','true');director.next=0;
-  if(h){if(!I.named)caption(`${h.S.name}「${h.name}」`);selectEntity(h,true);startFollow(h,'orbit',true);director.prio=1;director.lockUntil=performance.now()+(byUser?6000:9000);}
+  if(h){if(!I.named)caption(TR`${h.S.name}「${h.name}」`);selectEntity(h,true);startFollow(h,'orbit',true);director.prio=1;director.lockUntil=performance.now()+(byUser?6000:9000);}
   else director.lockUntil=0;
   restorePanels();renderTutHint();
   $('#hint').style.opacity=1;setTimeout(()=>{if(tool==='observe')$('#hint').style.opacity=0;},12000);
-  setTimeout(()=>toast(`导演模式已开启：镜头会自动追踪捕猎、羽化和孵化。${IS_MOBILE?'双指拖动可以接管镜头':'拖动镜头或按 W A S D 随时接管'}`),byUser?200:700);}
+  setTimeout(()=>toast(TR`导演模式已开启：镜头会自动追踪捕猎、羽化和孵化。${IS_MOBILE?TR`双指拖动可以接管镜头`:TR`拖动镜头或按 W A S D 随时接管`}`),byUser?200:700);}
 
 // skip on any deliberate input; the event still reaches its normal handler
 function introSkip(){if(INTRO)introEnd(true);}
@@ -79,7 +79,7 @@ $('#introSkip').addEventListener('click',introSkip);
 let dirOffToasted=false;
 function directorHold(ms){if(director.on&&!INTRO)director.lockUntil=Math.max(director.lockUntil,performance.now()+(ms||20000));}
 function directorOff(){if(!director.on||INTRO)return;director.on=false;$('#dirBtn').setAttribute('aria-pressed','false');caption('');
-  if(!dirOffToasted){dirOffToasted=true;toast('你接管了镜头。想继续自动观赏，点右上角的导演模式按钮');}}
+  if(!dirOffToasted){dirOffToasted=true;toast(TR`你接管了镜头。想继续自动观赏，点右上角的导演模式按钮`);}}
 
 /* side panels: closed by default so the tank gets the screen; desktop remembers what you opened */
 const narrowUI=()=>matchMedia('(max-width:860px)').matches;
@@ -107,7 +107,7 @@ function restorePanels(){if(narrowUI())return;try{const s=JSON.parse(localStorag
 /* onboarding chip: the next 上手任务 stays visible even with the panels closed */
 function renderTutHint(){const el=$('#tutHint');if(!el)return;const t=TUT.find(x=>!x.done);if(!t){el.hidden=true;return;}
   const n=TUT.filter(x=>x.done).length,txt=t.t;
-  el.hidden=false;el.innerHTML=`<b>上手 ${n+1}/${TUT.length}</b><span>${txt}</span><em>+${t.r}</em>`;}
+  el.hidden=false;el.innerHTML=TR`<b>上手 ${n+1}/${TUT.length}</b><span>${txt}</span><em>+${t.r}</em>`;}
 $('#tutHint').addEventListener('click',()=>{setPanel('left',true);const b=$('#left .tabs button[data-tab="contracts"]');if(b)b.click();});
 
 /* =================== save / load =================== */
@@ -117,12 +117,12 @@ function saveKey(k){return 'ark-save-'+(k||MK);}
 function readSave(k){try{const s=localStorage.getItem(saveKey(k));if(!s)return null;const o=JSON.parse(s);return o&&o.v===1&&o.mk===(k||MK)?o:null;}catch(e){return null;}}
 function saveMeta(k){try{const s=localStorage.getItem('ark-meta-'+k);return s?JSON.parse(s):null;}catch(e){return null;}}
 function serializeWorld(){const r=v=>Math.round(v*1000)/1000;const E={};
-  for(const k of['time','day','o2','co2','coins','lamp','pump','vent','pond','algae','heat','score','balanceDays','dayOk','sal','nut','plank','temp','visit','jx'])if(env[k]!==undefined)E[k]=env[k];
+  for(const k of['time','day','o2','co2','coins','lamp','pump','bgOn','vent','pond','algae','heat','score','balanceDays','dayOk','sal','nut','plank','temp','visit','jx','cphase'])if(env[k]!==undefined)E[k]=env[k];
   E.zones=env.zones.map(z=>Object.assign({},z));
   const P=plants.filter(p=>p.alive).map(p=>[p.type,r(p.x),r(p.z),p.v,r(p.growth),r(p.health),r(p.size),r(p.rot),p.by!=null?r(p.by):null]);
   const A=[];for(const k of SPK)for(const a of pop[k]){if(!a.alive)continue;A.push({sp:k,x:r(a.x),z:r(a.z),y:r(a.y||0),h:r(a.h),st:a.stage,sc:r(a.scale),e:r(a.energy),ag:r(a.age),l:r(a.life),n:a.name,k:a.kills,d:a.kids,t:r(a.stageT||0),id:a.id,mu:a.mut?1:0,g:a.gen||0,pa:a.par,ga:a.gpar,pm:a.pmut?1:0});}
-  return{v:1,mk:MK,ts:Date.now(),E,P,A,turf:Array.from(turf,v=>Math.round(v*100)/100),D:DECOR.map(d=>[d.type,r(d.x),r(d.z)]),
-    C:contracts.map(c=>({k:c.tpl.k,n:c.n,b:c.base,r:c.reward,u:c.due})),S:stats,T:TUT.filter(t=>t.done).map(t=>t.k),col:colony?{x:colony.x,z:colony.z,store:colony.store}:null};}
+  return{v:1,mk:MK,ts:Date.now(),E,P,A,turf:Array.from(turf,v=>Math.round(v*100)/100),D:DECOR.map(d=>[d.type,r(d.x),r(d.z),Math.round((d.yaw||0)*1000)/1000,Math.round((d.s||1)*100)/100]),
+    C:contracts.map(c=>({k:c.tpl.k,n:c.n,b:c.base,r:c.reward,u:c.due})),S:stats,T:TUT.filter(t=>t.done).map(t=>t.k),col:colony?{x:colony.x,z:colony.z,store:colony.store}:null,terr:CREATE?terrEnc():undefined};}
 let saveOff=false;
 function saveNow(){if(saveOff||INTRO)return false;try{const o=serializeWorld();localStorage.setItem(saveKey(),JSON.stringify(o));
   const old=saveMeta(MK);localStorage.setItem('ark-meta-'+MK,JSON.stringify({day:env.day,ts:o.ts,a:o.A.length,p:o.P.length,name:old&&old.name||''}));return true;}catch(e){return false;}}
@@ -139,13 +139,14 @@ function restoreAnimals(S){const idMap={};for(const q of S.A||[]){if(!SPK.includ
 function formSchools(){const fish=(pop.damsel||[]).filter(a=>a.alive);const L=fish.filter(a=>a.x<0),R=fish.filter(a=>a.x>=0);
   for(const g of[L,R]){if(!g.length)continue;const sch={lead:g[0],tt:rand(3,6),wp:randWater()};sch.wp.y=g[0].y;g.forEach(a=>a.sch=sch);}}
 function restoreContracts(S){for(const c of S.C||[]){const tpl=CT.find(t=>t.k===c.k);if(tpl)contracts.push({tpl,n:c.n,base:c.b,reward:c.r,due:c.u,id:++UID});}while(contracts.length<3){const n=contracts.length;newContract();if(contracts.length===n)break;}ctDirty=true;}
-function restoreLate(S){for(const d of S.D||[]){if(!DECOR_T[d[0]])continue;const o=buildDecor(d[0],d[1],d[2]);DECOR.push(o);if(o.heat&&glassHidden)o.heat.parts.slice(1).forEach(m=>m.visible=false);if(o.air)env.airstones=(env.airstones||0)+1;}
+function restoreLate(S){for(const d of S.D||[]){if(!DECOR_T[d[0]])continue;const o=buildDecor(d[0],d[1],d[2],d[3]!=null?{yaw:d[3],s:d[4]||1}:null);DECOR.push(o);if(o.heat&&glassHidden)o.heat.parts.slice(1).forEach(m=>m.visible=false);if(o.air)env.airstones=(env.airstones||0)+1;}
+  if((S.D||[]).length)decorChanged();
   for(const k of S.T||[]){const t=TUT.find(x=>x.k===k);if(t)t.done=true;}renderTutHint();if(DECOR.length)refreshGrass();}
-if(SAVE){restoreLate(SAVE);setTimeout(()=>toast(`已读取存档：${MODE.name} · 第 ${env.day} 天`),INTRO?10500:600);}
+if(SAVE){restoreLate(SAVE);setTimeout(()=>toast(TR`已读取存档：${MODE.name} · 第 ${env.day} 天`),INTRO?10500:600);}
 setInterval(saveNow,30000);
 addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow();});
-{const hb=$('#homeBtn');if(hb){const nb=hb.cloneNode(true);hb.replaceWith(nb);nb.textContent='保存并返回首页';nb.addEventListener('click',()=>{saveNow();saveOff=true;location.reload();});}
-  const rb=$('#resetBtn');let arm=0;if(rb)rb.addEventListener('click',()=>{if(Date.now()-arm>3000){arm=Date.now();rb.textContent='再点一次确认：清空这只缸的存档';setTimeout(()=>{rb.textContent='重新开始这只缸';},3000);return;}
+{const hb=$('#homeBtn');if(hb){const nb=hb.cloneNode(true);hb.replaceWith(nb);nb.textContent=TR`保存并返回首页`;nb.addEventListener('click',()=>{saveNow();saveOff=true;location.reload();});}
+  const rb=$('#resetBtn');let arm=0;if(rb)rb.addEventListener('click',()=>{if(Date.now()-arm>3000){arm=Date.now();rb.textContent=TR`再点一次确认：清空这只缸的存档`;setTimeout(()=>{rb.textContent=TR`重新开始这只缸`;},3000);return;}
     saveOff=true;clearSave();try{sessionStorage.setItem('ark-go',MK);}catch(e){}location.reload();});}
 /* =================== save manager (home page) ===================
    One slot per tank. Rename only changes the label in the meta record; delete removes both keys.
@@ -159,12 +160,12 @@ async function downloadJSON(obj,name){const txt=JSON.stringify(obj);
 function exportSaves(keys){const out={format:'glass-ark-saves',v:1,exported:Date.now(),saves:{}};try{const j=localStorage.getItem('ark-journal');if(j){out.journal=JSON.parse(j);out.journalPhotos={};for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith('ark-jp-'))out.journalPhotos[k.slice(7)]=localStorage.getItem(k);}}}catch(e){}for(const k of keys){const r=saveRecord(k);if(r)out.saves[k]=r;}
   const n=Object.keys(out.saves).length;if(!n&&!out.journal)return Promise.resolve(0);const d=new Date(),p=x=>String(x).padStart(2,'0');
   return downloadJSON(out,`glass-ark-${keys.length===1?keys[0]:'saves'}-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}.json`).then(()=>n);}
-function importSaves(text){let o;try{o=JSON.parse(text);}catch(e){return{err:'文件不是有效的 JSON'};}
-  if(!o||o.format!=='glass-ark-saves'||!o.saves||typeof o.saves!=='object')return{err:'这不是玻璃方舟的存档文件'};
+function importSaves(text){let o;try{o=JSON.parse(text);}catch(e){return{err:TR`文件不是有效的 JSON`};}
+  if(!o||o.format!=='glass-ark-saves'||!o.saves||typeof o.saves!=='object')return{err:TR`这不是玻璃方舟的存档文件`};
   const ok=[],bad=[];for(const k in o.saves){const r=o.saves[k];const d=r&&r.data;
     if(!MODES[k]||!d||d.v!==1||d.mk!==k||!Array.isArray(d.P)||!Array.isArray(d.A)||!d.E){bad.push(k);continue;}
     const m=r.meta||{};const meta={day:+(d.E.day||m.day||1),ts:+(d.ts||m.ts||Date.now()),a:d.A.length,p:d.P.length,name:typeof m.name==='string'?m.name.slice(0,24):''};
-    try{localStorage.setItem(saveKey(k),JSON.stringify(d));localStorage.setItem('ark-meta-'+k,JSON.stringify(meta));ok.push(k);}catch(e){return{err:'浏览器存储空间不足，导入失败'};}}
+    try{localStorage.setItem(saveKey(k),JSON.stringify(d));localStorage.setItem('ark-meta-'+k,JSON.stringify(meta));ok.push(k);}catch(e){return{err:TR`浏览器存储空间不足，导入失败`};}}
   if(o.journal&&o.journal.v===1&&o.journal.e){try{const cur=JSON.parse(localStorage.getItem('ark-journal')||'null')||{v:1,e:{},mut:{},fresh:0};
     for(const k in o.journal.e){const a=cur.e[k],b=o.journal.e[k];if(!a||(b.star||1)>(a.star||1))cur.e[k]=b;}Object.assign(cur.mut=cur.mut||{},o.journal.mut||{});localStorage.setItem('ark-journal',JSON.stringify(cur));
     for(const k in o.journalPhotos||{}){const v=o.journalPhotos[k];if(typeof v==='string'&&v.startsWith('data:image/jpeg')&&v.length<60000&&!localStorage.getItem('ark-jp-'+k))localStorage.setItem('ark-jp-'+k,v);}ok.push('journal');}catch(e){}}
@@ -175,31 +176,31 @@ function initSaveManager(){const dlg=$('#saves'),list=$('#savesList'),msg=$('#sa
       const li=document.createElement('li');if(!has)li.className='empty';
       li.innerHTML=`<img src="assets/home/card-${k}.webp" alt="" width="72" height="48"><div class="si"><div class="sn"></div><div class="sm"></div></div><div class="sa"></div>`;
       li.querySelector('.sn').textContent=has&&m.name?m.name:M.name;
-      li.querySelector('.sm').textContent=has?`${m.name?M.name+' · ':''}第 ${m.day} 天 · ${m.a} 只动物 · ${m.p} 株植物 · ${fmtWhen(m.ts)}`:'还没有存档';
+      li.querySelector('.sm').textContent=has?TR`${m.name?M.name+' · ':''}第 ${m.day} 天 · ${m.a} 只动物 · ${m.p} 株植物 · ${fmtWhen(m.ts)}`:TR`还没有存档`;
       const sa=li.querySelector('.sa');
       if(has){const mk=(t,f,c)=>{const b=document.createElement('button');b.type='button';b.textContent=t;if(c)b.className=c;b.addEventListener('click',f);sa.appendChild(b);return b;};
-        mk('重命名',()=>{const sn=li.querySelector('.sn');const inp=document.createElement('input');inp.maxLength=24;inp.value=m.name||'';inp.placeholder=M.name;inp.setAttribute('aria-label',`${M.name}存档的名字`);sn.replaceWith(inp);inp.focus();inp.select();
-          let fin=false;const done=keep=>{if(fin)return;fin=true;if(keep){const mm=saveMeta(k)||m;mm.name=inp.value.trim().slice(0,24);try{localStorage.setItem('ark-meta-'+k,JSON.stringify(mm));}catch(e){}say(mm.name?`已重命名为“${mm.name}”`:'已恢复默认名字');}render();homeDecorate();};
+        mk(TR`重命名`,()=>{const sn=li.querySelector('.sn');const inp=document.createElement('input');inp.maxLength=24;inp.value=m.name||'';inp.placeholder=M.name;inp.setAttribute('aria-label',TR`${M.name}存档的名字`);sn.replaceWith(inp);inp.focus();inp.select();
+          let fin=false;const done=keep=>{if(fin)return;fin=true;if(keep){const mm=saveMeta(k)||m;mm.name=inp.value.trim().slice(0,24);try{localStorage.setItem('ark-meta-'+k,JSON.stringify(mm));}catch(e){}say(mm.name?TR`已重命名为“${mm.name}”`:TR`已恢复默认名字`);}render();homeDecorate();};
           inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();done(true);}else if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done(false);}});inp.addEventListener('blur',()=>done(true),{once:true});});
-        mk('导出',()=>{exportSaves([k]).then(()=>say(`已导出${M.name}的存档`),e=>say(e&&e.code==='declined'?'已取消导出':'这里不能下载文件'));});
-        let arm=0;const del=mk('删除',()=>{if(Date.now()-arm>3000){arm=Date.now();del.textContent='确认删除';del.classList.add('armed');setTimeout(()=>{del.textContent='删除';del.classList.remove('armed');},3000);return;}
-          clearSave(k);say(`已删除${M.name}的存档`);render();homeDecorate();},'danger');}
+        mk(TR`导出`,()=>{exportSaves([k]).then(()=>say(TR`已导出${M.name}的存档`),e=>say(e&&e.code==='declined'?TR`已取消导出`:TR`这里不能下载文件`));});
+        let arm=0;const del=mk(TR`删除`,()=>{if(Date.now()-arm>3000){arm=Date.now();del.textContent=TR`确认删除`;del.classList.add('armed');setTimeout(()=>{del.textContent=TR`删除`;del.classList.remove('armed');},3000);return;}
+          clearSave(k);say(TR`已删除${M.name}的存档`);render();homeDecorate();},'danger');}
       list.appendChild(li);}
     $('#saveExportAll').disabled=!Object.keys(MODES).some(k=>localStorage.getItem(saveKey(k)));};
   const open=()=>{say('');render();if(dlg.showModal)dlg.showModal();else dlg.setAttribute('open','');};
   $('#saveOpen').addEventListener('click',open);
   $('#savesClose').addEventListener('click',()=>dlg.close());
   dlg.addEventListener('click',e=>{if(e.target===dlg)dlg.close();});
-  $('#saveExportAll').addEventListener('click',()=>{exportSaves(Object.keys(MODES)).then(n=>say(n?`已导出 ${n} 个存档`:'没有可以导出的存档'),e=>say(e&&e.code==='declined'?'已取消导出':'这里不能下载文件'));});
+  $('#saveExportAll').addEventListener('click',()=>{exportSaves(Object.keys(MODES)).then(n=>say(n?TR`已导出 ${n} 个存档`:TR`没有可以导出的存档`),e=>say(e&&e.code==='declined'?TR`已取消导出`:TR`这里不能下载文件`));});
   $('#saveImport').addEventListener('click',()=>file.click());
-  file.addEventListener('change',()=>{const f=file.files&&file.files[0];file.value='';if(!f)return;if(f.size>5e6){say('文件太大，不像是存档');return;}
+  file.addEventListener('change',()=>{const f=file.files&&file.files[0];file.value='';if(!f)return;if(f.size>5e6){say(TR`文件太大，不像是存档`);return;}
     f.text().then(t=>{const r=importSaves(t);J=null;if(r.err){say(r.err);return;}
-      say(r.ok.length?`已导入：${r.ok.map(k=>k==='journal'?'缸中见闻录':MODES[k].name).join('、')}${r.bad.length?`；跳过 ${r.bad.length} 个无效存档`:''}`:'文件里没有可用的存档');render();homeDecorate();});});}
+      say(r.ok.length?TR`已导入：${r.ok.map(k=>k==='journal'?TR`缸中见闻录`:MODES[k].name).join(TR`、`)}${r.bad.length?TR`；跳过 ${r.bad.length} 个无效存档`:''}`:TR`文件里没有可用的存档`);render();homeDecorate();});});}
 /* home page: "存档 · 第 N 天" badges on the cards, and the main button continues the mixed tank if it has a save */
 function homeDecorate(){$$('#home .mode[data-mode]').forEach(b=>{const k=b.dataset.mode,m=saveMeta(k);const old=b.querySelector('.mode-save');if(old)old.remove();if(!m)return;
-    const s=document.createElement('span');s.className='mode-save';s.textContent=`${m.name||'存档'} · 第 ${m.day} 天`;const im=b.querySelector('.mode-img');(im||b).appendChild(s);b.setAttribute('aria-label',`${b.querySelector('.mode-name')?.firstChild?.textContent||k}，继续第 ${m.day} 天`);});
-  const m=saveMeta('mixed'),l=$('#ctaLabel');if(l)l.textContent=m?`继续混合生态缸 · 第 ${m.day} 天`:'打开混合生态缸';
+    const s=document.createElement('span');s.className='mode-save';s.textContent=TR`${m.name||TR`存档`} · 第 ${m.day} 天`;const im=b.querySelector('.mode-img');(im||b).appendChild(s);b.setAttribute('aria-label',TR`${b.querySelector('.mode-name')?.firstChild?.textContent||k}，继续第 ${m.day} 天`);});
+  const m=saveMeta('mixed'),l=$('#ctaLabel');if(l)l.textContent=m?TR`继续混合生态缸 · 第 ${m.day} 天`:TR`打开混合生态缸`;
   initSaveManager();initJournal();
   try{const go=sessionStorage.getItem('ark-go');if(go){sessionStorage.removeItem('ark-go');const b=document.querySelector(`#home .mode[data-mode="${go}"]`);if(b)setTimeout(()=>b.click(),0);}}catch(e){}}
 
-introStart();
+if(!MODE.create)introStart();

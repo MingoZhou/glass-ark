@@ -41,18 +41,18 @@ function simStep(dt){
   env.time+=dt/DAY;if(env.time>=1){env.time-=1;env.day++;newDay();}
   const th=(env.time-0.25)*Math.PI*2;env.sunH=Math.sin(th);env.daylight=smooth(-0.05,0.22,env.sunH);env.light=Math.max(env.daylight,env.lamp?0.65:0);
   if(env.heat>0)env.heat-=dt;if(env.vent>0)env.vent-=dt;const L=env.light;
-  if(env.shower&&env.time>env.shower.t){rain.global=10;env.shower=null;toast(OCEAN?'<b>自动补水</b>：顶部淋入一批淡水':'<b>午后阵雨</b>：顶部喷淋自动开启');logEvent('info','午后阵雨',null,1);}
-  if(env.visit&&env.time>0.75){const g=Math.round(env.score*0.8);env.coins+=g;env.visit=0;toast(`参观日结算：观赏值 ${env.score}，门票收入 <b>+${g} 孢子</b>`);logEvent('life',`参观日门票收入 ${g} 孢子`,null,2);}
+  if(env.shower&&env.time>env.shower.t){rain.global=10;env.shower=null;toast(OCEAN?TR`<b>自动补水</b>：顶部淋入一批淡水`:TR`<b>午后阵雨</b>：顶部喷淋自动开启`);logEvent('info',TR`午后阵雨`,null,1);}
+  if(env.visit&&env.time>0.75){const g=Math.round(env.score*0.8);env.coins+=g;env.visit=0;toast(TR`参观日结算：观赏值 ${env.score}，门票收入 <b>+${g} 孢子</b>`);logEvent('life',TR`参观日门票收入 ${g} 孢子`,null,2);}
   if(OCEAN)oceanStep(dt,L);else{
   for(let i=0;i<4;i++){const z=env.zones[i];const Tt=18+env.daylight*9+ZBIAS[i]+(env.lamp?2.5:0)-z.m*4+(env.heat>0&&(i<2||MODE.zone!=null)?6:0);z.T+=(Tt-z.T)*Math.min(1,0.05*dt);
     const ev=0.0014*(0.4+L)*(z.T/25)*z.m*(env.heat>0?1.8:1);z.m-=ev*dt;z.h+=ev*1.2*dt;z.h+=((z.m*0.85+0.1)-z.h)*0.015*dt;z.h-=0.0015*(z.h-0.25)*dt*(env.vent>0?28:1);
-    if(z.h>0.94)z.mold+=dt;else z.mold=Math.max(0,z.mold-dt*2);if(z.mold>20&&!z.moldWarned){z.moldWarned=true;if(MODE.zone==null||i===MODE.zone){logEvent('warn',`${ZONES[i].name}湿度过高，开始长霉`,null,2);toast(`${ZONES[i].name}湿度过高，<b>霉菌滋生</b>。通风可以缓解`);}}if(z.mold<=0)z.moldWarned=false;}
+    if(z.h>0.94)z.mold+=dt;else z.mold=Math.max(0,z.mold-dt*2);if(z.mold>20&&!z.moldWarned){z.moldWarned=true;if(MODE.zone==null||i===MODE.zone){logEvent('warn',TR`${ZONES[i].name}湿度过高，开始长霉`,null,2);toast(TR`${ZONES[i].name}湿度过高，<b>霉菌滋生</b>。通风可以缓解`);}}if(z.mold<=0)z.moldWarned=false;}
   const ZBASE=[0.08,0.46,0.66,0.62];for(let i=0;i<4;i++){const z=env.zones[i];z.m+=(ZBASE[i]-z.m)*0.004*dt;}
   const mz=env.zones[MODE.zone!=null?MODE.zone:2],jz=env.zones[MODE.zone!=null?MODE.zone:3];
   if(env.pump){mz.m+=(0.8-mz.m)*0.006*dt;if(MODE.zone==null||MODE.zone===3){jz.h+=(0.9-jz.h)*0.003*dt;jz.m+=(0.72-jz.m)*0.0015*dt;}}
   if(MODE.pond&&env.pond>0.05){const pull=(0.78-mz.m)*0.02*dt;if(pull>0){mz.m+=pull;env.pond-=pull*0.2;}}env.pond-=0.0003*dt*(0.5+L)*(env.heat>0?1.6:1)*(env.pump?0.7:1);
   if(MODE.zone==null)for(let i=0;i<3;i++){const a=env.zones[i],b=env.zones[i+1],dm=(a.m-b.m)*0.0012*dt,dh=(a.h-b.h)*0.008*dt;a.m-=dm;b.m+=dm;a.h-=dh;b.h+=dh;}
-  env.zones.forEach(z=>{z.m=clamp(z.m,0,1);z.h=clamp(z.h,0.05,1);z.fert=clamp(z.fert,0.05,1.2);});env.pond=clamp(env.pond,0,1);env.waterY=waterLevelY();
+  env.zones.forEach(z=>{z.m=clamp(z.m,0,1);z.h=clamp(z.h,0.05,1);z.fert=clamp(z.fert,0.05,1.2);});env.pond=CREATE?1:clamp(env.pond,0,1);env.waterY=waterLevelY();
   env.algae=clamp(env.algae+(0.0009*L*(0.3+mz.fert)*(1-env.algae)-(env.pump?0.0006:0)*env.algae)*dt,0.02,1);}
   const co2f=Math.min(1.35,(env.co2/(env.co2+350))/0.545);
   plantAcc+=dt;if(plantAcc>=0.5){updatePlants(plantAcc,L,co2f);plantAcc=0;}
@@ -62,7 +62,7 @@ function simStep(dt){
   for(const k of SPK){const list=pop[k],S=SPEC[k];for(let i=0;i<list.length;i++){const a=list[i];if(!a.alive)continue;
     a.age+=dt/DAY;a.ph+=dt;const burn=S.stageBurn?S.stageBurn[a.stage]:S.burn;a.energy-=burn*dt*(env.o2<18?1.6:1)*(OCEAN?env.stress:1)*(a.state==='dormant'||a.state==='sleep'?0.35:1);
     if(a.heldBy){if(!a.heldBy.alive){a.heldBy=null;a.state='idle';}continue;}
-    if(a.stuck){a.stuckT+=dt;a.x=a.stuckPos.x;a.y=a.stuckPos.y;a.z=a.stuckPos.z;a.energy-=0.004*dt;if(!a.wrapped&&a.stuckT>45&&Math.random()<0.03*dt){const w=a.stuck;const j=w.stuck.indexOf(a);if(j>=0)w.stuck.splice(j,1);a.stuck=null;a.state='idle';logEvent('hunt',`${S.name}${S.noName?'':'「'+a.name+'」'}挣脱了蛛网`,a,1);}if(a.energy<=0&&!a.wrapped)a.die('starved');continue;}
+    if(a.stuck){a.stuckT+=dt;a.x=a.stuckPos.x;a.y=a.stuckPos.y;a.z=a.stuckPos.z;a.energy-=0.004*dt;if(!a.wrapped&&a.stuckT>45&&Math.random()<0.03*dt){const w=a.stuck;const j=w.stuck.indexOf(a);if(j>=0)w.stuck.splice(j,1);a.stuck=null;a.state='idle';logEvent('hunt',TR`${S.name}${S.noName?'':TR`「`+a.name+TR`」`}挣脱了蛛网`,a,1);}if(a.energy<=0&&!a.wrapped)a.die('starved');continue;}
     S.update(a,dt);
     if(a.alive&&a.scale<1&&(!S.stages||a.stage==='adult')&&k!=='frog')a.scale=Math.min(1,a.scale+dt/DAY*0.5);
     if(a.alive&&k==='frog'&&a.stage==='adult'&&a.scale<1)a.scale=Math.min(1,a.scale+dt/DAY*0.35);
@@ -81,7 +81,7 @@ function simStep(dt){
   if(OCEAN?(env.o2<17||env.stress>1.25):(env.o2<19||env.o2>24))env.dayOk=false;
   env.excite=Math.max(0,env.excite-dt*0.03);
   env.coins+=(env.score*0.0038-(env.pump?0.03:0)-(env.lamp?0.08:0))*dt;if(env.coins<0)env.coins=0;
-  if(env.pump&&env.coins<=0){env.pump=false;updateToggles();toast(OCEAN?'孢子用完了，造浪泵自动关闭':'孢子用完了，水泵自动关闭');}
+  if(env.pump&&env.coins<=0){env.pump=false;updateToggles();toast(OCEAN?TR`孢子用完了，造浪泵自动关闭`:TR`孢子用完了，水泵自动关闭`);}
 }
 function oceanStep(dt,L){
   const Tt=24+env.daylight*1.8+(env.lamp?1.4:0)+(env.heat>0?6.5:0)-(env.vent>0?3:0);env.temp+=(Tt-env.temp)*Math.min(1,0.02*dt);
@@ -93,9 +93,9 @@ function oceanStep(dt,L){
   env.algae=clamp(env.algae+ag*dt,0.02,1);env.nut=clamp(env.nut-Math.max(0,ag)*0.12*dt,0.02,1.5);
   const sd=Math.abs(env.sal-35);
   env.stress=1+(env.temp>29?(env.temp-29)*0.18:0)+(sd>3?(sd-3)*0.12:0)+(env.nut>0.8?(env.nut-0.8)*0.6:0)+(env.o2<17?(17-env.o2)*0.15:0);
-  if(env.temp>30&&!env.hotWarned){env.hotWarned=true;logEvent('warn','水温超过 30°C，珊瑚开始白化',null,2);toast('水温超过 30°C，<b>珊瑚开始白化</b>。关灯或换水降温');}if(env.temp<28.5)env.hotWarned=false;
-  if(sd>3.5&&!env.salWarned){env.salWarned=true;const hi=env.sal>35;logEvent('warn',hi?'盐度过高':'盐度过低',null,2);toast(hi?'蒸发让<b>盐度升高</b>了，补点淡水吧':'淡水加太多，<b>盐度偏低</b>');}if(sd<2.5)env.salWarned=false;
-  if(env.algae>0.7&&!env.algWarned){env.algWarned=true;logEvent('warn','藻类爆发，覆盖珊瑚',null,2);toast('<b>藻类爆发</b>：营养盐太高，换水或多养海胆');}if(env.algae<0.55)env.algWarned=false;}
+  if(env.temp>30&&!env.hotWarned){env.hotWarned=true;logEvent('warn',TR`水温超过 30°C，珊瑚开始白化`,null,2);toast(TR`水温超过 30°C，<b>珊瑚开始白化</b>。关灯或换水降温`);}if(env.temp<28.5)env.hotWarned=false;
+  if(sd>3.5&&!env.salWarned){env.salWarned=true;const hi=env.sal>35;logEvent('warn',hi?TR`盐度过高`:TR`盐度过低`,null,2);toast(hi?TR`蒸发让<b>盐度升高</b>了，补点淡水吧`:TR`淡水加太多，<b>盐度偏低</b>`);}if(sd<2.5)env.salWarned=false;
+  if(env.algae>0.7&&!env.algWarned){env.algWarned=true;logEvent('warn',TR`藻类爆发，覆盖珊瑚`,null,2);toast(TR`<b>藻类爆发</b>：营养盐太高，换水或多养海胆`);}if(env.algae<0.55)env.algWarned=false;}
 function updatePlants(dt,L,co2f){let P=0,R=0,tp=0;
   for(const p of plants){if(!p.alive)continue;const T=p.T,z=env.zones[p.zone];let bad=0;
     if(OCEAN){bad=-oceanFit(T);}
@@ -112,52 +112,52 @@ function updatePlants(dt,L,co2f){let P=0,R=0,tp=0;
   if(plants.some(p=>!p.alive))for(let i=plants.length-1;i>=0;i--)if(!plants[i].alive)plants.splice(i,1);
   let ts=0;for(let c=0;c<turf.length;c++)ts+=turf[c];env.turfP=ts*0.035;env.plantP=P;env.plantR=R;}
 function newDay(){if(env.dayOk)env.balanceDays++;else env.balanceDays=0;env.dayOk=true;env.rainZone=[0,0,0,0];for(const w of webs)w.age+=0;
-  const r=Math.random();if(OCEAN){if(env.day>1&&r<0.22){env.heat=70;setTimeout(()=>{toast('<b>海洋热浪</b>：水温上升，珊瑚有白化风险');logEvent('warn','海洋热浪来袭',null,1);},0);}
-    else if(env.day>1&&r<0.45){env.plank=Math.min(1,env.plank+0.4);env.nut=Math.min(1.5,env.nut+0.08);setTimeout(()=>{toast('<b>浮游生物爆发</b>：滤食动物的盛宴');logEvent('life','浮游生物爆发',null,1);},0);}
-    else if(env.day>2&&r<0.63){env.visit=1;setTimeout(()=>toast('今天是<b>参观日</b>：傍晚 18:00 按观赏值结算门票'),0);}
-    logEvent('info',`第 ${env.day} 天开始${env.balanceDays>0?'（昨日生态平衡）':''}`,null,0);return;}
-  if(env.day>1&&r<(MK==='desert'?0.4:0.28)){env.heat=60;setTimeout(()=>{toast(MODE.zone!=null?'<b>午后热浪</b>：缸内升温，蒸发加快':'<b>午后热浪</b>：沙漠和草甸升温，蒸发加快');logEvent('warn','午后热浪来袭',null,1);},0);}
+  const r=Math.random();if(OCEAN){if(env.day>1&&r<0.22){env.heat=70;setTimeout(()=>{toast(TR`<b>海洋热浪</b>：水温上升，珊瑚有白化风险`);logEvent('warn',TR`海洋热浪来袭`,null,1);},0);}
+    else if(env.day>1&&r<0.45){env.plank=Math.min(1,env.plank+0.4);env.nut=Math.min(1.5,env.nut+0.08);setTimeout(()=>{toast(TR`<b>浮游生物爆发</b>：滤食动物的盛宴`);logEvent('life',TR`浮游生物爆发`,null,1);},0);}
+    else if(env.day>2&&r<0.63){env.visit=1;setTimeout(()=>toast(TR`今天是<b>参观日</b>：傍晚 18:00 按观赏值结算门票`),0);}
+    logEvent('info',TR`第 ${env.day} 天开始${env.balanceDays>0?TR`（昨日生态平衡）`:''}`,null,0);return;}
+  if(env.day>1&&r<(MK==='desert'?0.4:0.28)){env.heat=60;setTimeout(()=>{toast(MODE.zone!=null?TR`<b>午后热浪</b>：缸内升温，蒸发加快`:TR`<b>午后热浪</b>：沙漠和草甸升温，蒸发加快`);logEvent('warn',TR`午后热浪来袭`,null,1);},0);}
   else if(env.day>1&&r<(MK==='desert'?0.48:0.5)){env.shower={t:0.55+rand(0,0.15)};}
-  else if(env.day>2&&r<0.68){env.visit=1;setTimeout(()=>toast('今天是<b>参观日</b>：傍晚 18:00 按观赏值结算门票'),0);}
-  logEvent('info',`第 ${env.day} 天开始${env.balanceDays>0?'（昨日生态平衡）':''}`,null,0);}
+  else if(env.day>2&&r<0.68){env.visit=1;setTimeout(()=>toast(TR`今天是<b>参观日</b>：傍晚 18:00 按观赏值结算门票`),0);}
+  logEvent('info',TR`第 ${env.day} 天开始${env.balanceDays>0?TR`（昨日生态平衡）`:''}`,null,0);}
 
 /* =================== economy: score + contracts =================== */
 function computeScore(){const sa=SPK.filter(k=>count(k)>0).length,pt=new Set(plants.filter(p=>p.alive&&!p.T.fungus).map(p=>p.type)).size;const animals=SPK.reduce((s,k)=>s+count(k),0);
   const div=40*(0.65*sa/SPK.length+0.35*pt/PLANT_KEYS.length);const bal=25*(OCEAN?(env.o2>=17?1:0.35):(env.o2>=19.5&&env.o2<=23.5?1:0.35)*(env.co2>180?1:0.6))*(OCEAN?(env.stress>1.3?0.6:1)*(env.algae>0.7?0.8:1):env.zones.some(z=>z.mold>20)?0.7:1);
   const ab=15*Math.min(1,animals/180);env.score=Math.round(div+bal+ab+Math.min(20,env.excite));}
 const CT=[
-  {k:'emerge',sp:['butterfly'],t:n=>`让 ${n} 只毛毛虫羽化成蝴蝶`,n:[1,3],r:n=>30+n*15,prog:()=>stats.emerged},
-  {k:'meta',sp:['frog'],t:n=>`让 ${n} 只蝌蚪变成小雨蛙`,n:[2,5],r:n=>25+n*8,prog:()=>stats.metamorph,req:()=>!!MODE.pond},
-  {k:'hunts',t:n=>`记录 ${n} 次成功捕猎`,n:()=>OCEAN?[3,6]:[6,14],r:n=>20+n*(OCEAN?6:3),prog:()=>stats.hunts},
-  {k:'ants',sp:['ant'],t:n=>`蚁群达到 ${n} 只`,n:[50,110],abs:true,r:n=>Math.round(20+n*0.4),prog:()=>count('ant')},
-  {k:'crick',sp:['cricket'],t:n=>`蟋蟀种群达到 ${n} 只`,n:[20,40],abs:true,r:n=>20+n,prog:()=>count('cricket')},
-  {k:'fire',sp:['firefly'],t:n=>`萤火虫达到 ${n} 只`,n:[16,32],abs:true,r:n=>Math.round(20+n*1.5),prog:()=>count('firefly')},
-  {k:'flowers',land:1,t:n=>`缸里同时有 ${n} 株开花植物`,n:()=>MODE.zone==null?[60,100]:[25,45],abs:true,r:n=>Math.round(20+n*0.5),prog:()=>plants.filter(p=>p.alive&&p.T.nectar).length,req:()=>MK!=='desert'},
-  {k:'mush',land:1,t:n=>`长出 ${n} 朵蘑菇`,n:[3,8],r:n=>15+n*4,prog:()=>stats.mush,req:()=>['mixed','marsh','jungle'].includes(MK)},
-  {k:'hatch',land:1,t:n=>`孵化 ${n} 个新生命`,n:[10,25],r:n=>20+n,prog:()=>stats.hatched+stats.births},
-  {k:'webs',sp:['spider'],t:n=>`园蛛织出 ${n} 张新网`,n:[2,4],r:n=>15+n*8,prog:()=>stats.webs},
-  {k:'species',t:n=>`同时养活 ${n} 种动物`,n:()=>[Math.max(3,SPK.length-3),SPK.length-1],abs:true,r:n=>n*8,prog:()=>SPK.filter(k=>count(k)>0).length},
-  {k:'o2day',land:1,t:()=>`氧气在 19.5–23.5% 之间保持一整天`,n:[1,1],abs:true,r:()=>45,prog:()=>env.balanceDays},
-  {k:'jungle',land:1,t:()=>`用降雨把雨林空气湿度提到 90%`,n:[1,1],abs:true,r:()=>20,prog:()=>env.zones[3].h>=0.9?1:0,req:()=>MK==='mixed'||MK==='jungle'},
-  {k:'desert',land:1,t:()=>`让沙漠缸的仙人掌长到 30 株`,n:[1,1],abs:true,r:()=>40,prog:()=>plants.filter(p=>p.alive&&(p.type==='barrel'||p.type==='saguaro')).length>=30?1:0,req:()=>MK==='desert'},
-  {k:'snake',sp:['snake'],t:()=>`玉米蛇完成一次捕食`,n:[1,1],r:()=>60,prog:()=>stats.snakeHunts||0,req:()=>count('snake')>0},
-  {k:'school',ocean:1,t:n=>`鱼群达到 ${n} 条`,n:[32,50],abs:true,r:n=>Math.round(20+n*0.8),prog:()=>count('damsel')+count('clown')},
-  {k:'clowns',ocean:1,t:n=>`小丑鱼达到 ${n} 条`,n:[6,10],abs:true,r:n=>15+n*5,prog:()=>count('clown')},
-  {k:'coral',ocean:1,t:n=>`同时拥有 ${n} 丛健康珊瑚`,n:[36,52],abs:true,r:n=>Math.round(20+n*0.9),prog:()=>plants.filter(p=>p.alive&&p.T.coral&&p.health>0.6).length},
-  {k:'births',ocean:1,t:n=>`繁殖出 ${n} 个新生命`,n:[8,18],r:n=>20+n*2,prog:()=>stats.births},
-  {k:'jelly',ocean:1,t:n=>`海月水母达到 ${n} 只`,n:[8,12],abs:true,r:n=>10+n*4,prog:()=>count('jelly')},
-  {k:'water',ocean:1,t:()=>`水质稳定一整天（溶氧足、水温盐度正常）`,n:[1,1],abs:true,r:()=>45,prog:()=>env.balanceDays},
-  {k:'crabs',ocean:1,t:n=>`螃蟹达到 ${n} 只`,n:[8,12],abs:true,r:n=>10+n*4,prog:()=>count('crab')},
+  {k:'emerge',sp:['butterfly'],t:n=>TR`让 ${n} 只毛毛虫羽化成蝴蝶`,n:[1,3],r:n=>30+n*15,prog:()=>stats.emerged},
+  {k:'meta',sp:['frog'],t:n=>TR`让 ${n} 只蝌蚪变成小雨蛙`,n:[2,5],r:n=>25+n*8,prog:()=>stats.metamorph,req:()=>!!MODE.pond},
+  {k:'hunts',t:n=>TR`记录 ${n} 次成功捕猎`,n:()=>OCEAN?[3,6]:[6,14],r:n=>20+n*(OCEAN?6:3),prog:()=>stats.hunts},
+  {k:'ants',sp:['ant'],t:n=>TR`蚁群达到 ${n} 只`,n:[50,110],abs:true,r:n=>Math.round(20+n*0.4),prog:()=>count('ant')},
+  {k:'crick',sp:['cricket'],t:n=>TR`蟋蟀种群达到 ${n} 只`,n:[20,40],abs:true,r:n=>20+n,prog:()=>count('cricket')},
+  {k:'fire',sp:['firefly'],t:n=>TR`萤火虫达到 ${n} 只`,n:[16,32],abs:true,r:n=>Math.round(20+n*1.5),prog:()=>count('firefly')},
+  {k:'flowers',land:1,t:n=>TR`缸里同时有 ${n} 株开花植物`,n:()=>MODE.zone==null?[60,100]:[25,45],abs:true,r:n=>Math.round(20+n*0.5),prog:()=>plants.filter(p=>p.alive&&p.T.nectar).length,req:()=>MK!=='desert'},
+  {k:'mush',land:1,t:n=>TR`长出 ${n} 朵蘑菇`,n:[3,8],r:n=>15+n*4,prog:()=>stats.mush,req:()=>['mixed','marsh','jungle'].includes(MK)},
+  {k:'hatch',land:1,t:n=>TR`孵化 ${n} 个新生命`,n:[10,25],r:n=>20+n,prog:()=>stats.hatched+stats.births},
+  {k:'webs',sp:['spider'],t:n=>TR`园蛛织出 ${n} 张新网`,n:[2,4],r:n=>15+n*8,prog:()=>stats.webs},
+  {k:'species',t:n=>TR`同时养活 ${n} 种动物`,n:()=>[Math.max(3,SPK.length-3),SPK.length-1],abs:true,r:n=>n*8,prog:()=>SPK.filter(k=>count(k)>0).length},
+  {k:'o2day',land:1,t:()=>TR`氧气在 19.5–23.5% 之间保持一整天`,n:[1,1],abs:true,r:()=>45,prog:()=>env.balanceDays},
+  {k:'jungle',land:1,t:()=>TR`用降雨把雨林空气湿度提到 90%`,n:[1,1],abs:true,r:()=>20,prog:()=>env.zones[3].h>=0.9?1:0,req:()=>MK==='mixed'||MK==='jungle'},
+  {k:'desert',land:1,t:()=>TR`让沙漠缸的仙人掌长到 30 株`,n:[1,1],abs:true,r:()=>40,prog:()=>plants.filter(p=>p.alive&&(p.type==='barrel'||p.type==='saguaro')).length>=30?1:0,req:()=>MK==='desert'},
+  {k:'snake',sp:['snake'],t:()=>TR`玉米蛇完成一次捕食`,n:[1,1],r:()=>60,prog:()=>stats.snakeHunts||0,req:()=>count('snake')>0},
+  {k:'school',ocean:1,t:n=>TR`鱼群达到 ${n} 条`,n:[32,50],abs:true,r:n=>Math.round(20+n*0.8),prog:()=>count('damsel')+count('clown')},
+  {k:'clowns',ocean:1,t:n=>TR`小丑鱼达到 ${n} 条`,n:[6,10],abs:true,r:n=>15+n*5,prog:()=>count('clown')},
+  {k:'coral',ocean:1,t:n=>TR`同时拥有 ${n} 丛健康珊瑚`,n:[36,52],abs:true,r:n=>Math.round(20+n*0.9),prog:()=>plants.filter(p=>p.alive&&p.T.coral&&p.health>0.6).length},
+  {k:'births',ocean:1,t:n=>TR`繁殖出 ${n} 个新生命`,n:[8,18],r:n=>20+n*2,prog:()=>stats.births},
+  {k:'jelly',ocean:1,t:n=>TR`海月水母达到 ${n} 只`,n:[8,12],abs:true,r:n=>10+n*4,prog:()=>count('jelly')},
+  {k:'water',ocean:1,t:()=>TR`水质稳定一整天（溶氧足、水温盐度正常）`,n:[1,1],abs:true,r:()=>45,prog:()=>env.balanceDays},
+  {k:'crabs',ocean:1,t:n=>TR`螃蟹达到 ${n} 只`,n:[8,12],abs:true,r:n=>10+n*4,prog:()=>count('crab')},
 ];
 const contracts=[];let ctDirty=true;
 function newContract(){const used=new Set(contracts.map(c=>c.tpl.k));const pool=CT.filter(t=>!used.has(t.k)&&(OCEAN?!t.land&&(!t.sp):!t.ocean)&&(!t.sp||t.sp.every(k=>SPK.includes(k)))&&(!t.req||t.req()));if(!pool.length)return;const tpl=pick(pool);const nr=typeof tpl.n==='function'?tpl.n():tpl.n;const n=irand(nr[0],nr[1]);
   contracts.push({tpl,n,base:tpl.abs?0:tpl.prog(),reward:Math.round(tpl.r(n)),due:env.day+3,id:++UID});ctDirty=true;}
 function checkContracts(){for(let i=contracts.length-1;i>=0;i--){const c=contracts[i];const pr=c.tpl.prog()-c.base;
-  if(pr>=c.n){env.coins+=c.reward;toast(`委托完成：${c.tpl.t(c.n)}　<b>+${c.reward} 孢子</b>`);logEvent('life',`完成委托：${c.tpl.t(c.n)}`,null,2);bumpExcite(4);contracts.splice(i,1);newContract();}
-  else if(env.day>c.due){toast(`委托过期：${c.tpl.t(c.n)}`);contracts.splice(i,1);newContract();}}}
+  if(pr>=c.n){env.coins+=c.reward;toast(TR`委托完成：${c.tpl.t(c.n)}　<b>+${c.reward} 孢子</b>`);logEvent('life',TR`完成委托：${c.tpl.t(c.n)}`,null,2);bumpExcite(4);contracts.splice(i,1);newContract();}
+  else if(env.day>c.due){toast(TR`委托过期：${c.tpl.t(c.n)}`);contracts.splice(i,1);newContract();}}}
 
 /* =================== initial world =================== */
-setMsg('播种…');await tick();
+setMsg(TR`播种…`);await tick();
 const SZ=MODE.zone;
 const SAVE=readSave();if(SAVE)restoreEnv(SAVE);
 function randIn(zi,test,tries){for(let t=0;t<(tries||300);t++){const x=SZ!=null?rand(-HW+0.7,HW-0.7):clamp(ZONES[zi].cx+rand(-6,6),-HW+0.7,HW-0.7),z=rand(-HD+1.2,HD-0.6);if(zoneAt(x,z)!==zi)continue;if(test&&!test(x,z))continue;return[x,z];}return null;}
@@ -167,6 +167,7 @@ function seedLily(n){if(!MODE.pond)return;for(let i=0;i<n;i++){for(let t=0;t<80;
 const nearPond=(x,z)=>{const d=pondD(x,z);return d>1.15&&d<1.9;};
 function seedOcean(type,zs,n,sp,test){for(let i=0;i<n;i++){for(let t=0;t<200;t++){const x=rand(-HW+0.8,HW-0.8),z=rand(-HD+1.3,HD-0.6);if(!zs.includes(zoneAt(x,z)))continue;const s=suit(type,x,z);if(!s.ok||!spacingOK(x,z,sp))continue;if(test&&!test(x,z))continue;addPlant(type,x,z);break;}}}
 if(SAVE)restorePlants(SAVE);
+else if(MODE.create){/* an empty tank: the player plants it */}
 else if(OCEAN){
   seedOcean('seagrass',[0,1],52,0.4);seedOcean('kelp',[0,1],7,1.2,(x,z)=>z<-2);seedOcean('staghorn',[2,3],22,0.75);seedOcean('brain',[2,3],14,0.8);seedOcean('table',[3],5,1.3);seedOcean('fan',[3,2],12,0.7,(x,z)=>z<3);seedOcean('anemone',[2,3],4,1.4);
   /* reef heads: every live rock is crusted with coral, the big ones carry a whole garden */
@@ -187,8 +188,8 @@ else{seed('tree',3,14,2.4,(x,z)=>z<4.5);seed('monstera',3,32,0.95);seed('fern',3
   for(let i=0;i<6;i++){const p=randIn(3,(x,z)=>okLand(x,z,0.3));if(p)addPlant('mushroom',p[0],p[1],0.8,0);}}
 flushPlants();refreshGrass();
 if(SAVE){if(SAVE.col&&SPK.includes('ant')){makeColony(SAVE.col.x,SAVE.col.z);colony.store=SAVE.col.store;}}
-else if(SPK.includes('ant')){let cx=-5.2,cz=4.2;if(SZ!=null){for(let t=0;t<60;t++){const x=rand(-8,8),z=rand(2,7);if(okLand(x,z,0.6)){cx=x;cz=z;break;}}}makeColony(cx,cz);}
-setMsg('唤醒生物…');await tick();
+else if(SPK.includes('ant')&&!MODE.create){let cx=-5.2,cz=4.2;if(SZ!=null){for(let t=0;t<60;t++){const x=rand(-8,8),z=rand(2,7);if(okLand(x,z,0.6)){cx=x;cz=z;break;}}}makeColony(cx,cz);}
+setMsg(TR`唤醒生物…`);await tick();
 const spawnIn=(sp,zi,n,o,test)=>{if(!SPK.includes(sp))return;for(let i=0;i<n;i++){const p=randIn(zi,(x,z)=>!inWater(x,z,-0.1)&&!blocked(x,z,0.1)&&(!test||test(x,z)));if(p)new Agent(sp,p[0],p[1],o?Object.assign({},o):undefined);}};
 function spawnFrogs(nA,nT,egg){if(!SPK.includes('frog')||!MODE.pond)return;
   for(let i=0;i<nA;i++){const a=rand(0,6.28),r=pondR(a)*1.25;new Agent('frog',POND.x+Math.cos(a)*r,POND.z+Math.sin(a)*r);}
@@ -198,6 +199,7 @@ function spawnButterflies(zi,nA,nL){spawnIn('butterfly',zi,nA);spawnIn('butterfl
   if(pop.butterfly)for(const b of pop.butterfly)if(b.stage==='larva'&&!b.trail){b.stageT=0.4;b.trail=new Trail(0.45,b.x,b.z,b.h);}}
 const nAnt=SZ==null?40:32;if(colony&&!SAVE)for(let i=0;i<nAnt;i++)new Agent('ant',colony.x+rand(-0.6,0.6),colony.z+rand(-0.6,0.6));
 if(SAVE)restoreAnimals(SAVE);
+else if(MODE.create){/* animals arrive after the tank is opened */}
 else if(OCEAN){
   const oz=(sp,zs,n,o)=>{for(let i=0;i<n;i++){for(let t=0;t<200;t++){const x=rand(-HW+1,HW-1),z=rand(-HD+1.4,HD-0.8);if(!zs.includes(zoneAt(x,z))||blocked(x,z,0.15))continue;new Agent(sp,x,z,o?Object.assign({},o):undefined);break;}}};
   for(const [cx,cz] of [[-4,1.5],[6,2.5]]){const cy=heightAt(cx,cz)+rand(2.2,3.2),h=rand(0,6.283),sch={lead:null,tt:rand(3,6),wp:randWater()};sch.wp.y=cy;for(let i=0;i<20;i++){const x=cx+rand(-1.1,1.1),z=cz+rand(-1,1);if(blocked(x,z,0.1))continue;const d=new Agent('damsel',x,z);d.y=cy+rand(-0.45,0.45);d.h=h+rand(-0.3,0.3);d.vx=Math.cos(d.h)*0.45;d.vz=Math.sin(d.h)*0.45;d.sch=sch;if(!sch.lead)sch.lead=d;}}oz('damsel',[1,2,3],4);oz('jelly',[0,1,2],5);oz('shrimp',[2,3,1],14);oz('crab',[1,2,3],5);oz('starfish',[1,2],4);oz('urchin',[2,3],4);oz('grouper',[3],1);
@@ -211,4 +213,4 @@ else if(OCEAN){
 else if(SZ===1){spawnIn('cricket',1,30);spawnButterflies(1,10,4);spawnIn('isopod',1,6);spawnIn('firefly',1,6);spawnIn('spider',1,2);spawnIn('mantis',1,1);spawnIn('lizard',1,2);spawnFrogs(3,3,false);}
 else if(SZ===2){spawnIn('cricket',2,12);spawnIn('snail',2,8);spawnIn('isopod',2,14);spawnButterflies(2,6,2);spawnIn('firefly',2,12);spawnIn('spider',2,2);spawnIn('mantis',2,1);spawnFrogs(8,8,true);}
 else{spawnIn('cricket',3,12);spawnIn('snail',3,10);spawnIn('isopod',3,20);spawnButterflies(3,6,2);spawnIn('firefly',3,14);spawnIn('spider',3,2);spawnIn('mantis',3,1);spawnIn('lizard',3,2);spawnFrogs(6,5,true);}
-if(SAVE)restoreContracts(SAVE);else for(let i=0;i<3;i++)newContract();
+if(SAVE)restoreContracts(SAVE);else if(!MODE.create)for(let i=0;i<3;i++)newContract();

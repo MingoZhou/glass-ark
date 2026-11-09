@@ -1,6 +1,6 @@
 
 /* =================== creature models =================== */
-setMsg('塑造动物…');await tick();
+setMsg(TR`塑造动物…`);await tick();
 const CM={
   chitin:new THREE.MeshPhysicalMaterial({vertexColors:true,roughness:0.42,clearcoat:0.8,clearcoatRoughness:0.3}),
   soft:new THREE.MeshStandardMaterial({vertexColors:true,roughness:0.62}),

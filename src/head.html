@@ -97,6 +97,26 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .subh{font-size:11px;color:var(--faint);letter-spacing:.12em;margin:12px 0 6px}
 
 .sp{display:grid;grid-template-columns:10px 1fr auto;gap:2px 8px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
+/* food web cards: portrait, status dot, tier, count, then what it eats and what eats it */
+.sp-list{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+#tab-species .sp{display:grid;grid-template-columns:58px 1fr;gap:4px 12px;align-items:start;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.02))}
+#tab-species .sp-ico{width:58px;height:58px;border-radius:12px;background:radial-gradient(circle at 50% 40%,rgba(255,236,200,.16),rgba(255,255,255,.03) 70%);display:flex;align-items:center;justify-content:center;overflow:hidden}
+#tab-species .sp-ico img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(0,0,0,.45))}
+#tab-species .sp-ico i{width:14px;height:14px;border-radius:50%}
+.sp-q{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 16px/1 inherit;color:var(--c);border:2px dashed var(--c);opacity:.7}
+#tab-species .sp-ico svg{width:30px;height:30px;fill:none;stroke:#8fc06a;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sp-main{min-width:0}
+.sp-top{display:flex;align-items:center;gap:7px}
+.sp-top b{font-size:14.5px;font-weight:700;color:#fff3dc}
+.sp-top .cnt{margin-left:auto;font:700 15px var(--mono);color:#ffe2b0}
+.sp-dot{width:8px;height:8px;border-radius:50%;flex:none;background:#e0a13a;box-shadow:0 0 6px currentColor}
+.sp-dot.ok{background:#7cc35a;color:#7cc35a}.sp-dot.none{background:#e0a13a;color:#e0a13a}.sp-dot.lock{background:#8a8f88;color:transparent}
+#tab-species .sp .meta{display:flex;flex-direction:column;gap:2px;margin-top:4px;font-size:12px;line-height:1.5}
+.sp-st{color:#cfe6b8}
+.sp-lock{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin-top:4px;padding:7px 10px;border-radius:10px;background:rgba(240,178,90,.1);border:1px solid rgba(240,178,90,.28);color:#ffd9a0;font-size:12px}
+.sp-lock svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+#tab-species .sp.locked .sp-ico,#tab-species .sp.locked .sp-main{opacity:.55}
+#tab-species .sp.locked .sp-ico img{filter:grayscale(.7) brightness(.8)}
 .sp:first-child{border-top:0}
 .sp i{width:9px;height:9px;border-radius:50%}
 .sp b{font-weight:600;font-size:13px}
@@ -140,6 +160,16 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .hint{font-size:12px;color:var(--muted);padding:5px 12px;border-radius:99px;background:rgba(8,12,10,.65);border:1px solid var(--line);transition:opacity .6s;text-align:center}
 
 .inspect{left:16px;bottom:calc(168px + env(safe-area-inset-bottom,0px));width:300px;padding:14px;max-height:calc(100% - 260px);overflow:auto;scrollbar-width:thin}
+.inspect .ins-min{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:2}
+.inspect .ins-min svg,.insp-pill svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.inspect .ins-min:hover{border-color:rgba(240,178,90,.55)}
+.inspect.folded{display:none!important}
+.inspect h3{padding-right:34px}
+.insp-pill{position:fixed;left:16px;bottom:calc(168px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;color:var(--ink);font:500 13px/1 inherit;cursor:pointer;pointer-events:auto}
+.insp-pill[hidden]{display:none}
+.insp-pill em{font-style:normal;color:#ffe2b0;font-size:12px}
+@media (min-width:861px){body.left-open .insp-pill{left:324px}}
+@media (max-width:860px){.insp-pill{left:12px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
 .inspect h3{margin:0;font:400 21px/1.1 var(--display);letter-spacing:.06em;display:flex;align-items:center;gap:8px}
 .inspect h3 i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
 .inspect h3 .rn{margin-left:auto;font:11px var(--body);color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
@@ -240,6 +270,7 @@ td.n{white-space:nowrap} td.n i{display:inline-block;width:8px;height:8px;border
 .home-foot{box-sizing:border-box;max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12px;padding:36px max(24px,env(safe-area-inset-right,0px)) calc(28px + env(safe-area-inset-bottom,0px)) max(24px,env(safe-area-inset-left,0px))}
 .home-foot .qual{display:flex;align-items:center;gap:10px}
 .home-foot .segm{margin:0;min-width:160px}
+.home-foot .langSeg{min-width:150px}
 .home-foot .keys-touch{display:none}@media (hover:none) and (pointer:coarse){.home-foot .keys-desk{display:none}.home-foot .keys-touch{display:block}}
 .home-foot .keys{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em}
 
@@ -413,6 +444,208 @@ body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.z
   .inspect{top:auto;bottom:calc(84px + env(safe-area-inset-bottom,0px));max-height:44%}
   .tool{font-size:11.5px}
 }
+
+/* ---- layout tools in the decor list ---- */
+.pal-lay{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:7px 10px;pointer-events:auto;align-self:center;max-width:min(860px,calc(100vw - 24px))}
+.pal-lay[hidden]{display:none}
+.pal-lay span{flex:1 1 200px;font-size:12px;color:var(--faint)}
+@media (max-width:760px){.pal-lay span{display:none}}
+.pal-lay button{font:500 12px/1 inherit;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:9px;padding:8px 10px;cursor:pointer}
+.pal-lay button:hover{border-color:rgba(240,178,90,.55)}
+.layoutdlg{max-width:520px;width:calc(100vw - 32px)}
+.layoutdlg textarea{display:block;width:calc(100% - 36px);margin:4px 18px;min-height:120px;resize:vertical;font:12px/1.4 ui-monospace,monospace;color:var(--ink);background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:10px;padding:10px}
+.lay-err{margin:6px 18px 0;color:#ff9b7a;font-size:12px;min-height:16px}
+.decor-edit.dragging{opacity:.55}
+/* ---- decor edit card ---- */
+.decor-edit{display:flex;align-items:center;gap:6px;padding:8px 10px;pointer-events:auto;align-self:center}
+.decor-edit[hidden]{display:none}
+.decor-edit b{font-size:13px;color:#ffe2b0;margin:0 6px 0 4px;white-space:nowrap}
+.de-b{min-width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--ink);font:500 16px/1 inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0 8px}
+.de-b svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.de-b.de-w{font-size:13px}
+.de-b:hover{border-color:rgba(240,178,90,.55)}.de-b:disabled{opacity:.35;cursor:default}
+.decor-edit.moving [data-de="move"]{background:rgba(240,178,90,.25);border-color:#f0b25a;color:#ffe2b0}
+.de-scale{min-width:44px;text-align:center;font:500 12px/1 ui-monospace,monospace;color:var(--faint)}
+.de-sep{width:1px;height:22px;background:var(--line);margin:0 2px}
+/* ---- creative mode ---- */
+.mode-create{grid-column:1/-1;flex-direction:row}
+.mode-create .mode-img{flex:0 0 50%;aspect-ratio:16/9;min-height:0}
+.mode-create .mode-body{align-self:center}
+.create-art{background:linear-gradient(180deg,#18241f 0%,#0d1411 100%);display:block}
+.create-art i{position:absolute;display:block}
+.create-art .ca-glass{inset:14% 9% 10%;border:2px solid rgba(200,235,240,.35);border-top-color:rgba(200,235,240,.12);border-radius:4px;box-shadow:inset 0 0 40px rgba(170,220,230,.08)}
+.create-art .ca-l{left:calc(9% + 2px);right:calc(9% + 2px)}
+.create-art .ca-clay{bottom:calc(10% + 2px);height:7%;background:repeating-radial-gradient(circle at 20% 50%,#b0623a 0 3px,#8f4a28 3px 6px)}
+.create-art .ca-gravel{bottom:17%;height:8%;background:radial-gradient(circle,#9a9384 1.6px,transparent 2px) 0 0/7px 6px,#5f594e}
+.create-art .ca-soil{bottom:25%;height:12%;background:linear-gradient(180deg,#5e4631,#3d2b1b)}
+.create-art .ca-sand{bottom:37%;height:7%;right:58%;background:linear-gradient(180deg,#ead3a0,#cfae74);border-radius:40% 60% 0 0/100% 100% 0 0}
+.create-art .ca-turf{bottom:37%;height:9%;left:40%;right:30%;background:linear-gradient(180deg,#86a446,#5d7a30);border-radius:50% 50% 0 0/100% 100% 0 0}
+.create-art .ca-moss{bottom:37%;height:17%;left:68%;background:radial-gradient(circle at 30% 30%,#6fa03a,#3a6322);border-radius:70% 30% 0 0/100% 100% 0 0}
+.create-art .ca-brush{width:34px;height:34px;left:46%;top:26%;border:2px solid #f0b25a;border-radius:50%;box-shadow:0 0 0 6px rgba(240,178,90,.18),0 0 24px rgba(240,178,90,.5);animation:caB 4s ease-in-out infinite}
+@keyframes caB{0%,100%{transform:translate(-40px,6px)}50%{transform:translate(50px,-4px)}}
+@media (max-width:760px){.mode-create{flex-direction:column}.mode-create .mode-img{flex:none;aspect-ratio:16/9;min-height:0}}
+@media (prefers-reduced-motion:reduce){.create-art .ca-brush{animation:none}}
+.buildbar{display:flex;flex-direction:column;gap:8px;padding:10px 12px;max-width:min(860px,calc(100vw - 24px));pointer-events:auto}
+.buildbar[hidden]{display:none}
+.bb-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.bb-b,.bb-m,.bb-go{font:500 13px/1.2 inherit;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:10px;padding:7px 11px;cursor:pointer;min-height:36px}
+.bb-b:hover,.bb-m:hover{border-color:rgba(240,178,90,.5)}
+.bb-b[aria-pressed="true"],.bb-m[aria-pressed="true"]{background:rgba(240,178,90,.2);border-color:#f0b25a;color:#ffe2b0}
+.bb-m{display:inline-flex;align-items:center;gap:7px}
+.bb-m i{width:16px;height:16px;border-radius:5px;display:block;box-shadow:inset 0 0 0 1px rgba(0,0,0,.35)}
+.bb-go{margin-left:auto;background:#f0b25a;color:#2a1a08;border-color:#f0b25a;font-weight:700;padding:7px 18px}
+.bb-go:hover{filter:brightness(1.08)}
+.bb-b:disabled{opacity:.4;cursor:default}
+.bb-sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+.bb-size{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--faint)}
+.bb-size input{width:90px;accent-color:#f0b25a}
+body.build #toolbar,body.build .seg[aria-label="时间流速"]{display:none!important}
+.opencheck{max-width:420px}
+.oc-p{margin:10px 18px;line-height:1.6;color:var(--ink)}
+.oc-sum{color:var(--faint);font-size:13px}
+.oc-row{display:flex;gap:10px;justify-content:flex-end;padding:8px 18px 18px}
+.oc-row .bb-go{margin-left:0}
+@media (max-width:760px){.bb-b,.bb-m,.bb-go{padding:6px 9px;font-size:12px;min-height:34px}.bb-size input{width:64px}.bb-sep{display:none}}
+
+/* ---------- journal, illustrated field-book look ---------- */
+.journal{width:min(960px,calc(100vw - 24px));padding:0;overflow:hidden;display:none;border-radius:26px;border:1px solid rgba(226,206,150,.38);
+  background:radial-gradient(120% 70% at 15% 0%,rgba(120,150,92,.26),transparent 60%),radial-gradient(90% 60% at 100% 100%,rgba(70,104,72,.3),transparent 65%),linear-gradient(170deg,#2a3726 0%,#1b2519 45%,#141c14 100%);
+  box-shadow:0 40px 100px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,240,200,.14),inset 0 0 0 1px rgba(255,255,255,.03),inset 0 0 60px rgba(160,200,120,.06)}
+.journal[open]{display:flex;flex-direction:column;max-height:calc(100dvh - 32px)}
+.journal::backdrop{background:radial-gradient(circle at 50% 40%,rgba(10,16,10,.55),rgba(2,4,3,.82));backdrop-filter:blur(5px)}
+.jr-vine{position:absolute;pointer-events:none;width:150px;height:110px;opacity:.9;background-repeat:no-repeat;background-size:contain;z-index:0}
+.jr-vine-l{left:-6px;top:-8px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 110'%3E%3Cg fill='none' stroke='%237a9a52' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 60C20 30 46 14 90 8'/%3E%3Cpath d='M30 30c-6 10-6 22 0 32'/%3E%3C/g%3E%3Cg fill='%2387ab5a'%3E%3Cpath d='M40 22c6-10 18-14 26-10-6 9-16 13-26 10z'/%3E%3Cpath d='M62 13c4-8 14-12 22-9-5 8-13 11-22 9z' fill='%239cc06a'/%3E%3Cpath d='M18 40c-9-2-15-9-14-17 9 2 14 9 14 17z' fill='%236f9149'/%3E%3Cpath d='M28 48c-4 7-11 10-18 8 4-7 11-10 18-8z' fill='%2394b862'/%3E%3C/g%3E%3C/svg%3E")}
+.jr-vine-r{right:-8px;bottom:-10px;transform:rotate(180deg);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 110'%3E%3Cg fill='none' stroke='%237a9a52' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 60C20 30 46 14 90 8'/%3E%3C/g%3E%3Cg fill='%2387ab5a'%3E%3Cpath d='M40 22c6-10 18-14 26-10-6 9-16 13-26 10z'/%3E%3Cpath d='M18 40c-9-2-15-9-14-17 9 2 14 9 14 17z' fill='%236f9149'/%3E%3Ccircle cx='70' cy='16' r='5' fill='%23f3ead0'/%3E%3Ccircle cx='70' cy='16' r='2' fill='%23e8c45a'/%3E%3C/g%3E%3C/svg%3E")}
+.jr-head,.jr-stat,.journal .jr-tabs,.jr-foot{flex:none}
+html[lang=en] .jr-ht h3{letter-spacing:.05em}
+.jr-head{position:relative;z-index:1;display:flex;align-items:center;gap:16px;padding:22px 24px 14px}
+.jr-book{flex:none;width:62px;height:62px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45))}
+.jr-book .pg{fill:#f1e6c8;stroke:#a8865a;stroke-width:1.4;stroke-linejoin:round}.jr-book .ln{fill:none;stroke:#b69f78;stroke-width:1.1;stroke-linecap:round}.jr-book .lf{fill:#7fb05a;stroke:#5c8a3c;stroke-width:.8}
+.jr-ht{flex:1;min-width:0}
+.jr-ht h3{margin:0;font:400 30px/1.15 var(--display);letter-spacing:.16em;color:#f6ecd2;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+.jr-ht p{margin:4px 0 0;color:#b9c4ad;font-size:13.5px;letter-spacing:.04em}
+.jr-x{flex:none;width:46px!important;height:46px!important;border-radius:50%!important;border:1px solid rgba(240,226,190,.35)!important;background:rgba(10,14,10,.35)!important;color:#f3ecdc!important;font:300 26px/1 var(--body)!important;align-self:flex-start;transition:background .2s,transform .2s}
+.jr-x:hover{background:rgba(240,178,90,.18)!important;transform:rotate(90deg)}
+.jr-stat{position:relative;z-index:1;margin:0 24px 14px;padding:14px 18px 16px;border-radius:16px;border:1px solid rgba(230,214,170,.16);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.12))}
+.jr-nums{display:flex;flex-wrap:wrap;gap:6px 34px;font-size:15px;color:#dfe6d6}
+.jr-nums span{display:inline-flex;align-items:center;gap:8px}
+.jr-nums svg{width:20px;height:20px;fill:none;stroke:#e9c06a;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+.jr-nums b{font:600 17px var(--body);color:#fff4dc;font-variant-numeric:tabular-nums}
+.jr-bar{display:block;height:8px;margin-top:12px;border-radius:99px;background:rgba(0,0,0,.35);box-shadow:inset 0 1px 2px rgba(0,0,0,.5);overflow:hidden}
+.jr-bar b{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#c98a2c,#f3c063 70%,#ffe1a0);box-shadow:0 0 12px rgba(243,192,99,.55);transition:width .6s}
+.journal .jr-tabs{position:relative;z-index:1;display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 24px 14px}
+.journal .jr-tabs button{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 8px;border-radius:99px;border:1px solid rgba(230,214,170,.2);background:rgba(255,255,255,.035);color:#d9e0d0;font:500 14.5px var(--body);white-space:nowrap;transition:background .2s,border-color .2s}
+.journal .jr-tabs button svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round;stroke-linecap:round}
+.journal .jr-tabs button:hover{border-color:rgba(240,200,120,.5)}
+.journal .jr-tabs button[aria-pressed="true"]{color:#2a1c06;border-color:#f6cf7c;background:linear-gradient(180deg,#ffd98c,#e9a744);box-shadow:0 0 18px rgba(240,178,90,.45),inset 0 1px 0 rgba(255,255,255,.5)}
+.journal .jr-list{position:relative;z-index:1;flex:1;min-height:0;overflow:auto;margin:0;padding:2px 18px 6px 24px;grid-template-columns:repeat(2,1fr);gap:14px;scrollbar-width:thin;scrollbar-color:rgba(240,192,99,.7) transparent;align-content:start}
+.journal .jr-card{position:relative;display:grid;grid-template-columns:104px 1fr;gap:14px;align-items:center;padding:12px 14px 12px 12px;border-radius:18px;border:1px solid rgba(230,214,170,.14);border-left:1px solid rgba(230,214,170,.14);
+  background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));box-shadow:0 8px 22px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);opacity:1;transition:border-color .2s,transform .2s}
+.journal .jr-card.got:hover{border-color:color-mix(in srgb,var(--tc) 60%,transparent);transform:translateY(-1px)}
+.journal .jr-card:not(.got){background:linear-gradient(160deg,rgba(255,255,255,.03),rgba(0,0,0,.1))}
+.jr-th{position:relative;width:104px;height:104px;border-radius:14px;overflow:hidden;display:grid;place-items:center;border:1px solid rgba(230,214,170,.18);
+  background:radial-gradient(circle at 50% 38%,rgba(150,190,110,.4),rgba(40,62,36,.9) 62%,#162114);box-shadow:inset 0 -14px 22px rgba(0,0,0,.35)}
+.jr-th img{width:100%;height:100%;object-fit:cover}
+.jr-th img.po{width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 5px 6px rgba(0,0,0,.5))}
+.jr-th svg{width:46px;height:46px;fill:none;stroke:#dfe9c8;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 3px 5px rgba(0,0,0,.5))}
+.jr-card:not(.got) .jr-th{background:radial-gradient(circle at 50% 38%,rgba(120,130,110,.22),#141a13 70%)}
+.jr-card:not(.got) .jr-th img.po{filter:brightness(0) opacity(.45)}
+.jr-card:not(.got) .jr-th svg{stroke:#6d7a68}
+.jr-th .q{position:absolute;font:400 30px var(--display);color:rgba(230,226,200,.55)}
+.journal .jr-tx{gap:4px}
+.jr-top{display:flex;align-items:center;gap:8px;padding-right:26px}
+.journal .jr-tier{padding:2px 9px;border-radius:7px;font:600 11.5px/1.5 var(--body);letter-spacing:.06em;color:color-mix(in srgb,var(--tc) 85%,#fff);background:color-mix(in srgb,var(--tc) 22%,transparent);border:1px solid color-mix(in srgb,var(--tc) 45%,transparent)}
+.journal .jr-where{font-size:11.5px;color:#8f9c88}
+.jr-done{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:7px;font:600 11.5px/1.5 var(--body);color:#ffe1a0;background:rgba(240,178,90,.16);border:1px solid rgba(240,178,90,.45)}
+.jr-star{position:absolute;top:12px;right:14px;width:20px;height:20px;fill:none;stroke:#9aa694;stroke-width:1.5;stroke-linejoin:round}
+.jr-star.on{fill:#f3c063;stroke:#f3c063;filter:drop-shadow(0 0 6px rgba(243,192,99,.7))}
+.journal .jr-tx b{font:700 18px/1.3 var(--body);letter-spacing:.03em;color:#fbf3df}
+.journal .jr-card:not(.got) .jr-tx b{color:#aab3a2}
+.journal .jr-tx small{font-size:13.5px;line-height:1.55;color:#c9d2bf;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.journal .jr-tx em{font-size:12px;color:#8f9c88;margin-top:2px}
+.jr-sw2{width:62px;height:62px;border-radius:50%;box-shadow:inset 0 -8px 14px rgba(0,0,0,.35),0 0 0 3px rgba(255,255,255,.08)}
+.jr-foot{position:relative;z-index:1;display:flex;align-items:center;gap:16px;padding:12px 24px 18px;border-top:1px solid rgba(230,214,170,.1);margin-top:8px}
+.jr-foot p{flex:1;display:flex;align-items:center;gap:10px;margin:0;font-size:12.5px;line-height:1.5;color:#aab6a0}
+.jr-foot p svg{flex:none;width:20px;height:20px;fill:rgba(140,180,96,.25);stroke:#8fb866;stroke-width:1.5;stroke-linejoin:round}
+.jr-web{flex:none;display:inline-flex;align-items:center;gap:10px;padding:11px 18px;border-radius:99px;border:1px solid rgba(240,200,120,.45);background:linear-gradient(180deg,rgba(60,48,26,.6),rgba(30,24,12,.6));color:#fbe9c4;font:500 14.5px var(--body);cursor:pointer;white-space:nowrap}
+.jr-web svg{width:20px;height:20px;fill:none;stroke:#f3c063;stroke-width:1.6;stroke-linecap:round}
+.jr-web b{font-weight:400;font-size:18px;color:#f3c063}
+.jr-web:hover{border-color:#f3c063;box-shadow:0 0 16px rgba(240,178,90,.3)}
+.jr-web[hidden]{display:none}
+@media (max-width:820px){.journal .jr-tabs{grid-template-columns:repeat(3,1fr)}.journal .jr-list{grid-template-columns:1fr}}
+@media (max-width:560px){
+  .journal{width:100vw;border-radius:22px 22px 0 0;margin:auto 0 0;max-width:100vw}.journal[open]{max-height:94dvh}
+  .jr-head{padding:16px 16px 10px;gap:12px}.jr-book{width:46px;height:46px}.jr-ht h3{font-size:23px}.jr-ht p{font-size:12px}.jr-x{width:40px!important;height:40px!important}
+  .jr-stat{margin:0 14px 12px;padding:11px 13px 13px}.jr-nums{gap:4px 18px;font-size:13px}.jr-nums b{font-size:15px}.jr-nums svg{width:17px;height:17px}
+  .journal .jr-tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;margin:0 0 12px;padding:2px 14px;gap:8px;scrollbar-width:none}.journal .jr-tabs::-webkit-scrollbar{display:none}
+  .journal .jr-tabs button{flex:none;padding:8px 14px;font-size:13.5px}
+  .journal .jr-list{padding:2px 14px 6px;gap:10px}
+  .journal .jr-card{grid-template-columns:78px 1fr;gap:12px;padding:10px 12px 10px 10px;border-radius:16px}.jr-th{width:78px;height:78px;border-radius:12px}.jr-th svg{width:36px;height:36px}
+  .journal .jr-tx b{font-size:16px}.journal .jr-tx small{font-size:12.5px}
+  .jr-foot{flex-direction:column;align-items:stretch;gap:10px;padding:10px 14px calc(14px + env(safe-area-inset-bottom,0px))}.jr-foot p{display:none}.jr-foot:has(.jr-web[hidden]){display:none}.jr-web{justify-content:center}
+  .jr-vine{width:110px;height:80px}}
+
+/* ---------- field-book theme: every pop-up panel shares the journal's look ---------- */
+:root{--fb-line:rgba(226,206,150,.3);--fb-line-2:rgba(230,214,170,.16);--fb-card:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.015));
+  --fb-bg:radial-gradient(120% 60% at 12% 0%,rgba(120,150,92,.24),transparent 60%),radial-gradient(90% 55% at 100% 100%,rgba(70,104,72,.26),transparent 65%),linear-gradient(170deg,rgba(40,53,36,.93) 0%,rgba(26,36,24,.94) 50%,rgba(19,27,19,.95) 100%);
+  --fb-gold:linear-gradient(180deg,#ffd98c,#e9a744)}
+.panel.side,.panel.inspect,.panel.settings,.insp-pill,.panel.decor-edit,.panel.palette,.panel.pal-lay,.panel.buildbar,.saves:not(.journal){
+  background:var(--fb-bg);border:1px solid var(--fb-line);box-shadow:0 24px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,240,200,.12),inset 0 0 40px rgba(160,200,120,.05)}
+.panel.side,.panel.inspect,.panel.settings{border-radius:22px}
+.panel.toolbar,.chip.panel,.panel.speed{border-color:var(--fb-line-2);box-shadow:0 12px 32px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,240,200,.08)}
+.saves:not(.journal){border-radius:24px}
+.saves::backdrop{background:radial-gradient(circle at 50% 40%,rgba(10,16,10,.55),rgba(2,4,3,.82));backdrop-filter:blur(5px)}
+/* vine ornaments */
+.panel.settings::before,.saves:not(.journal)::before,.panel.side::after{content:"";position:absolute;pointer-events:none;width:120px;height:88px;background:no-repeat center/contain;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 110'%3E%3Cg fill='none' stroke='%237a9a52' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M4 60C20 30 46 14 90 8'/%3E%3Cpath d='M30 30c-6 10-6 22 0 32'/%3E%3C/g%3E%3Cg fill='%2387ab5a'%3E%3Cpath d='M40 22c6-10 18-14 26-10-6 9-16 13-26 10z'/%3E%3Cpath d='M62 13c4-8 14-12 22-9-5 8-13 11-22 9z' fill='%239cc06a'/%3E%3Cpath d='M18 40c-9-2-15-9-14-17 9 2 14 9 14 17z' fill='%236f9149'/%3E%3Cpath d='M28 48c-4 7-11 10-18 8 4-7 11-10 18-8z' fill='%2394b862'/%3E%3C/g%3E%3C/svg%3E");opacity:.85;z-index:0}
+.panel.settings::before,.saves:not(.journal)::before{left:-6px;top:-8px}
+.panel.side::after{right:-8px;bottom:-10px;transform:rotate(180deg);opacity:.55}
+.panel.settings>*,.saves:not(.journal)>*{position:relative;z-index:1}
+/* headings */
+.sheet-head h3,.saves-head h3{font:400 26px/1.2 var(--display);letter-spacing:.16em;color:#f6ecd2;text-shadow:0 2px 14px rgba(0,0,0,.5)}
+html[lang=en] .sheet-head h3,html[lang=en] .saves-head h3{letter-spacing:.05em}
+.saves-head{padding-left:18px}.saves:not(.layoutdlg):not(.opencheck) .saves-head{padding-left:4px}
+.layoutdlg .saves-head,.opencheck .saves-head{padding:22px 18px 0 22px}
+.settings h4{display:flex;align-items:center;gap:8px;margin:16px 0 8px;font:400 16px var(--display);letter-spacing:.12em;color:#f3e7c8}
+.settings h4::before{content:"";width:16px;height:16px;flex:none;background:no-repeat center/contain;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 19c0-8 5-13 14-14-1 9-6 14-14 14z' fill='%2387ab5a' fill-opacity='.35' stroke='%238fb866' stroke-width='1.6' stroke-linejoin='round'/%3E%3Cpath d='M5 19l8-8' stroke='%238fb866' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E")}
+.settings .sheet-head+h4{margin-top:6px}
+.panel.settings .sheet-head h3,.saves:not(.journal) .saves-head h3{padding-left:16px}
+@media (min-width:861px){.panel.settings{width:300px;padding:16px 18px}}
+.settings p{color:#b4bfa9}
+/* close buttons: round, gold ring */
+.sheet-x,.saves-x{width:38px;height:38px;border-radius:50%;border:1px solid rgba(240,226,190,.35);background:rgba(10,14,10,.35);color:#f3ecdc;font:300 22px/1 var(--body);display:grid;place-items:center;transition:background .2s,transform .2s,border-color .2s}
+.sheet-x:hover,.saves-x:hover,.sheet-x:focus-visible,.saves-x:focus-visible{background:rgba(240,178,90,.18);border-color:#f3c063;color:#fff4dc;transform:rotate(90deg)}
+/* side-panel tabs become pills */
+.side .tabs{gap:8px;padding:12px 12px 10px;border-bottom:1px solid var(--fb-line-2);position:relative;z-index:1}
+.side .tabs button[role=tab]{flex:1;margin:0;padding:9px 8px;border:1px solid var(--fb-line-2);border-radius:99px;background:rgba(255,255,255,.035);color:#d9e0d0;font:500 14px/1 var(--body);letter-spacing:.04em;white-space:nowrap;transition:background .2s,border-color .2s}
+.side .tabs button[role=tab]:hover{border-color:rgba(240,200,120,.5)}
+.side .tabs button[role=tab][aria-selected="true"]{color:#2a1c06;border-color:#f6cf7c;background:var(--fb-gold);box-shadow:0 0 16px rgba(240,178,90,.4),inset 0 1px 0 rgba(255,255,255,.5)}
+.side .tabs button[role=tab][aria-selected="true"] small{color:#5a3e10}
+.side .tabs .sheet-x{flex:0 0 36px;width:36px;height:36px;margin:0;font-size:20px}
+.tabbody{position:relative;z-index:1}
+/* segmented controls */
+.segm{gap:6px;padding:4px;border:1px solid var(--fb-line-2);border-radius:99px;background:rgba(0,0,0,.18)}
+.segm button{border-radius:99px;padding:7px 6px;color:#d9e0d0;transition:background .2s}
+.segm button[aria-pressed="true"]{background:var(--fb-gold);color:#2a1c06;border-color:transparent;box-shadow:0 0 12px rgba(240,178,90,.35),inset 0 1px 0 rgba(255,255,255,.5)}
+/* buttons */
+.btn,.bb-b,.bb-m{border-radius:99px;border:1px solid rgba(240,200,120,.32);background:linear-gradient(180deg,rgba(60,48,26,.45),rgba(30,24,12,.45));color:#fbe9c4}
+.btn{padding:10px 16px;font:500 13.5px var(--body)}
+.btn:hover,.bb-b:hover,.bb-m:hover{border-color:#f3c063;background:linear-gradient(180deg,rgba(80,62,30,.55),rgba(40,30,14,.55));box-shadow:0 0 14px rgba(240,178,90,.25);color:#fff4dc}
+.btn.pri,.bb-go{border-radius:99px;background:var(--fb-gold);color:#2a1c06;border-color:#f6cf7c;box-shadow:0 0 16px rgba(240,178,90,.35),inset 0 1px 0 rgba(255,255,255,.5)}
+.bb-b[aria-pressed="true"],.bb-m[aria-pressed="true"]{background:rgba(240,178,90,.22);border-color:#f3c063;color:#ffe2b0}
+.saves-list .sa button{border-radius:99px;border-color:rgba(240,200,120,.3)}
+/* cards inside panels */
+.gas .g,#tab-species .sp,.saves-list li,.inspect .acts .btn{border-radius:16px}
+.gas .g,#tab-species .sp,.saves-list li{border:1px solid var(--fb-line-2);background:var(--fb-card);box-shadow:0 6px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.06)}
+.gas .g .v{color:#fbf3df}
+#tab-contracts .contract{margin:0 0 10px;padding:12px 14px;border:1px solid var(--fb-line-2);border-radius:16px;background:var(--fb-card);box-shadow:0 6px 16px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.06)}
+.log li{border-top-color:rgba(230,214,170,.12)}
+.inspect h3{color:#f6ecd2}
+.inspect .tag{border-color:var(--fb-line-2);background:rgba(255,255,255,.04);color:#d4dccb}
+.inspect .ins-min{border-radius:50%;width:34px;height:34px;border:1px solid rgba(240,226,190,.35);background:rgba(10,14,10,.35)}
+.insp-pill{border-radius:999px}
+.layoutdlg textarea{border-radius:14px;border-color:var(--fb-line-2);background:rgba(0,0,0,.3);box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
+.saves-note,.oc-p{color:#c9d2bf}
+.tabbody,.saves,.settings,.inspect{scrollbar-width:thin;scrollbar-color:rgba(240,192,99,.6) transparent}
 </style>
 
 <div id="app">
@@ -482,12 +715,15 @@ body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.z
 
   <div class="hud toasts" id="toasts" aria-live="polite"></div>
   <aside class="hud panel inspect live" id="inspect" hidden></aside>
+  <button class="hud panel insp-pill live" id="inspPill" type="button" hidden title="展开面板"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg><span id="inspPillName"></span><em>展开</em></button>
   <div class="scrim" id="scrim" hidden></div>
   <aside class="hud panel settings live" id="settings" hidden>
     <div class="sheet-head"><h3>设置</h3><button class="sheet-x" type="button" data-close="settings" aria-label="关闭">×</button></div>
+    <h4>语言</h4>
+    <div class="segm langSeg"><button data-l="zh" lang="zh-CN">中文</button><button data-l="en" lang="en">English</button></div>
     <h4>画质</h4>
     <div class="segm" id="qualSeg"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div>
-    <p>手机默认“低”：关闭实时阴影和后期，草的密度降到三成。高画质开启泛光、景深和高分辨率阴影。</p>
+    <p>手机默认“低”：关闭实时阴影和后期，草的密度降到三成。高画质开启泛光和高分辨率阴影。</p>
     <h4>玻璃水汽</h4>
     <div class="segm" id="condSeg"><button data-c="0">关</button><button data-c="1">少量</button><button data-c="2">真实</button></div>
     <p>湿润的缸壁会结水珠。“少量”只在玻璃上沿和边角结露，不挡视线。</p>
@@ -495,7 +731,7 @@ body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.z
     <input type="range" id="vol" min="0" max="100" value="70" aria-label="音量">
     <p>声音来自具体的动物：雨蛙在水边鸣叫，蟋蟀在夜里的草丛里叫。镜头离得越近越响。</p>
     <h4>键盘</h4>
-    <p>G 隐藏玻璃 · H 沉浸模式 · W S 朝视线方向前进后退（可以一直飞进缸里）· A D 横移 · Q E 旋转 · R F 缩放 · Shift 加速 · 空格暂停 · 1–8 切换工具 · Esc 取消</p>
+    <p>G 隐藏玻璃 · B 背景板 · H 沉浸模式 · W S 朝视线方向前进后退（可以一直飞进缸里）· A D 横移 · 空格 上升 · Ctrl 下降 · Q E 旋转 · R F 缩放 · Shift 加速 · 1–8 切换工具 · Esc 取消</p>
     <h4>存档</h4>
     <p>每只缸单独自动保存：每 30 秒一次，切到后台或返回首页时也会保存。存档只在这台设备的这个浏览器里。</p>
     <button class="btn" id="homeBtn" style="width:100%">保存并返回首页</button>
@@ -504,7 +740,17 @@ body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.z
 
   <div class="hud dock">
     <div class="hint" id="hint">拖动旋转 · 滚轮/双指缩放 · 右键或双指拖动平移 · 点击生物查看并跟随</div>
-    <div class="panel palette live" id="palette" hidden></div>
+    <div class="panel decor-edit" id="decorEdit" hidden role="toolbar" aria-label="调整布景"><b id="deName">布景</b>
+      <button class="de-b" data-de="left" type="button" title="向左转（,）" aria-label="向左转"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4.5h4.5"/></svg></button><button class="de-b" data-de="right" type="button" title="向右转（.）" aria-label="向右转"><svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4.5h-4.5"/></svg></button>
+      <span class="de-sep"></span><button class="de-b" data-de="smaller" type="button" title="缩小（-）" aria-label="缩小">−</button><span class="de-scale" id="deScale">100%</span><button class="de-b" data-de="bigger" type="button" title="放大（+）" aria-label="放大">＋</button>
+      <span class="de-sep"></span><button class="de-b de-w" data-de="copy" type="button" title="在旁边放一个一样的">复制</button><button class="de-b de-w" data-de="move" type="button" title="点击新位置挪过去，也可以直接按住拖动">移动</button><button class="de-b de-w" data-de="remove" type="button" title="移除（Delete）">移除</button><button class="de-b" data-de="close" type="button" aria-label="关闭">×</button></div>
+    <div class="panel pal-lay live" id="layBar" hidden><span>按住已摆放的布景可以直接拖动，点一下可以旋转、缩放、复制</span><button type="button" data-lay="copy">复制布局</button><button type="button" data-lay="import">导入布局</button><button type="button" data-lay="reset">恢复默认</button></div>
+    <div class="panel palette live" id="palette" hidden></div><div class="panel buildbar" id="buildbar" hidden role="toolbar" aria-label="造景工具">
+      <div class="bb-row bb-mats" id="bbMats"></div>
+      <div class="bb-row"><button class="bb-b" data-brush="raise" type="button" title="按住拖动抬高地面">抬高</button><button class="bb-b" data-brush="lower" type="button" title="按住拖动挖低地面">挖低</button><button class="bb-b" data-brush="smooth" type="button" title="按住拖动抹平">抹平</button><button class="bb-b bb-water" data-brush="water" type="button" title="点一下低洼处，水会涨到坑边为止">注水</button><button class="bb-b" data-brush="drain" type="button" title="点一下水面，把这片水抽干">抽水</button>
+        <span class="bb-sep"></span><button class="bb-b" data-btool="decor" type="button">布景</button><button class="bb-b" data-btool="plant" type="button">种植</button><button class="bb-b" data-btool="remove" type="button">铲除</button><button class="bb-b" data-btool="observe" type="button" title="拖动旋转镜头">镜头</button>
+        <span class="bb-sep"></span><label class="bb-size">笔刷<input type="range" id="bbSize" min="0.4" max="3" step="0.1" value="1.2" aria-label="笔刷大小"></label><button class="bb-b" id="bbUndo" type="button" title="撤销（Ctrl+Z）">撤销</button><button class="bb-go" id="bbOpen" type="button">开缸</button></div>
+    </div>
     <nav class="panel toolbar live" id="toolbar" aria-label="工具">
       <button class="tool" data-tool="observe" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>观察</button>
       <button class="tool" data-tool="rain" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M7 14.5a4 4 0 0 1-.6-7.95A5.8 5.8 0 0 1 17.6 7.2 3.7 3.7 0 0 1 17.5 14.5z"/><path d="M8.5 17.5 7.5 20M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5"/></svg>降雨</button>
@@ -518,16 +764,24 @@ body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.z
       <button class="tool act" id="ventBtn" aria-pressed="false" title="通风：打开顶盖，让气体与室内交换，降低湿度和 CO₂（海洋缸：换水，重置盐度和营养盐）"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><path d="M12 10.4C12 6 14 3.5 16.5 4.5S17 10 12 10.4zM13.6 12c4.4 0 6.9 2 5.9 4.5S14 17 13.6 12zM12 13.6c0 4.4-2 6.9-4.5 5.9S7 14 12 13.6zM10.4 12C6 12 3.5 10 4.5 7.5S10 7 10.4 12z"/></svg>通风</button>
       <button class="tool act" id="lampBtn" aria-pressed="false" title="补光灯：夜里也能光合作用，沙蜥和蝴蝶不再休息。每天约 −14 孢子"><svg viewBox="0 0 24 24"><path d="M3 5h18l-2.2 4H5.2z"/><path d="M8 12.5l-1.6 3.2M12 12.5v4M16 12.5l1.6 3.2"/></svg>补光灯</button>
       <button class="tool act" id="pumpBtn" aria-pressed="true" title="水泵：瀑布和溪流恢复，雨林和溪沼更湿润，藻类减少。每天约 −5 孢子（海洋缸：造浪泵，水流带来氧气）"><svg viewBox="0 0 24 24"><path d="M5 4v6a4 4 0 0 0 4 4h6"/><path d="M13 11l3 3-3 3"/><path d="M18 20c-1.7 0-3-1.2-3-2.7 0-1.8 3-4.8 3-4.8s3 3 3 4.8c0 1.5-1.3 2.7-3 2.7z"/></svg>水泵</button>
+      <button class="tool act" id="bgBtn" aria-pressed="true" title="背景板：白天自动亮起，天黑后换成夜景。点击开关（B）"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><circle cx="16" cy="8.5" r="1.6"/></svg>背景板</button>
     </nav>
   </div>
 
   <div class="flash" id="flash"></div>
+  <dialog class="saves layoutdlg" id="layoutDlg" aria-labelledby="layoutTitle"><div class="saves-head"><h3 id="layoutTitle">导入布局</h3><button class="sheet-x" type="button" onclick="this.closest('dialog').close()" aria-label="关闭">×</button></div>
+    <p class="oc-p">把“复制布局”得到的整段文字粘贴到下面。现在缸里的布景会被换掉。</p><textarea id="layoutText" rows="7" spellcheck="false" placeholder='{"game":"glass-ark","kind":"layout",…}'></textarea><p class="lay-err" id="layoutErr"></p>
+    <div class="oc-row"><button class="bb-b" type="button" onclick="this.closest('dialog').close()">取消</button><button class="bb-go" id="layoutGo" type="button">导入</button></div></dialog>
+  <dialog class="saves opencheck" id="openDlg" aria-labelledby="openTitle"><div class="saves-head"><h3 id="openTitle">开缸？</h3></div>
+    <p class="oc-p">开缸后时间开始流动，可以投放动物。之后地形和底材不能再改，布景和种植恢复正常价格。</p><p class="oc-p oc-sum" id="openSum"></p>
+    <div class="oc-row"><button class="bb-b" id="openNo" type="button">再改改</button><button class="bb-go" id="openYes" type="button">开缸</button></div></dialog>
   <dialog class="saves journal" id="journal" aria-labelledby="jrTitle">
-    <div class="saves-head"><h3 id="jrTitle">缸中见闻录</h3><button class="saves-x" id="jrClose" type="button" aria-label="关闭">×</button></div>
-    <p class="saves-note">只记录你亲眼看到的瞬间：事情发生时，主角要在画面里。趁它还在画面里按相机拍下来，可以升级为金星。整座方舟共用一本见闻录。</p>
-    <div class="jr-prog"><span id="jrProg"></span><i><b id="jrBar"></b></i></div>
-    <div class="jr-tabs" id="jrTabs" role="group" aria-label="筛选"><button data-t="0">全部</button><button data-t="1">常见</button><button data-t="2">少见</button><button data-t="3">罕见</button><button data-t="4">传说</button><button data-t="5">稀有变异</button></div>
+    <div class="jr-vine jr-vine-l" aria-hidden="true"></div><div class="jr-vine jr-vine-r" aria-hidden="true"></div>
+    <div class="jr-head"><svg class="jr-book" viewBox="0 0 64 64" aria-hidden="true"><path class="pg" d="M6 20c9-3 18-2 26 3 8-5 17-6 26-3v32c-9-3-18-2-26 3-8-5-17-6-26-3z"/><path class="ln" d="M32 23v32M11 27c6-1.5 11-1 16 1M11 33c6-1.5 11-1 16 1M11 39c6-1.5 11-1 16 1M37 28c5-2 10-2.5 16-1M37 34c5-2 10-2.5 16-1M37 40c5-2 10-2.5 16-1"/><path class="lf" d="M32 22c-1-6 1-11 6-14 1 6-1 11-6 14zM32 22c-3-4-8-5-12-3 3 4 8 5 12 3z"/></svg><div class="jr-ht"><h3 id="jrTitle">缸中见闻录</h3><p>记录你在缸里亲眼看到的每一次发现</p></div><button class="saves-x jr-x" id="jrClose" type="button" aria-label="关闭">×</button></div>
+    <div class="jr-stat"><div class="jr-nums" id="jrProg"></div><i class="jr-bar"><b id="jrBar"></b></i></div>
+    <div class="jr-tabs" id="jrTabs" role="group" aria-label="筛选"><button data-t="0"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><span>全部</span></button><button data-t="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM15.5 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM5 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM19 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM12 12c-3 0-5.5 4-5.5 6 0 1.5 1.3 2 2.5 2 1.4 0 2-.7 3-.7s1.6.7 3 .7c1.2 0 2.5-.5 2.5-2 0-2-2.5-6-5.5-6z"/></svg><span>常见</span></button><button data-t="2"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14zM5 19l8-8"/></svg><span>少见</span></button><button data-t="3"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h12l3 5-9 11L3 9zM3 9h18M9 4l3 16 3-16"/></svg><span>罕见</span></button><button data-t="4"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6.1.7-4.5 4.2 1.2 6L12 16.6 6.6 19.5l1.2-6L3.3 9.3l6.1-.7z"/></svg><span>传说</span></button><button data-t="5"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5zM3 12.5l9 5 9-5M3 16.5l9 5 9-5"/></svg><span>稀有变异</span></button></div>
     <ul class="jr-list" id="jrList"></ul>
+    <div class="jr-foot"><p><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14zM5 19l8-8"/></svg><span>只记录你亲眼看到的瞬间：事情发生时，主角要在画面里。趁它还在画面里按相机拍下来，可以升级为金星。整座方舟共用一本见闻录。</span></p><button class="jr-web" id="jrWeb" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5a2 2 0 1 0 0 .1zM5.5 17a2 2 0 1 0 0 .1zM18.5 17a2 2 0 1 0 0 .1zM11 6.5l-4.5 8.5M13 6.5l4.5 8.5M7.5 17h9"/></svg><span>查看食物链关系</span><b>›</b></button></div>
   </dialog>
   <div class="home" id="home">
     <header class="hero">
@@ -569,6 +823,10 @@ body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.z
           <span class="mode-img"><img src="assets/home/card-ocean.webp" alt="海洋缸：珊瑚礁、海葵里的小丑鱼、蓝色鱼群、水母、螃蟹和海星" width="960" height="640" loading="lazy" decoding="async"></span>
           <span class="mode-body"><span class="mode-name">海洋缸 <em class="new">新</em><span class="mode-no">No.06</span></span><span class="mode-desc">珊瑚礁、小丑鱼、螃蟹和伏击的海鳗。要管水温、盐度和营养盐。</span><span class="mode-spec">25°C · 盐度 35‰ · 9 种动物</span></span>
         </button>
+        <button class="mode mode-create" data-mode="create">
+          <span class="mode-img"><img src="assets/home/card-create.webp" alt="创造缸：做到一半的生态缸，左边是刚铺好的沙子和砾石，中间一汪浅水，右边是长满苔藓和蕨的小山，旁边放着镊子和小铲子" width="1440" height="810" loading="lazy" decoding="async"></span>
+          <span class="mode-body"><span class="mode-name">创造缸 <em class="new">新</em><span class="mode-no">No.07</span></span><span class="mode-desc">从一只空缸开始：按住拖动铺沙子、砾石、泥土、草皮、苔藓和落叶，抬高山坡、挖坑注水，再摆石头、种植物。造景阶段一切免费，满意了再开缸放动物。</span><span class="mode-spec">7 种底材 · 你铺什么，就长什么</span></span>
+        </button>
       </div>
     </section>
     <dialog class="saves" id="saves" aria-labelledby="savesTitle">
@@ -579,7 +837,7 @@ body.zen .hud:not(.dock):not(.toasts),body.zen #labels,body.zen .director,body.z
       <p class="saves-msg" id="savesMsg" role="status" aria-live="polite"></p>
     </dialog>
     <footer class="home-foot">
-      <div class="qual"><span>画质</span><div class="segm" id="homeQual"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div></div>
+      <div class="qual"><span>语言</span><div class="segm langSeg"><button data-l="zh" lang="zh-CN">中文</button><button data-l="en" lang="en">English</button></div></div><div class="qual"><span>画质</span><div class="segm" id="homeQual"><button data-q="low">低</button><button data-q="mid">中</button><button data-q="high">高</button></div></div>
       <a class="gh" href="https://github.com/MingoZhou/glass-ark" target="_blank" rel="noopener" aria-label="在 GitHub 上查看玻璃方舟的源代码" title="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span>GitHub</span></a>
       <div class="keys keys-desk">W A S D 飞行 · Q E 旋转 · 滚轮缩放 · 点击生物跟随</div><div class="keys keys-touch">单指转动 · 双指缩放平移 · 点击生物跟随</div>
     </footer>

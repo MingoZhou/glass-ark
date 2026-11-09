@@ -1,6 +1,6 @@
 
 /* =================== plant builders =================== */
-setMsg('培育植物…');await tick();
+setMsg(TR`培育植物…`);await tick();
 const HSL=(h,s,l)=>new Col().setHSL(h,s,l);
 function blade(M,bx,bz,h,lean,w,dirA,c0,c1,segs,hr,kw){const dx=Math.cos(dirA),dz=Math.sin(dirA),px=-dz,pz=dx;let prev=null;
   for(let s=0;s<=segs;s++){const t=s/segs,y=h*t,off=lean*t*t*h,cx=bx+dx*off,cz=bz+dz*off,ww=w*(1-t*0.9);_c.copy(c0).lerp(c1,t);const k=wk(y,hr,kw);
@@ -147,30 +147,30 @@ function bAnemone(v){const M=new Mesher(),parts=[];const col=[[0x4a8a4a,0xc05ad0
     addTubeR(M,[b,b.clone().addScaledVector(d,L*0.5),b.clone().addScaledVector(d,L).add(new V3(0,-0.03,0))],[0.012,0.009,0.006],c0.clone().lerp(c1,0.5),4,0.4,1);const tp=b.clone().addScaledVector(d,L).add(new V3(0,-0.03,0));const g=sph(0.011,c1.getHex(),[tp.x,tp.y,tp.z]);g.setAttribute('aWind',new THREE.BufferAttribute(new Float32Array(g.attributes.position.count).fill(wk(tp.y,0.4,1)),1));parts.push({g,m:'coral'});}
   parts.push({g:M.geo(),m:'coral'});return{parts,h:0.4};}
 const PT={
-  barrel:{name:'金琥',moist:[0,0.36],o2:0.5,cost:10,grow:0.5,seed:0.0004,build:bBarrel,cap:70,cast:true,size:[0.85,1.2],hint:'沙漠',color:'#6f9a55'},
-  saguaro:{name:'柱状仙人掌',moist:[0,0.36],o2:1.2,cost:28,grow:0.3,seed:0.0002,build:bSaguaro,cap:40,cast:true,size:[0.85,1.15],hint:'沙漠',color:'#5a8a52'},
-  aloe:{name:'芦荟',moist:[0.04,0.45],o2:0.6,cost:12,grow:0.6,seed:0.0006,build:bAloe,cap:60,cast:true,size:[0.8,1.2],hint:'沙漠',nectar:true,color:'#86ab8c'},
-  echeveria:{name:'石莲花',moist:[0,0.42],o2:0.3,cost:6,grow:0.7,seed:0.0009,build:bEche,cap:80,size:[0.8,1.3],hint:'沙漠',color:'#9cbfae',snailFood:true},
-  foxtail:{name:'狗尾草',moist:[0.2,0.75],o2:0.4,cost:4,grow:1.4,seed:0.003,build:bFox,cap:140,size:[0.8,1.2],hint:'草甸',antFood:true,color:'#aebc5c'},
-  daisy:{name:'雏菊',moist:[0.25,0.75],o2:0.35,cost:6,grow:1.1,seed:0.002,build:bDaisy,cap:120,size:[0.8,1.25],hint:'草甸',nectar:true,host:true,antFood:true,color:'#f3f0e6'},
-  cosmos:{name:'波斯菊',moist:[0.25,0.7],o2:0.5,cost:8,grow:1,seed:0.0016,build:bCosmos,cap:90,cast:true,size:[0.85,1.2],hint:'草甸',nectar:true,host:true,perch:true,color:'#e2629c'},
-  dandelion:{name:'蒲公英',moist:[0.2,0.78],o2:0.3,cost:5,grow:1.2,seed:0.001,build:bDand,cap:90,size:[0.9,1.3],hint:'草甸',nectar:true,host:true,antFood:true,color:'#f7cf2a'},
-  clover:{name:'三叶草',moist:[0.3,0.88],o2:0.35,cost:4,grow:1.3,seed:0.0025,build:bClover,cap:120,size:[0.8,1.3],hint:'草甸 · 溪沼',host:true,antFood:true,snailFood:true,color:'#4d8b36'},
-  cattail:{name:'香蒲',moist:[0.55,1],o2:0.9,cost:9,grow:1,seed:0.0012,build:bCattail,cap:80,cast:true,size:[0.8,1.15],hint:'水边',perch:true,color:'#8a7a50'},
-  lily:{name:'睡莲',water:true,moist:[0,1],o2:0.7,cost:10,grow:0.9,seed:0.0012,build:bLily,cap:60,size:[0.8,1.3],hint:'水面',nectar:true,color:'#4f8a45'},
-  fern:{name:'蕨',moist:[0.5,1],o2:0.8,cost:8,grow:1,seed:0.0013,build:bFern,cap:120,cast:true,size:[0.8,1.3],hint:'雨林 · 溪沼',snailFood:true,color:'#4b8a3a'},
-  moss:{name:'苔藓',moist:[0.45,1],o2:0.25,cost:3,grow:1.2,seed:0.0025,build:bMoss,cap:120,size:[0.8,1.4],hint:'雨林 · 溪沼',snailFood:true,isoFood:true,color:'#6b9a3c'},
-  monstera:{name:'龟背竹',moist:[0.5,1],o2:1.2,cost:18,grow:0.7,seed:0.0005,build:bMonstera,cap:60,cast:true,size:[0.85,1.25],hint:'雨林',snailFood:true,perch:true,color:'#2f6b28'},
-  bromeliad:{name:'凤梨',moist:[0.45,1],o2:0.6,cost:12,grow:0.8,seed:0.0006,build:bBrom,cap:60,cast:true,size:[0.85,1.3],hint:'雨林',nectar:true,color:'#c2474b'},
-  tree:{name:'雨林树',moist:[0.5,1],o2:4.0,cost:60,grow:0.25,seed:0.00006,build:bTree,single:true,cast:true,size:[0.9,1.1],hint:'雨林',perch:true,color:'#3e7a33'},
-  seagrass:{name:'海草',ocean:true,o2:0.5,cost:4,grow:1.3,seed:0.003,build:bSeagrass,cap:160,size:[0.8,1.3],hint:'沙地 · 海草床',color:'#5a9a4a'},
-  kelp:{name:'巨藻',ocean:true,o2:1.4,cost:14,grow:0.6,seed:0.0006,build:bKelp,cap:40,cast:true,size:[0.8,1.1],hint:'沙地 · 开阔水',color:'#a8913a'},
-  staghorn:{name:'鹿角珊瑚',ocean:true,coral:true,o2:0.6,cost:16,grow:0.35,seed:0.0006,build:bStag,cap:80,cast:true,size:[0.8,1.3],hint:'礁石区',color:'#9a6ad0'},
-  brain:{name:'脑珊瑚',ocean:true,coral:true,o2:0.4,cost:14,grow:0.25,seed:0.0003,build:bBrain,cap:50,cast:true,size:[0.7,1.3],hint:'礁坪',color:'#8a9a4a'},
-  table:{name:'桌面珊瑚',ocean:true,coral:true,o2:0.5,cost:18,grow:0.3,seed:0.0003,build:bTable,cap:40,cast:true,size:[0.8,1.3],hint:'礁坪',color:'#b07a9a'},
-  fan:{name:'海扇',ocean:true,coral:true,o2:0.3,cost:12,grow:0.4,seed:0.0004,build:bFan,cap:50,size:[0.8,1.3],hint:'礁石区',color:'#d8506a'},
-  anemone:{name:'海葵',ocean:true,coral:true,host:true,o2:0.2,cost:15,grow:0.5,seed:0.0004,build:bAnemone,cap:40,size:[0.9,1.4],hint:'礁坪 · 小丑鱼的家',color:'#7ad06a'},
-  mushroom:{name:'蘑菇',fungus:true,moist:[0.4,1],o2:0,cost:0,grow:4,seed:0,build:bMush,cap:60,size:[0.9,1.4],hint:'腐殖质上自生',snailFood:true,isoFood:true,life:1.6,color:'#c8261e'},
+  barrel:{name:TR`金琥`,moist:[0,0.36],o2:0.5,cost:10,grow:0.5,seed:0.0004,build:bBarrel,cap:70,cast:true,size:[0.85,1.2],hint:TR`沙漠`,color:'#6f9a55'},
+  saguaro:{name:TR`柱状仙人掌`,moist:[0,0.36],o2:1.2,cost:28,grow:0.3,seed:0.0002,build:bSaguaro,cap:40,cast:true,size:[0.85,1.15],hint:TR`沙漠`,color:'#5a8a52'},
+  aloe:{name:TR`芦荟`,moist:[0.04,0.45],o2:0.6,cost:12,grow:0.6,seed:0.0006,build:bAloe,cap:60,cast:true,size:[0.8,1.2],hint:TR`沙漠`,nectar:true,color:'#86ab8c'},
+  echeveria:{name:TR`石莲花`,moist:[0,0.42],o2:0.3,cost:6,grow:0.7,seed:0.0009,build:bEche,cap:80,size:[0.8,1.3],hint:TR`沙漠`,color:'#9cbfae',snailFood:true},
+  foxtail:{name:TR`狗尾草`,moist:[0.2,0.75],o2:0.4,cost:4,grow:1.4,seed:0.003,build:bFox,cap:140,size:[0.8,1.2],hint:TR`草甸`,antFood:true,color:'#aebc5c'},
+  daisy:{name:TR`雏菊`,moist:[0.25,0.75],o2:0.35,cost:6,grow:1.1,seed:0.002,build:bDaisy,cap:120,size:[0.8,1.25],hint:TR`草甸`,nectar:true,host:true,antFood:true,color:'#f3f0e6'},
+  cosmos:{name:TR`波斯菊`,moist:[0.25,0.7],o2:0.5,cost:8,grow:1,seed:0.0016,build:bCosmos,cap:90,cast:true,size:[0.85,1.2],hint:TR`草甸`,nectar:true,host:true,perch:true,color:'#e2629c'},
+  dandelion:{name:TR`蒲公英`,moist:[0.2,0.78],o2:0.3,cost:5,grow:1.2,seed:0.001,build:bDand,cap:90,size:[0.9,1.3],hint:TR`草甸`,nectar:true,host:true,antFood:true,color:'#f7cf2a'},
+  clover:{name:TR`三叶草`,moist:[0.3,0.88],o2:0.35,cost:4,grow:1.3,seed:0.0025,build:bClover,cap:120,size:[0.8,1.3],hint:TR`草甸 · 溪沼`,host:true,antFood:true,snailFood:true,color:'#4d8b36'},
+  cattail:{name:TR`香蒲`,moist:[0.55,1],o2:0.9,cost:9,grow:1,seed:0.0012,build:bCattail,cap:80,cast:true,size:[0.8,1.15],hint:TR`水边`,perch:true,color:'#8a7a50'},
+  lily:{name:TR`睡莲`,water:true,moist:[0,1],o2:0.7,cost:10,grow:0.9,seed:0.0012,build:bLily,cap:60,size:[0.8,1.3],hint:TR`水面`,nectar:true,color:'#4f8a45'},
+  fern:{name:TR`蕨`,moist:[0.5,1],o2:0.8,cost:8,grow:1,seed:0.0013,build:bFern,cap:120,cast:true,size:[0.8,1.3],hint:TR`雨林 · 溪沼`,snailFood:true,color:'#4b8a3a'},
+  moss:{name:TR`苔藓`,moist:[0.45,1],o2:0.25,cost:3,grow:1.2,seed:0.0025,build:bMoss,cap:120,size:[0.8,1.4],hint:TR`雨林 · 溪沼`,snailFood:true,isoFood:true,color:'#6b9a3c'},
+  monstera:{name:TR`龟背竹`,moist:[0.5,1],o2:1.2,cost:18,grow:0.7,seed:0.0005,build:bMonstera,cap:60,cast:true,size:[0.85,1.25],hint:TR`雨林`,snailFood:true,perch:true,color:'#2f6b28'},
+  bromeliad:{name:TR`凤梨`,moist:[0.45,1],o2:0.6,cost:12,grow:0.8,seed:0.0006,build:bBrom,cap:60,cast:true,size:[0.85,1.3],hint:TR`雨林`,nectar:true,color:'#c2474b'},
+  tree:{name:TR`雨林树`,moist:[0.5,1],o2:4.0,cost:60,grow:0.25,seed:0.00006,build:bTree,single:true,cast:true,size:[0.9,1.1],hint:TR`雨林`,perch:true,color:'#3e7a33'},
+  seagrass:{name:TR`海草`,ocean:true,o2:0.5,cost:4,grow:1.3,seed:0.003,build:bSeagrass,cap:160,size:[0.8,1.3],hint:TR`沙地 · 海草床`,color:'#5a9a4a'},
+  kelp:{name:TR`巨藻`,ocean:true,o2:1.4,cost:14,grow:0.6,seed:0.0006,build:bKelp,cap:40,cast:true,size:[0.8,1.1],hint:TR`沙地 · 开阔水`,color:'#a8913a'},
+  staghorn:{name:TR`鹿角珊瑚`,ocean:true,coral:true,o2:0.6,cost:16,grow:0.35,seed:0.0006,build:bStag,cap:80,cast:true,size:[0.8,1.3],hint:TR`礁石区`,color:'#9a6ad0'},
+  brain:{name:TR`脑珊瑚`,ocean:true,coral:true,o2:0.4,cost:14,grow:0.25,seed:0.0003,build:bBrain,cap:50,cast:true,size:[0.7,1.3],hint:TR`礁坪`,color:'#8a9a4a'},
+  table:{name:TR`桌面珊瑚`,ocean:true,coral:true,o2:0.5,cost:18,grow:0.3,seed:0.0003,build:bTable,cap:40,cast:true,size:[0.8,1.3],hint:TR`礁坪`,color:'#b07a9a'},
+  fan:{name:TR`海扇`,ocean:true,coral:true,o2:0.3,cost:12,grow:0.4,seed:0.0004,build:bFan,cap:50,size:[0.8,1.3],hint:TR`礁石区`,color:'#d8506a'},
+  anemone:{name:TR`海葵`,ocean:true,coral:true,host:true,o2:0.2,cost:15,grow:0.5,seed:0.0004,build:bAnemone,cap:40,size:[0.9,1.4],hint:TR`礁坪 · 小丑鱼的家`,color:'#7ad06a'},
+  mushroom:{name:TR`蘑菇`,fungus:true,moist:[0.4,1],o2:0,cost:0,grow:4,seed:0,build:bMush,cap:60,size:[0.9,1.4],hint:TR`腐殖质上自生`,snailFood:true,isoFood:true,life:1.6,color:'#c8261e'},
 };
 const PZ={barrel:[0],saguaro:[0],aloe:[0],echeveria:[0],foxtail:[1],daisy:[1,2],cosmos:[1],dandelion:[1],clover:[1,2],cattail:[2],lily:[2],fern:[2,3],moss:[2,3],monstera:[3],bromeliad:[3],tree:[3]};
 const PLANT_KEYS=Object.keys(PT).filter(k=>{const T=PT[k];if(T.fungus)return false;if(OCEAN)return !!T.ocean;if(T.ocean)return false;if(k==='lily'&&!MODE.pond)return false;return MODE.zone==null||PZ[k].includes(MODE.zone);});
@@ -193,7 +193,7 @@ function addPlant(type,x,z,growth,v){const T=PT[type];if(v==null)v=type==='dande
   if(OCEAN&&T.coral){const ry=rockSurfY(x,z);if(ry!=null&&ry>heightAt(x,z))p.by=ry;}
   plants.push(p);pgAdd(p);placePlant(p);return p;}
 function rockSurfY(x,z){let best=null;for(const o of OBST){if(o.top==null||!o.rock)continue;const d=Math.hypot(x-o.x,z-o.z)/(o.r*1.05);if(d>=1)continue;const y=o.g+(o.top-o.g)*Math.pow(1-d*d,0.6)-0.07;if(best==null||y>best)best=y;}return best;}
-function plantBaseY(p){if(p.by!=null)return p.by;return p.T.water?env.waterY+0.004:heightAt(p.x,p.z)-0.02;}
+function plantBaseY(p){if(p.by!=null)return p.by;return p.T.water?(CREATE?waterSurf(p.x,p.z):env.waterY)+0.004:heightAt(p.x,p.z)-0.02;}
 function plantScale(p){return p.size*(0.3+0.7*p.growth);}
 function plantTop(p){return plantBaseY(p)+p.h*plantScale(p)*0.92;}
 function placePlant(p){const y=plantBaseY(p),s=plantScale(p);
@@ -209,26 +209,38 @@ function setVariant(p,v){if(p.T.single||p.v===v)return;const r=p.r,last=r.items.
   const r2=getPR(p.type,v);if(r2.items.length>=r2.cap){p.r=r;p.idx=r.items.length;r.items.push(p);r.mesh.count=r.items.length;placePlant(p);return;}p.v=v;p.r=r2;p.idx=r2.items.length;r2.items.push(p);r2.mesh.count=r2.items.length;p.h=r2.h;placePlant(p);}
 function flushPlants(){for(const k in PR){const r=PR[k];if(r.dirty){r.mesh.instanceMatrix.needsUpdate=true;if(r.mesh.instanceColor)r.mesh.instanceColor.needsUpdate=true;r.dirty=false;}}}
 function spacingOK(x,z,d){return nearPlants(x,z,d).length===0;}
-function suit(type,x,z){const T=PT[type];if(OCEAN){if(Math.abs(x)>HW-0.4||Math.abs(z)>HD-0.4)return{ok:false,msg:'太靠近玻璃了'};if(z<-HD+0.9)return{ok:false,msg:'太靠近岩壁了'};const o=blocked(x,z,0.05);if(o&&!(T.coral&&o.top!=null))return{ok:false,msg:'这里有障碍物'};return{ok:true,fit:oceanFit(T)>-0.05};}if(Math.abs(x)>HW-0.4||Math.abs(z)>HD-0.4)return{ok:false,msg:'太靠近玻璃了'};if(z<-HD+0.9)return{ok:false,msg:'太靠近岩壁了'};
-  if(blocked(x,z,0.05))return{ok:false,msg:'这里有石头或树干'};
-  if(T.water)return inPond(x,z,0.08)?{ok:true,fit:true}:{ok:false,msg:'睡莲只能种在水塘里'};
-  if(inWater(x,z,-0.02))return{ok:false,msg:'这里是水面'};
+function suit(type,x,z){const T=PT[type];if(OCEAN){if(Math.abs(x)>HW-0.4||Math.abs(z)>HD-0.4)return{ok:false,msg:TR`太靠近玻璃了`};if(z<-HD+0.9)return{ok:false,msg:TR`太靠近岩壁了`};const o=blocked(x,z,0.05);if(o&&!(T.coral&&o.top!=null))return{ok:false,msg:TR`这里有障碍物`};return{ok:true,fit:oceanFit(T)>-0.05};}if(Math.abs(x)>HW-0.4||Math.abs(z)>HD-0.4)return{ok:false,msg:TR`太靠近玻璃了`};if(z<-HD+0.9)return{ok:false,msg:TR`太靠近岩壁了`};
+  if(blocked(x,z,0.05))return{ok:false,msg:TR`这里有石头或树干`};
+  if(T.water)return inPond(x,z,0.08)?{ok:true,fit:true}:{ok:false,msg:TR`睡莲只能种在水塘里`};
+  if(inWater(x,z,-0.02))return{ok:false,msg:TR`这里是水面`};
   const zi=zoneAt(x,z),m=localMoist(x,z,zi);return{ok:true,fit:m>=T.moist[0]&&m<=T.moist[1],zi,m};}
 
 /* =================== turf (dense grass field) =================== */
 function oceanFit(T){let bad=0;const t=env.temp;if(T.coral){if(t>29)bad+=(t-29)*0.12;if(t<21)bad+=(21-t)*0.08;if(env.algae>0.62)bad+=(env.algae-0.62)*0.8;}else{if(t>31)bad+=(t-31)*0.08;}const sd=Math.abs(env.sal-35);if(sd>3)bad+=(sd-3)*0.06;return -bad;}
 const TNX=36,TNZ=22,turf=new Float32Array(TNX*TNZ),turfCap=new Float32Array(TNX*TNZ);
 const tcell=(x,z)=>clamp(Math.floor(x+HW),0,TNX-1)+clamp(Math.floor(z+HD),0,TNZ-1)*TNX;
-for(let j=0;j<TNZ;j++)for(let i=0;i<TNX;i++){const x=-HW+i+0.5,z=-HD+j+0.5,w=zoneW(zu(x,z));const c=j*TNX+i;turfCap[c]=OCEAN?clamp(0.3+0.45*reefAt(x,z),0,1):clamp(w[1]*1+w[2]*0.55+w[3]*0.22+w[0]*0.05,0,1)*(z<-HD+1.2?0.2:1);turf[c]=turfCap[c]*rand(0.6,0.9);}
+/* creative: material weights around a point (3x3 samples, 0.3 apart) */
+const _mw=new Float32Array(7);
+function matW(x,z){_mw.fill(0);for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++)_mw[matAt(x+a*0.3,z+b*0.3)]+=1/9;return _mw;}
+const TURFM=[0.02,0.02,0.1,1,0.3,0.1,0.05];
+function creTurfCap(){for(let j=0;j<TNZ;j++)for(let i=0;i<TNX;i++){const c=j*TNX+i;let a=0;for(let q=0;q<4;q++)for(let r=0;r<4;r++)a+=TURFM[matAt(-HW+i+0.125+q*0.25,-HD+j+0.125+r*0.25)];turfCap[c]=a/16*(-HD+j+0.5<-HD+1.2?0.2:1);turf[c]=turfCap[c]*rand(0.65,0.9);}}
+for(let j=0;j<TNZ;j++)for(let i=0;i<TNX;i++){if(CREATE)break;const x=-HW+i+0.5,z=-HD+j+0.5,w=zoneW(zu(x,z));const c=j*TNX+i;turfCap[c]=OCEAN?clamp(0.3+0.45*reefAt(x,z),0,1):clamp(w[1]*1+w[2]*0.55+w[3]*0.22+w[0]*0.05,0,1)*(z<-HD+1.2?0.2:1);turf[c]=turfCap[c]*rand(0.6,0.9);}
 function grassClusterGeo(c0,c1,n,hmin,hmax){const M=new Mesher();for(let b=0;b<n;b++){const a=rand(0,6.28),r=rand(0,0.06);blade(M,Math.cos(a)*r,Math.sin(a)*r,rand(hmin,hmax),rand(0.1,0.45),rand(0.01,0.018),rand(0,6.28),c0,c1,3,hmax,1);}return M.geo();}
 const GN=Math.floor(16000);
+if(CREATE)creTurfCap();
 const grass=(function(){const geo=OCEAN?grassClusterGeo(new Col(0x2c4628),new Col(0x7f9a4e),7,0.05,0.12):grassClusterGeo(new Col(0x33501f),new Col(0x9fb85a),8,0.14,0.4);const mesh=new THREE.InstancedMesh(geo,MATS.blade,GN);mesh.frustumCulled=false;mesh.receiveShadow=true;
-  const gx=new Float32Array(GN),gz=new Float32Array(GN),gs=new Float32Array(GN),gr=new Float32Array(GN),gc=new Int32Array(GN),gy=new Float32Array(GN),gzi=new Uint8Array(GN),gb=new Float32Array(GN);const cells=[];for(let i=0;i<TNX*TNZ;i++)cells.push([]);let n=0,tries=0;
-  while(n<GN&&tries<GN*12){tries++;const x=rand(-HW+0.3,HW-0.3),z=rand(-HD+0.9,HD-0.3),c=tcell(x,z);if(Math.random()>turfCap[c]*0.95)continue;if(OCEAN&&Math.random()<0.45)continue;if(pondD(x,z)<1.18||streamQ(x,z).d<0.75||Math.hypot(x-POOL.x,z-POOL.z)<POOL.r*1.4||slopeAt(x,z)>1.3||blocked(x,z,0.05))continue;
+  const gx=new Float32Array(GN),gz=new Float32Array(GN),gs=new Float32Array(GN),gr=new Float32Array(GN),gc=new Int32Array(GN),gy=new Float32Array(GN),gzi=new Uint8Array(GN),gb=new Float32Array(GN);const cells=[];
+  const G={mesh,n:0,gx,gz,gs,gr,gc,gy,gzi,gb,cells,place};tank.add(mesh);place();return G;
+  function place(){cells.length=0;for(let i=0;i<TNX*TNZ;i++)cells.push([]);let n=0,tries=0;
+  while(n<GN&&tries<GN*12){tries++;const x=rand(-HW+0.3,HW-0.3),z=rand(-HD+0.9,HD-0.3),c=tcell(x,z);if(Math.random()>turfCap[c]*0.95)continue;if(OCEAN&&Math.random()<0.45)continue;if(pondD(x,z)<1.18||streamQ(x,z).d<0.75||(MODE.stream&&Math.hypot(x-POOL.x,z-POOL.z)<POOL.r*1.4)||slopeAt(x,z)>1.3||blocked(x,z,0.05))continue;
     gx[n]=x;gz[n]=z;gs[n]=rand(0.7,1.35);gr[n]=rand(0,6.28);gc[n]=c;gy[n]=heightAt(x,z)-0.01;gzi[n]=zoneAt(x,z);gb[n]=localMoist(x,z,gzi[n])-env.zones[gzi[n]].m;cells[c].push(n);n++;}
-  mesh.count=Math.floor(n*Q.grass);mesh.setColorAt(0,WHITE);tank.add(mesh);return{mesh,n,gx,gz,gs,gr,gc,gy,gzi,gb,cells};})();
+  mesh.count=Math.floor(n*Q.grass);mesh.setColorAt(0,WHITE);G.n=n;}})();
+/* creative: re-derive turf from the painted materials and re-plant the grass blades */
+function regrowGrass(){creTurfCap();grass.place();refreshGrass();}
 const DRY=new Col(1.05,0.86,0.5);
-function refreshGrass(){const G=grass;for(let i=0;i<G.n;i++){const c=G.gc[i],t=turf[c];const x=G.gx[i],z=G.gz[i];dummy.position.set(x,G.gy[i],z);dummy.rotation.set(0,G.gr[i],0);const s=G.gs[i]*(0.2+0.8*t);dummy.scale.set(s,s*(0.5+0.5*t),s);dummy.updateMatrix();G.mesh.setMatrixAt(i,dummy.matrix);
+var DECOR_COVER=[];
+function grassCovered(x,z){for(const c of DECOR_COVER){const dx=x-c[0],dz=z-c[1];if(dx*dx+dz*dz<c[2]*c[2])return true;}return false;}
+function refreshGrass(){const G=grass,cov=DECOR_COVER.length>0;for(let i=0;i<G.n;i++){const c=G.gc[i],t=turf[c];const x=G.gx[i],z=G.gz[i];dummy.position.set(x,G.gy[i],z);dummy.rotation.set(0,G.gr[i],0);const s=(cov&&grassCovered(x,z))?0:G.gs[i]*(0.2+0.8*t);dummy.scale.set(s,s*(0.5+0.5*t),s);dummy.updateMatrix();G.mesh.setMatrixAt(i,dummy.matrix);
     const m=Math.min(1,env.zones[G.gzi[i]].m+G.gb[i]);_c.copy(WHITE).lerp(DRY,clamp(1-m*1.9,0,0.85));_c.multiplyScalar(0.85+hash2(i,3)*0.25);G.mesh.setColorAt(i,_c);}
   G.mesh.instanceMatrix.needsUpdate=true;G.mesh.instanceColor.needsUpdate=true;}
 
@@ -238,24 +250,32 @@ function scatter(geo,mat,N,accept,cfg){N=Math.floor(N);const mesh=new THREE.Inst
     dummy.position.set(x,y,z);dummy.rotation.set(rand(-1,1)*(cfg.tilt||0),rand(0,6.28),rand(-1,1)*(cfg.tilt||0));const s=rand(cfg.s[0],cfg.s[1]);dummy.scale.set(s,s*(cfg.sy||1),s);dummy.updateMatrix();mesh.setMatrixAt(n,dummy.matrix);
     mesh.setColorAt(n,cfg.col?cfg.col(x,z):WHITE);n++;}
   mesh.count=n;tank.add(mesh);return mesh;}
-setMsg('铺设地表…');await tick();
+setMsg(TR`铺设地表…`);await tick();
+const GC=[];
+function gcScatter(geo,mat,N,accept,cfg){if(CREATE&&mat!==MATS.pebble&&!(cfg&&cfg.water)){const a0=accept;accept=(x,z)=>inWater(x,z,-0.04)?0:a0(x,z);}const m=scatter(geo,mat,N,accept,cfg);GC.push(m);return m;}
+let buildGroundCover=()=>{};
 if(!OCEAN)(function(){const S=Q.scatter;
   const peb=new THREE.IcosahedronGeometry(0.07,1);const pp=peb.attributes.position;for(let i=0;i<pp.count;i++){const v=new V3(pp.getX(i),pp.getY(i),pp.getZ(i));v.multiplyScalar(0.8+0.4*hash2(Math.round(v.x*50),Math.round(v.y*50+v.z*30)));pp.setXYZ(i,v.x,v.y*0.6,v.z);}peb.computeVertexNormals();colorize(peb,0xffffff,0);
-  scatter(peb,MATS.pebble,4200*S,(x,z)=>{const w=zoneW(zu(x,z));const q=streamQ(x,z);let a=w[0]*0.25+(q.d<1.3?0.9:0)+(pondD(x,z)<1.4&&pondD(x,z)>0.6?0.6:0)+(Math.hypot(x-POOL.x,z-POOL.z)<2?0.8:0);return a;},{s:[0.5,1.8],y:0.01,col:(x,z)=>{const w=zoneW(zu(x,z));return new Col().setHSL(0.08,w[0]*0.3+0.08,rand(0.35,0.6));}});
   const lit=new Mesher();addLeaf(lit,new V3(-0.08,0.012,0),0,{len:0.17,wid:0.1,lift:0.08,droop:1,fold:0.12,segs:3,flat:true,wind:0});const litG=lit.geo();
   const litM=new THREE.MeshStandardMaterial({map:TX.litter,alphaTest:0.45,side:THREE.DoubleSide,roughness:0.85});
-  scatter(litG,litM,5200*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*0.95+w[2]*0.25+w[1]*0.08;},{s:[0.7,1.5],col:()=>new Col().setHSL(rand(0.05,0.1),rand(0.3,0.55),rand(0.45,0.75))});
   const tw=new Mesher();addTube(tw,[new V3(-0.15,0.01,0),new V3(0,0.02,0.01),new V3(0.15,0.01,-0.01)],0.008,0.005,new Col(0x5a4632),4,1,0);const twG=tw.geo();
-  scatter(twG,MATS.stem,900*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z)?0:w[3]*0.7+w[1]*0.2+w[0]*0.15;},{s:[0.6,1.6],col:()=>new Col().setHSL(0.07,0.25,rand(0.5,0.8))});
   const dry=grassClusterGeo(new Col(0x7a6a44),new Col(0xdccb96),9,0.12,0.34);
-  scatter(dry,MATS.blade,1300*S,(x,z)=>{const w=zoneW(zu(x,z));return w[0]*0.6*(1-smooth(0.3,0.9,Math.abs(Math.sin(x*0.42+z*0.28))));},{s:[0.8,1.6]});
   const gcM=new Mesher();for(let i=0;i<6;i++)addLeaf(gcM,new V3(0,0.01,0),i*1.05,{len:0.11,wid:0.07,lift:0.5,droop:3,segs:3,hr:0.2,wind:0.3});
-  scatter(gcM.geo(),MATS.leafVar,3400*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*1+w[2]*0.15;},{s:[0.7,1.5],col:()=>new Col().setHSL(rand(0.25,0.32),0.3,rand(0.6,0.9))});
   /* rainforest understorey: low fern sprigs and selaginella fill the gaps between the big plants */
   const spM=new Mesher();for(let i=0;i<5;i++)addLeaf(spM,new V3(0,0.01,0),i*1.26+rand(-0.2,0.2),{len:rand(0.22,0.3),wid:0.06,lift:0.9,droop:4.5,segs:5,hr:0.3,wind:0.6});
-  scatter(spM.geo(),MATS.leafVar,1500*S,(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*0.9;},{s:[0.8,1.7],col:()=>new Col().setHSL(rand(0.24,0.33),rand(0.35,0.55),rand(0.4,0.7))});
   const val=new Mesher();for(let b=0;b<6;b++)blade(val,rand(-0.05,0.05),rand(-0.05,0.05),rand(0.35,0.6),rand(0.05,0.2),0.012,rand(0,6.28),new Col(0x1f4a24),new Col(0x4f8a3a),5,0.6,1);
-  scatter(val.geo(),MATS.blade,700*S,(x,z)=>pondD(x,z)<0.85?0.9:0,{s:[0.7,1.3],water:true});
+
+
+  const gcG=gcM.geo(),spG=spM.geo(),valG=val.geo();
+  buildGroundCover=function(){for(const m of GC){tank.remove(m);m.dispose();}GC.length=0;
+  gcScatter(peb,MATS.pebble,4200*S,CREATE?(x,z)=>{const m=matW(x,z);return m[1]*1.1+m[0]*0.1+m[4]*0.1;}:(x,z)=>{const w=zoneW(zu(x,z));const q=streamQ(x,z);let a=w[0]*0.25+(q.d<1.3?0.9:0)+(pondD(x,z)<1.4&&pondD(x,z)>0.6?0.6:0)+(Math.hypot(x-POOL.x,z-POOL.z)<2?0.8:0);return a;},{s:[0.5,1.8],y:0.01,col:(x,z)=>{const w=zoneW(zu(x,z));return new Col().setHSL(0.08,w[0]*0.3+0.08,rand(0.35,0.6));}});
+  gcScatter(litG,litM,5200*S,CREATE?(x,z)=>{const m=matW(x,z);return m[6]*1.0+m[5]*0.12+m[2]*0.04;}:(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*0.95+w[2]*0.25+w[1]*0.08;},{s:[0.7,1.5],col:()=>new Col().setHSL(rand(0.05,0.1),rand(0.3,0.55),rand(0.45,0.75))});
+  gcScatter(twG,MATS.stem,900*S,CREATE?(x,z)=>{const m=matW(x,z);return m[6]*0.7+m[2]*0.1;}:(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z)?0:w[3]*0.7+w[1]*0.2+w[0]*0.15;},{s:[0.6,1.6],col:()=>new Col().setHSL(0.07,0.25,rand(0.5,0.8))});
+  gcScatter(dry,MATS.blade,1300*S,CREATE?(x,z)=>{const m=matW(x,z);return m[0]*0.55*(1-smooth(0.3,0.9,Math.abs(Math.sin(x*0.42+z*0.28))))+m[1]*0.08;}:(x,z)=>{const w=zoneW(zu(x,z));return w[0]*0.6*(1-smooth(0.3,0.9,Math.abs(Math.sin(x*0.42+z*0.28))));},{s:[0.8,1.6]});
+  gcScatter(gcG,MATS.leafVar,3400*S,CREATE?(x,z)=>{const m=matW(x,z);return m[5]*0.9+m[6]*0.15;}:(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*1+w[2]*0.15;},{s:[0.7,1.5],col:()=>new Col().setHSL(rand(0.25,0.32),0.3,rand(0.6,0.9))});
+  gcScatter(spG,MATS.leafVar,1500*S,CREATE?(x,z)=>{const m=matW(x,z);return m[5]*0.65;}:(x,z)=>{const w=zoneW(zu(x,z));return inWater(x,z,-0.05)?0:w[3]*0.9;},{s:[0.8,1.7],col:()=>new Col().setHSL(rand(0.24,0.33),rand(0.35,0.55),rand(0.4,0.7))});
+  gcScatter(valG,MATS.blade,700*S,CREATE?(x,z)=>inPond(x,z,0.18)?0.75:0:(x,z)=>pondD(x,z)<0.85?0.9:0,{s:[0.7,1.3],water:true});
+  };buildGroundCover();
 })();
 
 if(OCEAN)(function(){const S=Q.scatter;

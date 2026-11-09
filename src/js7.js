@@ -21,7 +21,7 @@ function applyCam(dt){camKeys(dt);const k=1-Math.pow(0.002,dt);const f=cam.follo
       camera.position.lerp(eye,1-Math.pow(0.0005,dt));cam.eyeLook.lerp(new V3(f.x+fx*2,(f.y||0)+0.02,f.z+fz*2),1-Math.pow(0.002,dt));camera.lookAt(cam.eyeLook);camera.near=0.01;camera.updateProjectionMatrix();cam.t.copy(cam.tT);return;}}
   let dth=angDiff(cam.theta,cam.tTheta);cam.theta+=dth*k;cam.phi+=(cam.tPhi-cam.phi)*k;cam.r+=(cam.tR-cam.r)*k;cam.t.lerp(cam.tT,f?1-Math.pow(0.0005,dt):k);
   const sp=Math.sin(cam.phi);camera.position.set(cam.t.x+cam.r*sp*Math.sin(cam.theta),cam.t.y+cam.r*Math.cos(cam.phi),cam.t.z+cam.r*sp*Math.cos(cam.theta));
-  const gy=heightAt(clamp(camera.position.x,-HW,HW),clamp(camera.position.z,-HD,HD));if(Math.abs(camera.position.x)<HW&&Math.abs(camera.position.z)<HD&&camera.position.y<gy+0.08)camera.position.y=gy+0.08;
+  const gy=heightAt(clamp(camera.position.x,-HW,HW),clamp(camera.position.z,-HD,HD));const inT=Math.abs(camera.position.x)<HW&&Math.abs(camera.position.z)<HD,gmin=gy+(inT?0.08:0.25);if(camera.position.y<gmin&&(inT||camera.position.y>BOT-1))camera.position.y=gmin;
   camera.lookAt(cam.t);const nn=cam.r<4?0.01:0.05;if(camera.near!==nn){camera.near=nn;camera.updateProjectionMatrix();}}
 function resize(){const w=canvas.clientWidth||innerWidth,h=canvas.clientHeight||innerHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=camera.aspect<0.8?52:36;camera.updateProjectionMatrix();
   if(composer){composer.setSize(w,h);composer.setPixelRatio(renderer.getPixelRatio());}if(camera.aspect<0.8&&cam.tR>30&&!cam.follow){cam.tR=cam.r=70;}}
@@ -34,7 +34,7 @@ function onDirectorEvent(e){if(!director.on||!e.who||!e.who.alive||e.prio<2)retu
 function directorTick(){if(!director.on)return;const now=performance.now();if(now<director.lockUntil||now<director.next)return;
   const hunters=[];for(const k of['snake','lizard','frog','mantis','spider','grouper','moray'])if(pop[k])for(const a of pop[k])if(a.alive&&(a.state==='stalk'||a.state==='chase'||a.state==='toPrey'))hunters.push(a);
   let a=hunters.length?pick(hunters):null;if(!a){const pool=[];for(const k of SPK)for(const b of pop[k])if(b.alive&&!b.hidden&&b.stage!=='egg')pool.push(b);if(pool.length)a=pick(pool);}
-  if(a){director.prio=1;director.lockUntil=now+12000;selectEntity(a,true);startFollow(a,pick(['orbit','orbit','chase']),true);caption(`${a.S.name}「${a.name}」`);}director.next=now+2000;}
+  if(a){director.prio=1;director.lockUntil=now+12000;selectEntity(a,true);startFollow(a,pick(['orbit','orbit','chase']),true);caption(TR`${a.S.name}「${a.name}」`);}director.next=now+2000;}
 let capT=0;function caption(t){const c=$('#directorCap');c.textContent=t;c.style.opacity=1;clearTimeout(capT);capT=setTimeout(()=>c.style.opacity=0,4200);}
 
 /* =================== picking & tools =================== */
@@ -72,33 +72,37 @@ function updateCursor(e){if(tool==='observe'){cursor.visible=false;return;}const
   if(tool==='rain'){r=rain.R;c=0x82c7d7;}else if(tool==='plant'){const s=suit(sub.plant,h.x,h.z);c=!s.ok?0xe7755d:s.fit?0xa4d18b:0xe9b451;r=sub.plant==='tree'?1.2:0.35;}
   else if(tool==='animal'){c=animalOK(sub.animal,h.x,h.z).ok?0xa4d18b:0xe7755d;}else if(tool==='move'){c=moveSel?0xf0b25a:0x98a89c;}else if(tool==='shovel'){r=0.5;c=0xe7755d;const d=decorAt(h.x,h.z);if(d){r=d.r;c=0xf0b25a;}}else if(tool==='decor'){const T=DECOR_T[sub.decor];r=T.r;c=decorOK(sub.decor,h.x,h.z).ok?0xa4d18b:0xe7755d;}
   cursor.material.color.setHex(c);cursor.visible=true;cursor.scale.setScalar(r);cursor.position.set(h.x,h.y+0.03,h.z);}
-function spend(c){if(env.coins<c){toast(`孢子不够：需要 <b>${c}</b>，现在有 ${Math.floor(env.coins)}`);return false;}env.coins-=c;return true;}
-function animalOK(sp,x,z){const S=SPEC[sp];if(S.unlock&&!S.unlock.need())return{ok:false,msg:S.unlock.text};if(inWater(x,z,0.02)&&sp!=='frog')return{ok:false,msg:'这里是水面'};if(blocked(x,z,0.05))return{ok:false,msg:'这里有障碍物'};if(count(sp)>=capOf(sp))return{ok:false,msg:`${S.name}已经太多了（上限 ${capOf(sp)}）`};return{ok:true};}
+function costTxt(c){return MODE.create&&env.cphase==='build'?TR`造景期免费`:TR`−${c} 孢子`;}
+function spend(c){if(MODE.create&&env.cphase==='build')return true;if(env.coins<c){toast(TR`孢子不够：需要 <b>${c}</b>，现在有 ${Math.floor(env.coins)}`);return false;}env.coins-=c;return true;}
+function animalOK(sp,x,z){const S=SPEC[sp];if(sp==='frog'&&CREATE&&!CPONDS.length)return{ok:false,msg:TR`这只缸没有水塘，雨蛙要在水里产卵，活不下去`};if(S.unlock&&!S.unlock.need())return{ok:false,msg:S.unlock.text};if(inWater(x,z,0.02)&&sp!=='frog')return{ok:false,msg:TR`这里是水面`};if(blocked(x,z,0.05))return{ok:false,msg:TR`这里有障碍物`};if(count(sp)>=capOf(sp))return{ok:false,msg:TR`${S.name}已经太多了（上限 ${capOf(sp)}）`};return{ok:true};}
 function clickAt(e){const ray=rayFrom(e);
+  if(DSEL&&DSEL.moving){const h=groundHit(ray);if(h){const d=DSEL.d;DSEL.moving=false;$('#decorEdit').classList.remove('moving');decorEdit(d,{x:h.x,z:h.z});}return;}
+  if(tool==='observe'||tool==='decor'){const ent=tool==='observe'?pickEntity(ray):null;const h=ent?null:groundHit(ray),d=h&&decorAt(h.x,h.z);if(d){if(selected)deselect();decorSelect(d);return;}if(DSEL)decorDeselect();}
   if(tool==='observe'){const ent=pickEntity(ray);if(ent){selectEntity(ent);return;}const h=groundHit(ray);if(h)showZone(h);else deselect();return;}
-  if(tool==='move'){if(!moveSel){const ent=pickEntity(ray);if(ent&&ent.kind==='animal'&&!ent.heldBy){moveSel=ent;selectEntity(ent);toast(`拿起了${ent.S.name}「${ent.name}」，点击放下的位置`);}return;}
+  if(tool==='move'){if(!moveSel){const ent=pickEntity(ray);if(ent&&ent.kind==='animal'&&!ent.heldBy){moveSel=ent;selectEntity(ent);toast(TR`拿起了${ent.S.name}「${ent.name}」，点击放下的位置`);}return;}
     const h=groundHit(ray);if(!h)return;const a=moveSel;moveSel=null;if(!a.alive)return;const water=inWater(h.x,h.z,0.05);
-    if((a.stage==='tadpole'||a.stage==='egg'&&a.sp==='frog')&&!water){toast('蝌蚪和卵块只能放在水里');return;}if(water&&!a.S.swim&&!a.flying){toast('它不会游泳');return;}
+    if((a.stage==='tadpole'||a.stage==='egg'&&a.sp==='frog')&&!water){toast(TR`蝌蚪和卵块只能放在水里`);return;}if(water&&!a.S.swim&&!a.flying){toast(TR`它不会游泳`);return;}
     if(a.web){removeWeb(a.web);a.web=null;}a.x=h.x;a.z=h.z;a.hop=null;a.flee=null;a.target=null;a.perch=null;a.onPerch=false;a.prey=null;if(a.held){finishEat(a);}if(a.state!=='egg')a.state='idle';if(a.flying)a.y=h.y+0.8;if(a.trail)a.trail.reset(a.x,a.z,a.h);if(a.stage==='pupa'){a.y=h.y+0.3;}
-    toast(`把「${a.name}」放到了${ZONES[zoneAt(h.x,h.z)].name}`);return;}
+    toast(TR`把「${a.name}」放到了${ZONES[zoneAt(h.x,h.z)].name}`);return;}
   if(tool==='shovel'){shovelAt(ray,groundHit(ray),false);return;}
   const h=groundHit(ray);if(!h)return;initSound();
   if(tool==='decor'){placeDecor(sub.decor,h.x,h.z);return;}
-  if(tool==='plant'){const T=PT[sub.plant],s=suit(sub.plant,h.x,h.z);if(!s.ok){toast(s.msg);return;}if(!spacingOK(h.x,h.z,sub.plant==='tree'?1.6:0.25)){toast('离其他植物太近了');return;}
-    const r=T.single?null:getPR(sub.plant,0);if(r&&r.items.length>=r.cap-2){toast(`${T.name}已经种满了`);return;}if(!spend(T.cost))return;
-    addPlant(sub.plant,h.x,h.z,0.15);flushPlants();tutDone('plant');stats.planted[sub.plant]=1;toast(`种下 <b>${T.name}</b>　−${T.cost} 孢子${s.fit?'':'　<span style="color:var(--warn)">这里的湿度不太适合它</span>'}`);return;}
+  if(tool==='plant'){const T=PT[sub.plant],s=suit(sub.plant,h.x,h.z);if(!s.ok){toast(s.msg);return;}if(!spacingOK(h.x,h.z,sub.plant==='tree'?1.6:0.25)){toast(TR`离其他植物太近了`);return;}
+    const r=T.single?null:getPR(sub.plant,0);if(r&&r.items.length>=r.cap-2){toast(TR`${T.name}已经种满了`);return;}if(!spend(T.cost))return;
+    addPlant(sub.plant,h.x,h.z,MODE.create&&env.cphase==='build'?rand(0.75,1):0.15);flushPlants();tutDone('plant');stats.planted[sub.plant]=1;toast(TR`种下 <b>${T.name}</b>　${costTxt(T.cost)}${s.fit?'':TR`　<span style="color:var(--warn)">这里的湿度不太适合它</span>`}`);return;}
   if(tool==='animal'){const S=SPEC[sub.animal];const ok=animalOK(sub.animal,h.x,h.z);if(!ok.ok){toast(ok.msg);return;}if(!spend(S.cost))return;stats.placed[sub.animal]=1;
-    if(sub.animal==='ant'&&!colony){makeColony(h.x,h.z);toast('建立了新的蚁巢');}
+    if(sub.animal==='ant'&&!colony){makeColony(h.x,h.z);toast(TR`建立了新的蚁巢`);}
     let first=null;for(let i=0;i<S.batch;i++){const x=sub.animal==='ant'?colony.x+rand(-0.4,0.4):h.x+rand(-0.35,0.35),z=sub.animal==='ant'?colony.z+rand(-0.4,0.4):h.z+rand(-0.35,0.35);const a=new Agent(sub.animal,x,z,{energy:0.85,age:0.1*S.life});if(a.flying!==undefined&&sub.animal==='butterfly'){a.y=heightAt(x,z)+rand(0.6,1.4);}if(!first)first=a;}
-    toast(`投放 <b>${S.name}</b>${S.batch>1?' ×'+S.batch:''}　−${S.cost} 孢子`);logEvent('life',`你投放了${S.name}${S.batch>1?' ×'+S.batch:'「'+first.name+'」'}`,first,1);return;}
-  if(tool==='feed'&&OCEAN){if(!spend(2))return;env.plank=Math.min(1,env.plank+0.12);env.nut=Math.min(1.5,env.nut+0.015);addDetritus(h.x,h.z,0.6,'pellet');for(let i=0;i<14;i++)bubble(h.x+rand(-0.4,0.4),WT-rand(0.1,1.5),h.z+rand(-0.4,0.4),-0.3);toast('撒下一勺浮游饵料　−2 孢子');return;}
-  if(tool==='feed'){if(inWater(h.x,h.z)){toast('饲料会泡烂，撒在地上吧');return;}if(!spend(2))return;addDetritus(h.x,h.z,1,'pellet');toast('撒下一撮昆虫饲料　−2 孢子');}}
-addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='BUTTON'&&e.key===' ')return;if(e.key===' '){e.preventDefault();setSpeed(env.speed===0?1:0);}
-  const m={'1':'observe','2':'rain','3':'plant','4':'animal','5':'feed','6':'move','7':'shovel','8':'decor'}[e.key];if(m)setTool(m);if(e.key==='Escape'){deselect();setTool('observe');stopFollow();}});
+    toast(TR`投放 <b>${S.name}</b>${S.batch>1?' ×'+S.batch:''}　−${S.cost} 孢子`);logEvent('life',TR`你投放了${S.name}${S.batch>1?' ×'+S.batch:TR`「`+first.name+TR`」`}`,first,1);return;}
+  if(tool==='feed'&&OCEAN){if(!spend(2))return;env.plank=Math.min(1,env.plank+0.12);env.nut=Math.min(1.5,env.nut+0.015);addDetritus(h.x,h.z,0.6,'pellet');for(let i=0;i<14;i++)bubble(h.x+rand(-0.4,0.4),WT-rand(0.1,1.5),h.z+rand(-0.4,0.4),-0.3);toast(TR`撒下一勺浮游饵料　−2 孢子`);return;}
+  if(tool==='feed'){if(inWater(h.x,h.z)){toast(TR`饲料会泡烂，撒在地上吧`);return;}if(!spend(2))return;addDetritus(h.x,h.z,1,'pellet');toast(TR`撒下一撮昆虫饲料　−2 孢子`);}}
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  const m={'1':'observe','2':'rain','3':'plant','4':'animal','5':'feed','6':'move','7':'shovel','8':'decor'}[e.key];if(m)setTool(m);if(e.key==='Escape'){if(DSEL){decorDeselect();return;}deselect();setTool('observe');stopFollow();}
+  if(DSEL&&!e.ctrlKey&&!e.metaKey){const a={',':'left','.':'right','-':'smaller','=':'bigger','+':'bigger','Delete':'remove','Backspace':'remove'}[e.key];if(a){e.preventDefault();decorAction(a);}}});
 
 /* =================== selection =================== */
 let selected=null;
 function selectEntity(e,auto){selected=e;if(!auto&&e.kind==='animal')tutDone('follow');if(!auto||!narrowUI()){$('#inspect').hidden=false;if(narrowUI()&&anyOverlay())closeOverlays();}inspDirty=true;renderInspect();if(!auto&&e.kind==='animal'){}}
-function deselect(){selected=null;$('#inspect').hidden=true;selRing.visible=false;stopFollow();}
+function deselect(){selected=null;$('#inspect').hidden=true;selRing.visible=false;stopFollow();insPillSync();}
 function showZone(h){selected={kind:'zone',zi:zoneAt(h.x,h.z),alive:true,x:h.x,z:h.z};$('#inspect').hidden=false;inspDirty=true;renderInspect();}
-function onEntityGone(e){if(selected===e){const was=e;if(was.kind==='animal'&&cam.follow===was){toast(`「${was.name}」的故事结束了`);}selected=null;$('#inspect').hidden=true;}if(cam.follow===e)cam.follow=null;if(moveSel===e)moveSel=null;}
+function onEntityGone(e){if(selected===e){const was=e;if(was.kind==='animal'&&cam.follow===was){toast(TR`「${was.name}」的故事结束了`);}selected=null;$('#inspect').hidden=true;insPillSync();}if(cam.follow===e)cam.follow=null;if(moveSel===e)moveSel=null;}

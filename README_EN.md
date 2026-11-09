@@ -14,7 +14,7 @@ Photosynthesis, food chains, birth and death — all unfold before your eyes.
 <img alt="No build step" src="https://img.shields.io/badge/build-none-6aa84f">
 <img alt="Works offline" src="https://img.shields.io/badge/offline-yes-3d85c6">
 <img alt="Desktop and mobile" src="https://img.shields.io/badge/platform-desktop%20%7C%20mobile-f0b25a">
-<img alt="Version v1.2.0" src="https://img.shields.io/badge/version-v1.2.0-b8463a">
+<img alt="Version v1.3.0" src="https://img.shields.io/badge/version-v1.3.0-b8463a">
 </p>
 
 [**Play online**](https://mingozhou.github.io/glass-ark/) · [Quick start](#-quick-start) · [Changelog](CHANGELOG.md) · [Sponsor](#-sponsor) · [中文](README.md)
@@ -45,9 +45,31 @@ The entire game is a single HTML file plus a local copy of three.js: nothing to 
 </tr>
 </table>
 
-## ✨ What's new in v1.2.0
+## ✨ What's new in v1.3.0 · Creative tank
 
 > Full details in [CHANGELOG.md](CHANGELOG.md).
+
+- **Creative tank**: start from an empty tank. Press and drag to lay sand, gravel, soil, turf, mud, moss and leaf litter, raise hills, dig hollows and fill them with water, then place rocks and plants. What you lay is what grows. Everything is free while you build; open the tank and release animals when you're happy
+- **Water rebuilt**: clear in the shallows and greener with depth, with reflections, ripples, rain rings and caustics on the bed; in the creative tank, tap a hollow to fill it
+- **A window to the sky**: the back of the tank is now a window with perspective and parallax on the sky, clouds and far hills; the light inside follows the sky — warm at dawn, pink at dusk, grey in the rain
+- **Hands-on decor**: press and drag rocks and driftwood; they follow the terrain and can't leave the glass. Rotate, resize, copy or delete them; low grass makes way underneath and grows back when you move them. Copy the whole layout as text and import it later
+- **New interface**: the Tank Journal and every pop-up panel share one look — green glass with fine gold edges — and journal cards now show the animal's portrait
+- **中文 / English**: the whole game is bilingual; switch on the home page or in Settings
+- **Controls**: Space rises, Ctrl sinks (all the way down to the ground), and the animal card can be folded away in director mode
+
+<table>
+<tr>
+<td width="50%"><img src="docs/screenshots/creative.jpg" alt="Creative tank with fresh substrate, a pond and decor"><br><sub><b>Creative tank</b> · lay substrate, dig and fill ponds, place decor</sub></td>
+<td width="50%"><img src="docs/screenshots/window-sky.jpg" alt="The window sky behind the mixed tank"><br><sub><b>Window sky</b> · clouds and hills shift with the view, the light follows the sky</sub></td>
+</tr>
+<tr>
+<td><img src="docs/screenshots/journal.jpg" alt="The redesigned Tank Journal"><br><sub><b>Tank Journal</b> · redesigned, with a portrait for every moment</sub></td>
+<td><img src="docs/screenshots/decor-edit.jpg" alt="A selected rock with the edit bar below"><br><sub><b>Decor editing</b> · drag, rotate, resize, copy; grass makes way underneath</sub></td>
+</tr>
+</table>
+
+<details>
+<summary><b>What was new in v1.2.0</b></summary>
 
 - **缸中见闻录 (Tank Chronicle)**: 54 moments in four tiers — common, uncommon, rare and legendary. Only moments you actually see count; snap a photo while it's still on screen to upgrade it to a gold star
 - **Rare mutations**: a tiny share of newborns come out as an albino frog, a blue lizard, a black-winged butterfly and more. They're heritable and can't be bought
@@ -57,10 +79,12 @@ The entire game is a single HTML file plus a local copy of three.js: nothing to 
 
 <table>
 <tr>
-<td width="50%"><img src="docs/screenshots/journal.jpg" alt="The Tank Chronicle with photos of recorded moments"><br><sub><b>缸中见闻录 (Tank Chronicle)</b> · moments you witness are recorded; photographed ones earn a gold star</sub></td>
+<td width="50%"><img src="docs/screenshots/journal-v12.jpg" alt="The Tank Chronicle with photos of recorded moments"><br><sub><b>缸中见闻录 (Tank Chronicle)</b> · moments you witness are recorded; photographed ones earn a gold star</sub></td>
 <td width="50%"><img src="docs/screenshots/mutant.jpg" alt="A blue mutant lizard next to an ordinary one"><br><sub><b>Rare mutations</b> · an ordinary lizard on the left, a blue mutant born in the tank on the right</sub></td>
 </tr>
 </table>
+
+</details>
 
 <details>
 <summary><b>What was new in v1.1.0</b></summary>
@@ -84,6 +108,7 @@ The entire game is a single HTML file plus a local copy of three.js: nothing to 
 | Marsh | Large pond, cattails, water lilies | Frog spawning, tadpole metamorphosis, rainy-night chorus |
 | Rainforest | Rainforest trees, monstera, waterfall and mist | Fireflies, mushrooms, a damp understorey |
 | **Ocean** | Seagrass bed, sand flat, reef flat, reef zone | Coral reef, fish schools, ambush predators, water-quality management |
+| **Creative** | Start from an empty tank and lay 7 substrates yourself | Raise and dig, fill ponds, place decor freely, then open the tank |
 
 <details>
 <summary><b>🐾 Species</b> (20 animals, 20+ plants and corals)</summary>
@@ -117,6 +142,7 @@ Top predators unlock only after you've raised their prey: corn snakes need enoug
 
 **Tools**: observe, rain / top up fresh water, plant, release, feed, move, remove (plants refund 30%, decor 50%), decor (boulder, layered rock, driftwood, stump, mini waterfall rock, heat rock; in the ocean: live rock, reef arch, shipwreck, air stone)
 
+- **Language**: Chinese and English. The first launch follows your browser language; switch any time at the bottom of the home screen or in Settings (switching inside a tank saves first and reopens the same tank)
 - **Opening shot**: each tank opens on a wide shot, then glides to an animal (about 10 seconds). Click, scroll, press any key or tap "跳过" (skip) to skip it.
 - **Director mode**: on by default, made for idle viewing. Rotating or zooming just keeps it on the current animal a little longer; moving with W A S D or right-drag hands the camera to you and turns director mode off. Turn it back on with the top-right button.
 - **Panels**: the contracts and tank-status panels start collapsed so the tank gets the screen; open them with the two top-right buttons. A chip in the top-left always shows the next onboarding task.
@@ -138,8 +164,10 @@ Top predators unlock only after you've raised their prey: corn snakes need enoug
 | Follow a creature | Click an animal, then choose orbit / chase / its view | Same |
 | Switch tool | Number keys 1–8 | Bottom toolbar |
 | Hide glass | G | Top button |
+| Backdrop on / off | B | “背景板” in the toolbar |
 | Immersive mode (hide UI, keep toolbar) | H, Esc to exit | Top button, exit at top-left |
-| Pause | Space | Top Ⅱ |
+| Rise / sink | Space / Ctrl | — |
+| Pause | Top Ⅱ | Top Ⅱ |
 | Take a photo | P | Camera button at the top |
 | Tank Chronicle | J | Book button at the top |
 | Fold the tool list, close panels | Esc | Tap the active tool again · × in the panel · tap the backdrop · back gesture |
@@ -161,14 +189,14 @@ If a red banner appears at the top of the page, follow its instructions.
 
 **Deploy to GitHub Pages**: Settings → Pages → Source: GitHub Actions (the workflow is already in the repo). A few minutes later it's live at `https://<username>.github.io/<repo>/`.
 
-**Quality**: choose low / medium / high on the home page or in Settings. Phones default to low: no real-time shadows or post-processing, grass density at 30%. High enables bloom, depth of field and high-resolution shadows.
+**Quality**: choose low / medium / high on the home page or in Settings. Phones default to low: no real-time shadows or post-processing, grass density at 30%. High enables bloom and high-resolution shadows.
 
 <p align="center"><img src="docs/screenshots/home-shelf.jpg" alt="The six tanks on the home page" width="74%"> <img src="docs/screenshots/home-mobile.jpg" alt="The home page on a phone" width="22%"></p>
 
 ## 🛠️ Technical highlights
 
 - **three.js r165** (vendored), ES Modules + importmap, no bundler
-- Physically based light units, ACES tone mapping, PCF soft shadows, RoomEnvironment lighting, optional UnrealBloom and depth of field
+- Physically based light units, ACES tone mapping, PCF soft shadows, environment lighting generated from the sky, optional UnrealBloom
 - Plants and grass use `InstancedMesh`, with wind sway in the vertex shader
 - Snakes, lizards, tadpoles and moray eels use a custom "spine tube" skin whose body follows its path
 - Ant leg gaits run in the shader, so hundreds of ants render in one draw call
@@ -187,6 +215,7 @@ If a red banner appears at the top of the page, follow its instructions.
 ├── vendor/three/         # three.js r165 and the add-ons it uses (MIT), works offline
 ├── src/
 │   ├── head.html         # Page structure, styles, home page
+│   ├── i18n.js           # Chinese / English: the TR`…` tag and the English dictionary
 │   ├── js1.js            # Renderer, procedural textures, home-page fireflies and mode selection
 │   ├── js2.js            # Terrain, zones, water, rocks, tank, underwater lighting
 │   ├── js3.js            # Plants: procedural modeling, instanced rendering, growth
@@ -196,10 +225,11 @@ If a red banner appears at the top of the page, follow its instructions.
 │   ├── js5o.js           # Ocean species behavior
 │   ├── js6.js            # Simulation loop, weather, economy, contracts, initial world
 │   ├── js7.js            # Camera, picking, tool interaction
-│   ├── js7d.js           # WASD flight, decor, removal, bubbles
+│   ├── js7d.js           # WASD flight, decor (drag, rotate, resize, copy, layout import / export), removal, bubbles
 │   ├── js8.js            # Sound, UI, per-frame visuals, main loop
 │   ├── js9.js            # Opening shot, director mode, onboarding, saves and save manager, phone panels
-│   └── js10.js           # Tank Chronicle, photos, rare mutations
+│   ├── js10.js           # Tank Chronicle, photos, rare mutations
+│   └── js11.js           # Creative tank: substrate and terrain brushes, water fill / drain, opening the tank
 ├── assets/home/          # Home-page illustrations (webp)
 └── docs/screenshots/     # README screenshots
 ```
@@ -213,7 +243,9 @@ After editing `src/`, run `./build.sh` to regenerate `index.html`. Every model, 
 - [x] Save and load (per-tank autosave, export / import)
 - [ ] WeChat mini-game version (chunked loading, fewer instances on phones)
 - [ ] More species: bees, salamanders, octopus, sea turtles
-- [ ] Free terrain sculpting
+- [x] Free terrain sculpting (creative tank, v1.3.0)
+- [x] Chinese / English
+- [ ] Desktop mode and Steam release
 
 ## 🙏 Acknowledgments
 

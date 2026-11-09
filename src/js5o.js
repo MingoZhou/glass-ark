@@ -16,9 +16,9 @@ function turfFood(a){let best=null,bv=0.25;for(let k=0;k<6;k++){const x=a.x+rand
 function bottomPose(a,lift,s){poseGround(a.m.root,a,heightAt(a.x,a.z)+(lift||0),s);}
 
 Object.assign(SPEC,{
- damsel:{name:'蓝魔雀鲷',role:'群游 · 滤食',lvl:1,ocean:true,cost:16,batch:5,life:6,burn:0.0022,resp:0.05,zones:[1,1,1,1],color:'#3a7fff',habitat:'开阔水',cap:60,corpse:0.08,
+ damsel:{name:TR`蓝魔雀鲷`,role:TR`群游 · 滤食`,lvl:1,ocean:true,cost:16,batch:5,life:6,burn:0.0022,resp:0.05,zones:[1,1,1,1],color:'#3a7fff',habitat:TR`开阔水`,cap:60,corpse:0.08,
   flee:{mode:'swim',r:1.3,speed:1.6,dur:1.2},
-  fact:'成群游动，彼此保持距离又一起转向。吃水里的浮游生物。遇到石斑鱼会整群炸开。',
+  fact:TR`成群游动，彼此保持距离又一起转向。吃水里的浮游生物。遇到石斑鱼会整群炸开。`,
   model:()=>buildFish('damsel'),init(a){a.flying=true;a.y=heightAt(a.x,a.z)+rand(1,4);a.vx=Math.cos(a.h)*0.4;a.vy=0;a.vz=Math.sin(a.h)*0.4;a.pitch=0;a.wp=randWater();a.wp.y=rand(1.5,WT-1.5);},
   update(a,dt){let cx=0,cy=0,cz=0,ax=0,ay=0,az=0,sx=0,sy=0,sz=0,n=0;
     for(const b of queryAgents(a.x,a.z,1.4)){if(b===a||b.sp!=='damsel')continue;const dx=b.x-a.x,dy=b.y-a.y,dz=b.z-a.z,d=Math.hypot(dx,dy,dz);if(d>1.4)continue;n++;cx+=b.x;cy+=b.y;cz+=b.z;ax+=b.vx;ay+=b.vy;az+=b.vz;if(d<0.3){sx-=dx/(d*d+0.02);sy-=dy/(d*d+0.02);sz-=dz/(d*d+0.02);}}
@@ -34,9 +34,9 @@ Object.assign(SPEC,{
   anim:fishAnim,
   mouth(a,o){o.set(a.x+Math.cos(a.h)*0.02,a.y,a.z+Math.sin(a.h)*0.02);},
  },
- clown:{name:'小丑鱼',role:'共生 · 滤食',lvl:1,ocean:true,cost:22,batch:2,life:8,burn:0.002,resp:0.05,zones:[0.5,0.8,1,1],color:'#f07a1c',habitat:'海葵',cap:14,corpse:0.08,
+ clown:{name:TR`小丑鱼`,role:TR`共生 · 滤食`,lvl:1,ocean:true,cost:22,batch:2,life:8,burn:0.002,resp:0.05,zones:[0.5,0.8,1,1],color:'#f07a1c',habitat:TR`海葵`,cap:14,corpse:0.08,
   flee:{mode:'swim',r:1.2,speed:1.4,dur:1.2},
-  fact:'和海葵共生：海葵的触手会蜇别的鱼，却保护小丑鱼。遇到危险时它会钻进海葵里，捕食者就拿它没办法。',
+  fact:TR`和海葵共生：海葵的触手会蜇别的鱼，却保护小丑鱼。遇到危险时它会钻进海葵里，捕食者就拿它没办法。`,
   model:()=>buildFish('clown'),init(a){a.flying=true;a.y=heightAt(a.x,a.z)+rand(0.5,1.5);a.pitch=0;},
   update(a,dt){if(!a.host||!a.host.alive){a.tt-=dt;if(a.tt<=0){a.tt=3;a.host=nearestPlant(a.x,a.z,14,p=>p.type==='anemone'&&p.growth>0.3&&pop.clown.filter(c=>c.host===p).length<3);}}
     const th=threatNear(a,1.4);feedPlankton(a,dt,0.018);
@@ -48,8 +48,8 @@ Object.assign(SPEC,{
   anim:fishAnim,
   mouth(a,o){o.set(a.x,a.y,a.z);},
  },
- jelly:{name:'海月水母',role:'漂流 · 滤食',lvl:1,ocean:true,cost:20,batch:2,life:7,burn:0.0015,resp:0.02,zones:[1,1,1,1],color:'#cfe6f5',habitat:'开阔水',cap:12,corpse:0,
-  fact:'没有大脑也没有心脏，靠伞盖一张一合向上游，再慢慢沉下去。夜里伞盖会发出淡淡的蓝光。',
+ jelly:{name:TR`海月水母`,role:TR`漂流 · 滤食`,lvl:1,ocean:true,cost:20,batch:2,life:7,burn:0.0015,resp:0.02,zones:[1,1,1,1],color:'#cfe6f5',habitat:TR`开阔水`,cap:12,corpse:0,
+  fact:TR`没有大脑也没有心脏，靠伞盖一张一合向上游，再慢慢沉下去。夜里伞盖会发出淡淡的蓝光。`,
   model:()=>buildJelly(),init(a){a.flying=true;a.y=rand(3,WT-1.5);a.vy=0;a.pulse=rand(0,1);},
   update(a,dt){a.pulse+=dt/1.4;if(a.pulse>=1){a.pulse-=1;a.vy+=0.22;}a.vy-=0.07*dt;a.vy*=Math.pow(0.4,dt);a.y+=a.vy*dt;
     const cur=U.uWind.value*0.06;a.x+=Math.sin(a.ph*0.13+a.id)*cur*dt+Math.cos(a.h)*0.04*dt;a.z+=Math.cos(a.ph*0.11+a.id*2)*cur*dt+Math.sin(a.h)*0.04*dt;a.h+=Math.sin(a.ph*0.2+a.id)*0.2*dt;
@@ -58,18 +58,18 @@ Object.assign(SPEC,{
     const tp=m.tpos,NT=m.NT;let k=0;for(let i=0;i<NT;i++){const an=i/NT*6.283,x0=Math.cos(an)*0.19*(1-0.14*s),z0=Math.sin(an)*0.19*(1-0.14*s);let px=x0,py=0,pz=z0;for(let j=1;j<=3;j++){const nx=x0*(1-j*0.05)+Math.sin(a.ph*1.5+i+j)*0.015*j,ny=-j*0.075*(1+0.2*s),nz=z0*(1-j*0.05)+Math.cos(a.ph*1.3+i+j)*0.015*j;tp[k++]=px;tp[k++]=py;tp[k++]=pz;tp[k++]=nx;tp[k++]=ny;tp[k++]=nz;px=nx;py=ny;pz=nz;}}
     m.tent.geometry.attributes.position.needsUpdate=true;},
  },
- shrimp:{name:'清洁虾',role:'清道夫',lvl:1,ocean:true,cost:10,batch:4,life:6,burn:0.002,resp:0.03,zones:[0.6,0.8,1,1],color:'#d8402a',habitat:'礁石 · 沙地',cap:50,corpse:0,
+ shrimp:{name:TR`清洁虾`,role:TR`清道夫`,lvl:1,ocean:true,cost:10,batch:4,life:6,burn:0.002,resp:0.03,zones:[0.6,0.8,1,1],color:'#d8402a',habitat:TR`礁石 · 沙地`,cap:50,corpse:0,
   flee:{mode:'dart',r:0.8,speed:2,dur:0.5},
-  fact:'在沙地和礁石上捡食碎屑、啃藻类，长长的白色触须不停摆动。受惊时尾巴一弹，瞬间向后蹿出去。',
+  fact:TR`在沙地和礁石上捡食碎屑、啃藻类，长长的白色触须不停摆动。受惊时尾巴一弹，瞬间向后蹿出去。`,
   model:()=>buildShrimp(),
   update(a,dt){if(a.dart>0){a.dart-=dt;a.x-=Math.cos(a.h)*2*dt;a.z-=Math.sin(a.h)*2*dt;a.hy=Math.sin(a.dart/0.5*Math.PI)*0.25;a.state='flee';clampSwim(a);a.speed=2;return;}a.hy=0;
     const th=threatNear(a,0.8);if(th&&Math.random()<0.6){a.h=Math.atan2(th.z-a.z,th.x-a.x);a.dart=0.5;a.flee={from:th,t:0.5};return;}a.flee=null;
     oceanBottom(a,dt,isNight()?0.14:0.09,x=>nearestDet(x.x,x.z,3)||turfFood(x));if(a.energy>0.8)tryBreed(a,0.003,dt);},
   anim(a,dt){bottomPose(a,a.hy||0,a.scale*1.3);a.m.ant.rotation.set(Math.sin(a.ph*3)*0.15,Math.sin(a.ph*2.3)*0.25,0);},
  },
- crab:{name:'螃蟹',role:'清道夫',lvl:1.5,ocean:true,cost:18,batch:1,life:9,burn:0.0017,resp:0.08,zones:[0.6,1,1,0.9],color:'#d4502a',habitat:'沙地 · 礁石',cap:14,corpse:0.2,
+ crab:{name:TR`螃蟹`,role:TR`清道夫`,lvl:1.5,ocean:true,cost:18,batch:1,life:9,burn:0.0017,resp:0.08,zones:[0.6,1,1,0.9],color:'#d4502a',habitat:TR`沙地 · 礁石`,cap:14,corpse:0.2,
   flee:{mode:'claw',r:0.9},
-  fact:'横着走路，什么都吃：碎屑、藻类、死去的动物。遇到威胁会举起大钳子，很多鱼因此不敢下嘴。',
+  fact:TR`横着走路，什么都吃：碎屑、藻类、死去的动物。遇到威胁会举起大钳子，很多鱼因此不敢下嘴。`,
   model:()=>buildCrab(),init(a){a.side=Math.random()<0.5?1:-1;},
   update(a,dt){const th=threatNear(a,0.9);a.threat=Math.max(0,(a.threat||0)-dt);if(th){a.threat=2;a.state='threat';a.h=Math.atan2(th.z-a.z,th.x-a.x);a.speed=0;return;}
     if(Math.random()<0.1*dt)a.side*=-1;const sp=isNight()?0.14:0.09;a.tt-=dt;if(a.tt<=0){a.tt=2;if(!a.target||!a.target.alive)a.target=nearestDet(a.x,a.z,4)||turfFood(a);}
@@ -80,21 +80,21 @@ Object.assign(SPEC,{
   anim(a,dt){bottomPose(a,0,a.scale*1.2);const m=a.m;const up=a.threat>0?1:0;m.claws.forEach((c,i)=>{c.rotation.z=up*0.9+Math.sin(a.ph*2+i)*0.05;c.rotation.x=(i?-1:1)*up*0.3;});
     m.legs.forEach(l=>{const o=Math.sin(a.ph*14+l.k*1.2+(l.s>0?0:Math.PI));l.piv.rotation.x=a.speed>0?o*0.3*l.s:0;l.piv.rotation.y=a.speed>0?Math.max(0,o)*0.2:0;});},
  },
- starfish:{name:'海星',role:'啃食藻类',lvl:1,ocean:true,cost:12,batch:1,life:14,burn:0.001,resp:0.02,zones:[0.8,1,1,1],color:'#e2663a',habitat:'礁石 · 沙地',cap:12,corpse:0.1,
-  fact:'用腹面几百只管足慢慢爬行，把胃翻出来消化藻类和碎屑。断了一条腕还能长回来。',
+ starfish:{name:TR`海星`,role:TR`啃食藻类`,lvl:1,ocean:true,cost:12,batch:1,life:14,burn:0.001,resp:0.02,zones:[0.8,1,1,1],color:'#e2663a',habitat:TR`礁石 · 沙地`,cap:12,corpse:0.1,
+  fact:TR`用腹面几百只管足慢慢爬行，把胃翻出来消化藻类和碎屑。断了一条腕还能长回来。`,
   model:()=>buildStar(),update(a,dt){oceanBottom(a,dt,0.025,x=>turfFood(x)||nearestDet(x.x,x.z,2));if(a.energy>0.9)tryBreed(a,0.0006,dt);},
   anim(a,dt){bottomPose(a,0.003,a.scale*1.2);a.m.root.rotation.y+=Math.sin(a.ph*0.2)*0.05;},
  },
- urchin:{name:'海胆',role:'啃食藻类',lvl:1,ocean:true,cost:12,batch:1,life:14,burn:0.001,resp:0.02,zones:[0.6,0.8,1,1],color:'#5a2a6a',habitat:'礁石',cap:12,corpse:0.1,
-  fact:'浑身是刺，几乎没有天敌。整天慢慢啃食礁石上的藻类，是珊瑚的好帮手：藻类少了，珊瑚才长得好。',
+ urchin:{name:TR`海胆`,role:TR`啃食藻类`,lvl:1,ocean:true,cost:12,batch:1,life:14,burn:0.001,resp:0.02,zones:[0.6,0.8,1,1],color:'#5a2a6a',habitat:TR`礁石`,cap:12,corpse:0.1,
+  fact:TR`浑身是刺，几乎没有天敌。整天慢慢啃食礁石上的藻类，是珊瑚的好帮手：藻类少了，珊瑚才长得好。`,
   model:()=>buildUrchin(),update(a,dt){oceanBottom(a,dt,0.02,turfFood);if(a.energy>0.9)tryBreed(a,0.0006,dt);},
   anim(a,dt){bottomPose(a,0,a.scale*1.2);},
  },
- grouper:{name:'石斑鱼',role:'伏击捕食者',lvl:3,ocean:true,cost:70,batch:1,life:14,burn:0.0018,resp:0.8,zones:[0.6,0.8,1,1],color:'#c43a2a',habitat:'礁石区',cap:4,corpse:0.6,
+ grouper:{name:TR`石斑鱼`,role:TR`伏击捕食者`,lvl:3,ocean:true,cost:70,batch:1,life:14,burn:0.0018,resp:0.8,zones:[0.6,0.8,1,1],color:'#c43a2a',habitat:TR`礁石区`,cap:4,corpse:0.6,
   diet:{damsel:{v:0.3},clown:{v:0.3},shrimp:{v:0.2},crab:{v:0.35,cond:p=>p.scale<0.9&&!(p.threat>0)}},
   hunt:{sense:3.5,stalkR:1.3,reach:0.5,strikeT:0.3,hitAt:0.5,success:0.62,eatT:3,hungry:0.7,move:(a,p,dt,mode)=>{a.state=mode;swimTo(a,p.x,p.y,p.z,mode==='stalk'?0.95:1.45,dt,mode==='stalk'?3:4.5);}},
-  unlock:{need:()=>count('damsel')>=12,text:'蓝魔雀鲷达到 12 条后解锁'},
-  fact:'礁石区的伏击者。慢慢贴近猎物，然后猛地张嘴，靠水流把小鱼直接吸进去。',
+  unlock:{need:()=>count('damsel')>=12,text:TR`蓝魔雀鲷达到 12 条后解锁`},
+  fact:TR`礁石区的伏击者。慢慢贴近猎物，然后猛地张嘴，靠水流把小鱼直接吸进去。`,
   model:()=>buildFish('grouper'),init(a){a.flying=true;a.y=heightAt(a.x,a.z)+rand(0.6,1.4);a.pitch=0;},
   update(a,dt){if(a.state==='strike'){const p=a.prey;if(p&&p.alive){a.h=Math.atan2(p.z-a.z,p.x-a.x);}}
     if(huntTick(a,dt)){if(a.state==='strike'&&a.prey){const p=a.prey;const d=dist3(a,p);if(d>0.05){a.x+=(p.x-a.x)/d*Math.min(d,2.4*dt);a.y+=(p.y-a.y)/d*Math.min(d,2.4*dt);a.z+=(p.z-a.z)/d*Math.min(d,2.4*dt);}}clampSwim(a);return;}
@@ -103,11 +103,11 @@ Object.assign(SPEC,{
   anim:fishAnim,
   mouth(a,o){o.set(a.x+Math.cos(a.h)*0.04,a.y,a.z+Math.sin(a.h)*0.04);},
  },
- moray:{name:'海鳗',role:'顶级捕食者',lvl:4,ocean:true,cost:130,batch:1,life:20,burn:0.0009,resp:1,zones:[0.5,0.5,1,1],color:'#6f7d2a',habitat:'礁石缝隙',cap:2,corpse:0.8,
+ moray:{name:TR`海鳗`,role:TR`顶级捕食者`,lvl:4,ocean:true,cost:130,batch:1,life:20,burn:0.0009,resp:1,zones:[0.5,0.5,1,1],color:'#6f7d2a',habitat:TR`礁石缝隙`,cap:2,corpse:0.8,
   diet:{damsel:{v:0.25},clown:{v:0.25},shrimp:{v:0.15},crab:{v:0.4,cond:p=>!(p.threat>0)||Math.random()<0.3},grouper:{v:0.8,cond:p=>p.scale<0.75}},
   hunt:{sense:1.5,stalkR:1.5,reach:0.55,strikeT:0.45,hitAt:0.45,success:0.7,eatT:6,hungry:0.55,move:(a,p,dt,mode)=>{a.state=mode;if(a.lurk&&!isNight()){a.speed=0;a.turnTo(Math.atan2(p.z-a.z,p.x-a.x),2,dt);}else{a.seek(p.x,p.z,0.6,dt,3);}}},
-  unlock:{need:()=>count('grouper')>=1&&count('crab')>=4,text:'有石斑鱼、螃蟹 4 只后解锁'},
-  fact:'白天把身体藏在礁石缝里，只露出脑袋，一张一合地呼吸。等猎物游到嘴边，猛地窜出去一口咬住，再缩回洞里。',
+  unlock:{need:()=>count('grouper')>=1&&count('crab')>=4,text:TR`有石斑鱼、螃蟹 4 只后解锁`},
+  fact:TR`白天把身体藏在礁石缝里，只露出脑袋，一张一合地呼吸。等猎物游到嘴边，猛地窜出去一口咬住，再缩回洞里。`,
   model:()=>buildMoray(),
   init(a){const rocks=OBST.filter(o=>o.top!=null&&o.r>0.7);const r=rocks.length?pick(rocks):{x:12,z:-6,r:1.5,top:2};a.home=r;const an=Math.atan2(2-r.z,-r.x)+rand(-0.8,0.8);a.den={x:r.x+Math.cos(an)*(r.r+0.08),z:r.z+Math.sin(an)*(r.r+0.08),h:an};a.x=a.den.x;a.z=a.den.z;a.h=an;a.trail=new Trail(1.9,a.x,a.z,a.h);a.lurk=true;},
   update(a,dt){const den=a.den;
@@ -123,6 +123,7 @@ Object.assign(SPEC,{
  },
 });
 const LAND_ALLOW={mixed:null,desert:['ant','cricket','butterfly','spider','mantis','lizard','snake'],meadow:['ant','cricket','butterfly','isopod','spider','mantis','firefly','frog','lizard','snake'],
-  marsh:['ant','cricket','snail','butterfly','isopod','firefly','spider','mantis','frog','snake'],jungle:['ant','cricket','snail','butterfly','isopod','firefly','spider','mantis','frog','lizard','snake']};
+  marsh:['ant','cricket','snail','butterfly','isopod','firefly','spider','mantis','frog','snake'],jungle:['ant','cricket','snail','butterfly','isopod','firefly','spider','mantis','frog','lizard','snake'],
+  create:['ant','cricket','snail','butterfly','isopod','firefly','frog','spider','mantis','lizard','snake']};
 const SPK=Object.keys(SPEC).filter(k=>OCEAN?!!SPEC[k].ocean:!SPEC[k].ocean&&(!LAND_ALLOW[MK]||LAND_ALLOW[MK].includes(k)));
 for(const k of Object.keys(SPEC))pop[k]=[];

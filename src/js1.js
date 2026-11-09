@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 window.__arkBooted=true;
+i18nDOM();
 const V3=THREE.Vector3,V2=THREE.Vector2,Col=THREE.Color;
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -15,10 +16,10 @@ let UID=0,LOADED=false;
 const setMsg=m=>{const e=$('#loadMsg');if(e)e.textContent=m;};
 const tick=()=>new Promise(r=>setTimeout(r,0));
 function reportError(msg){
-  if(!LOADED){const l=$('#loading');if(l){l.classList.remove('gone');$('#loadMsg').innerHTML='出错了：'+msg+'<br>请截图发给我';}return;}
-  let e=$('.errbar');if(!e){e=document.createElement('div');e.className='errbar';$('#app').appendChild(e);}e.textContent='运行出错：'+msg;
+  if(!LOADED){const l=$('#loading');if(l){l.classList.remove('gone');$('#loadMsg').innerHTML=TR`出错了：`+msg+TR`<br>请截图发给我`;}return;}
+  let e=$('.errbar');if(!e){e=document.createElement('div');e.className='errbar';$('#app').appendChild(e);}e.textContent=TR`运行出错：`+msg;
 }
-window.addEventListener('error',e=>reportError(e.message||'未知错误'));
+window.addEventListener('error',e=>reportError(e.message||TR`未知错误`));
 window.addEventListener('unhandledrejection',e=>reportError(String((e.reason&&e.reason.message)||e.reason)));
 
 /* ---------- noise ---------- */
@@ -33,7 +34,7 @@ function pfbm(u,v,P,o){o=o||4;let s=0,a=0.5,f=1,n=0;for(let i=0;i<o;i++){s+=a*pn
 /* ---------- quality ---------- */
 const IS_MOBILE=/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(('ontouchstart' in window)&&Math.min(screen.width,screen.height)<760);
 const QUAL={
-  high:{pr:2,shadow:2048,shadows:true,grass:1,scatter:1,bloom:true,dof:true},
+  high:{pr:2,shadow:2048,shadows:true,grass:1,scatter:1,bloom:true,dof:false},
   mid:{pr:1.5,shadow:2048,shadows:true,grass:0.6,scatter:0.7,bloom:true,dof:false},
   low:{pr:1,shadow:1024,shadows:false,grass:0.3,scatter:0.4,bloom:false,dof:false}};
 let QK=(()=>{try{const s=localStorage.getItem('ark-quality');if(s&&QUAL[s])return s;}catch(e){}return IS_MOBILE?'low':'high';})();
@@ -113,7 +114,7 @@ function buildTextures(){
     if(disk>0){const gr=g.createRadialGradient(cx,cy,0,cx,cy,disk*w);gr.addColorStop(0,dc[0]);gr.addColorStop(1,dc[1]);g.fillStyle=gr;g.beginPath();g.arc(cx,cy,disk*w,0,6.283);g.fill();
       for(let i=0;i<140;i++){const a=i*2.39996,rr=Math.sqrt(i/140)*disk*w*0.95;g.fillStyle='rgba(120,70,10,0.35)';g.beginPath();g.arc(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr,1.4,0,6.283);g.fill();}}});
   TX.daisy=flowerTex(0,26,'#fbfaf4','#e9e6da',0.13,['#f7c63c','#d8901c'],'daisy');
-  TX.cosmos=[['#e2629c','#c2457e'],['#f6f1f3','#e8d4de'],['#b5204a','#8e1538']].map(c=>flowerTex(0,8,c[0],c[1],0.1,['#f4c542','#c78a1a'],'cosmos'));
+  TX.cosmos=[['#e2629c','#c2457e'],['#efe6ea','#dcc6d1'],['#b5204a','#8e1538']].map(c=>flowerTex(0,8,c[0],c[1],0.1,['#f4c542','#c78a1a'],'cosmos'));
   TX.dandF=flowerTex(0,90,'#f7cf2a','#f0b418',0.05,['#e8a818','#c78a10'],'ray');
   TX.puff=ctex(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);const cx=w/2,cy=h/2;for(let i=0;i<220;i++){const a=Math.random()*6.283,r=w*rand(0.36,0.47);g.strokeStyle=`rgba(250,250,245,${rand(0.35,0.7)})`;g.lineWidth=0.7;g.beginPath();g.moveTo(cx,cy);g.lineTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);g.stroke();g.fillStyle='rgba(255,255,255,0.8)';g.beginPath();g.arc(cx+Math.cos(a)*r,cy+Math.sin(a)*r,1.8,0,6.283);g.fill();}
     g.fillStyle='rgba(150,120,80,0.9)';g.beginPath();g.arc(cx,cy,6,0,6.283);g.fill();});
@@ -194,12 +195,13 @@ function buildOceanTextures(){
 
 /* ---------- modes + home screen ---------- */
 const MODES={
-  mixed:{name:'混合生态缸',zone:null,pond:1,stream:true,vines:[6.5,17.4],heat:true},
-  desert:{name:'沙漠缸',zone:0,pond:0,stream:false,vines:null,heat:true},
-  meadow:{name:'草甸缸',zone:1,pond:0.75,stream:false,vines:null,heat:false},
-  marsh:{name:'溪沼缸',zone:2,pond:1.35,stream:true,vines:[-17.4,17.4],heat:false},
-  jungle:{name:'雨林缸',zone:3,pond:0.7,stream:true,vines:[-17.4,17.4],heat:false},
-  ocean:{name:'海洋缸',ocean:true,zone:null,pond:0,stream:false,vines:null,heat:false},
+  mixed:{name:TR`混合生态缸`,zone:null,pond:1,stream:true,vines:[6.5,17.4],heat:true},
+  desert:{name:TR`沙漠缸`,zone:0,pond:0,stream:false,vines:null,heat:true},
+  meadow:{name:TR`草甸缸`,zone:1,pond:0.75,stream:false,vines:null,heat:false},
+  marsh:{name:TR`溪沼缸`,zone:2,pond:1.35,stream:true,vines:[-17.4,17.4],heat:false},
+  jungle:{name:TR`雨林缸`,zone:3,pond:0.7,stream:true,vines:[-17.4,17.4],heat:false},
+  ocean:{name:TR`海洋缸`,ocean:true,zone:null,pond:0,stream:false,vines:null,heat:false},
+  create:{name:TR`创造缸`,create:true,zone:null,pond:0,stream:false,vines:null,heat:true},
 };
 let MK='mixed',MODE=MODES.mixed,OCEAN=false;
 function runHome(){return new Promise(resolve=>{
@@ -222,10 +224,13 @@ function runHome(){return new Promise(resolve=>{
   rs();addEventListener('resize',rs);if(!still)requestAnimationFrame(draw);
   const rq=()=>$$('#homeQual button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.q===QK));rq();
   $$('#homeQual button').forEach(b=>b.addEventListener('click',()=>{QK=b.dataset.q;Q=QUAL[QK];try{localStorage.setItem('ark-quality',QK);}catch(e){}rq();}));
+  $$('.langSeg button').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.l===LANG);b.addEventListener('click',()=>switchLang(b.dataset.l));});
   const alt=home.querySelector('.cta-alt');if(alt)alt.addEventListener('click',e=>{e.preventDefault();$('#shelf').scrollIntoView({behavior:still?'auto':'smooth'});});
   if(typeof homeDecorate==='function')homeDecorate();
   $$('#home [data-mode]').forEach(b=>{const k=b.dataset.mode;
     b.addEventListener('click',()=>{MK=k;MODE=MODES[k];OCEAN=!!MODE.ocean;$('#loading').classList.remove('gone');home.classList.add('gone');setTimeout(()=>{alive=false;home.remove();},900);resolve(k);});});
+  let rk=null;try{rk=sessionStorage.getItem('ark-resume');sessionStorage.removeItem('ark-resume');}catch(e){}
+  if(rk&&MODES[rk]){const btn=home.querySelector('[data-mode="'+rk+'"]');if(btn)btn.click();}
 });}
 await runHome();
-setMsg(`正在布置${MODE.name}…`);await tick();
+setMsg(TR`正在布置${MODE.name}…`);await tick();
