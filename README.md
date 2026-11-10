@@ -14,7 +14,7 @@
 <img alt="无需构建" src="https://img.shields.io/badge/构建-不需要-6aa84f">
 <img alt="离线可玩" src="https://img.shields.io/badge/离线-可玩-3d85c6">
 <img alt="电脑和手机" src="https://img.shields.io/badge/平台-电脑%20%7C%20手机-f0b25a">
-<img alt="版本 v1.3.0" src="https://img.shields.io/badge/版本-v1.3.0-b8463a">
+<img alt="版本 v1.4.0" src="https://img.shields.io/badge/版本-v1.4.0-b8463a">
 </p>
 
 [**在线试玩**](https://mingozhou.github.io/glass-ark/) · [快速开始](#-快速开始) · [更新日志](CHANGELOG.md) · [赞助](#-赞助) · [English](README_EN.md)
@@ -45,9 +45,20 @@
 </tr>
 </table>
 
-## ✨ v1.3.0 更新亮点 · 创造缸
+## ✨ v1.4.0 更新亮点 · 桌面摸鱼模式
 
 > 完整内容见 [CHANGELOG.md](CHANGELOG.md)。
+
+- **桌面版**：游戏现在可以打包成 Windows 桌面程序，离线可玩，存档保存在本机（[自己打包的方法](#-桌面版自己生成-exe)）
+- **桌面摸鱼模式**：在缸里点右上角的显示器图标，游戏缩成屏幕角落里一个无边框的小窗口。面板全部隐藏，镜头自动跟拍，生态缸在你工作、上课的时候继续安静地运转
+- 鼠标移到小窗口上会出现顶栏：拖动、置顶、大小（小 / 中 / 大）、透明度、回到完整窗口、保存并退出
+- 小窗口和完整窗口共用一份存档，切换前自动保存；窗口位置和设置会记住，系统托盘也能切换
+- 新的程序图标
+
+<p align="center"><img src="docs/screenshots/desktop-mode.jpg" alt="桌面摸鱼模式的小窗口" width="46%"> <img src="desktop/icon.png" alt="icon" width="22%"><br><sub><b>桌面摸鱼模式</b> · 无边框小窗口，鼠标移上去才出现顶栏</sub></p>
+
+<details>
+<summary><b>v1.3.0 更新亮点 · 创造缸</b></summary>
 
 - **创造缸**：从一只空缸开始，按住拖动铺沙子、砾石、泥土、草皮、湿泥、苔藓和落叶，抬高山坡、挖坑注水，再摆石头、种植物。你铺什么，就长什么。造景阶段一切免费，满意了再开缸放动物
 - **水重做**：近岸清澈、越深越绿，水面倒映岸上的东西，有波纹、雨点涟漪和水底焦散；创造缸里挖好的坑点一下就能注水
@@ -67,6 +78,8 @@
 <td><img src="docs/screenshots/decor-edit.jpg" alt="选中一块石头，下面出现调整栏"><br><sub><b>布景调整</b> · 拖动、旋转、缩放、复制，压住的草会自动让开</sub></td>
 </tr>
 </table>
+
+</details>
 
 <details>
 <summary><b>v1.2.0 更新亮点</b></summary>
@@ -193,6 +206,35 @@
 
 <p align="center"><img src="docs/screenshots/home-shelf.jpg" alt="首页的六只缸" width="74%"> <img src="docs/screenshots/home-mobile.jpg" alt="手机上的首页" width="22%"></p>
 
+## 🖥 桌面版：自己生成 exe
+
+桌面版在 `desktop/` 目录里，用 Electron 打包。需要先安装 [Node.js](https://nodejs.org)（LTS 版，20 以上）。
+
+```bash
+bash build.sh        # 在仓库根目录：改过 src/ 里的代码才需要，重新生成 index.html
+cd desktop
+npm install          # 只需要第一次，下载 Electron 和打包工具
+npm start            # 直接运行，不打包
+npm run dist         # 打包 Windows 版
+```
+
+打包结果在 `desktop/dist/`：
+
+- `win-unpacked/Glass Ark.exe`：可以直接双击运行，整个 `win-unpacked` 文件夹要放在一起
+- 同目录下还有一个内容相同的 zip，方便分发
+
+国内网络下载 Electron 较慢时，可以先设置镜像：
+
+```bash
+npm config set registry https://registry.npmmirror.com
+# CMD:        set ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/
+# PowerShell: $env:ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/"
+```
+
+不想在本机装环境也可以：在 GitHub 仓库的 **Actions → Build desktop (Windows) → Run workflow** 里运行一次，完成后在该次运行的页面底部下载 `GlassArk-win`。推送 `v` 开头的标签时也会自动打包。
+
+更多说明（桌面摸鱼模式的操作、文件结构、字体打包）见 [desktop/README.md](desktop/README.md)。
+
 ## 🛠️ 技术要点
 
 - **three.js r165**（本地 vendor），ES Module + importmap，无打包器
@@ -212,6 +254,7 @@
 .
 ├── index.html            # 构建好的游戏
 ├── start.bat / start.sh  # 一键启动本地服务器
+├── desktop/              # 桌面版（Electron）：窗口、托盘、桌面摸鱼模式，见 desktop/README.md
 ├── build.sh              # 把 src/ 拼成 index.html
 ├── vendor/three/         # three.js r165 及用到的插件（MIT），离线可用
 ├── src/
@@ -246,7 +289,8 @@
 - [ ] 更多物种：蜂类、蝾螈、章鱼、海龟
 - [x] 自由地形雕刻（创造缸，v1.3.0）
 - [x] 中文 / English 双语
-- [ ] 桌面模式与 Steam 版
+- [x] 桌面版与桌面摸鱼模式（v1.4.0）
+- [ ] Steam 版（成就、云存档）
 
 ## 🙏 致谢
 

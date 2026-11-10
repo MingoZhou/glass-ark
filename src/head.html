@@ -646,10 +646,34 @@ html[lang=en] .sheet-head h3,html[lang=en] .saves-head h3{letter-spacing:.05em}
 .layoutdlg textarea{border-radius:14px;border-color:var(--fb-line-2);background:rgba(0,0,0,.3);box-shadow:inset 0 2px 6px rgba(0,0,0,.35)}
 .saves-note,.oc-p{color:#c9d2bf}
 .tabbody,.saves,.settings,.inspect{scrollbar-width:thin;scrollbar-color:rgba(240,192,99,.6) transparent}
+
+/* ---------- desktop widget (桌面模式) ---------- */
+#deskBtn[hidden]{display:none}
+#wbar{position:fixed;left:0;right:0;top:0;z-index:30;height:34px;display:flex;align-items:center;gap:4px;padding:0 6px 0 12px;
+  background:linear-gradient(180deg,rgba(20,28,20,.86),rgba(20,28,20,.55) 70%,transparent);color:#f3ecdc;opacity:0;transition:opacity .25s;-webkit-app-region:drag;user-select:none}
+#wbar[hidden]{display:none}
+body.widget:hover #wbar,#wbar:focus-within{opacity:1}
+#wbar .wb-t{flex:1;font:400 14px var(--display);letter-spacing:.14em;color:#f6ecd2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#wbar button{-webkit-app-region:no-drag;display:inline-flex;align-items:center;gap:4px;height:26px;min-width:26px;padding:0 6px;border-radius:99px;border:1px solid transparent;background:none;color:#e9e2cf;font:500 11.5px var(--body);cursor:pointer}
+#wbar button:hover{border-color:rgba(240,200,120,.55);background:rgba(240,178,90,.16);color:#fff4dc}
+#wbar button[aria-pressed="true"]{color:#f3c063}
+#wbar svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#wbar [data-w=close]{font-size:18px;line-height:1}
+body.widget .hud:not(.toasts),body.widget #labels,body.widget .director,body.widget #hint,body.widget .zen-exit,body.widget #inspPill{display:none!important}
+body.widget .toasts{display:none!important}
+body.widget{border:1px solid rgba(226,206,150,.28)}
 </style>
 
 <div id="app">
   <canvas id="c" aria-label="生态缸三维视图" tabindex="0"></canvas>
+  <div id="wbar" hidden>
+    <span class="wb-t">玻璃方舟</span>
+    <button data-w="pin" aria-pressed="true" title="置顶：始终显示在其它窗口上面"><svg viewBox="0 0 24 24"><path d="M9 4h6l-1 6 3 3v2H7v-2l3-3zM12 15v6"/></svg></button>
+    <button data-w="size" title="窗口大小"><svg viewBox="0 0 24 24"><path d="M4 10V4h6M20 14v6h-6M4 4l7 7M20 20l-7-7"/></svg><span>中</span></button>
+    <button data-w="opacity" title="透明度"><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg><span>100%</span></button>
+    <button data-w="exit" title="回到完整窗口"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <button data-w="close" title="保存并退出">×</button>
+  </div>
   <div class="vignette"></div>
   <div id="labels"></div>
   <button class="zen-exit" id="zenExit" aria-label="退出沉浸模式"><svg viewBox="0 0 24 24"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>退出沉浸</button>
@@ -675,6 +699,7 @@ html[lang=en] .sheet-head h3,html[lang=en] .saves-head h3{letter-spacing:.05em}
       <button class="iconbtn panel" id="dirBtn" aria-pressed="false" title="导演模式：镜头自动追踪捕猎、羽化、孵化等精彩瞬间" aria-label="导演模式"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/></svg></button>
       <button class="iconbtn panel" id="soundBtn" aria-pressed="false" title="声音开关：雨声、蛙鸣、蟋蟀振翅" aria-label="声音"><svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.5 4.5 0 0 1 0 6M18 6.5a8 8 0 0 1 0 11"/></svg></button>
       <button class="iconbtn panel" id="glassBtn" aria-pressed="false" title="隐藏玻璃和缸架（G）：去掉遮挡，看缸内更清楚" aria-label="隐藏玻璃"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 8l3-3M8 13l8-8M13 19l6-6" opacity=".7"/><path d="M3 21 21 3" class="slash"/></svg></button>
+      <button class="iconbtn panel" id="deskBtn" hidden title="桌面摸鱼模式：缩成一个小窗口留在桌面上，生态缸继续运转" aria-label="桌面摸鱼模式"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><rect x="12.5" y="9.5" width="6" height="5" rx="1" fill="currentColor" stroke="none"/></svg></button>
       <button class="iconbtn panel" id="zenBtn" aria-pressed="false" title="沉浸模式：隐藏所有界面，只留下方工具栏（H），适合挂机观赏" aria-label="沉浸模式"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
       <button class="iconbtn panel" id="camBtn" title="拍照（P）：刚发生的见闻还在画面里时拍下，可以升级为金星" aria-label="拍照"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l1.6-2.2h6.8L17 8h3v11H4z"/><circle cx="12" cy="13.3" r="3.4"/></svg></button>
       <button class="iconbtn panel jr-btn" id="jrBtn" title="缸中见闻录（J）" aria-label="缸中见闻录"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5C6.5 4.5 9.5 4.5 12 6c2.5-1.5 5.5-1.5 8-.5V19c-2.5-1-5.5-1-8 .5-2.5-1.5-5.5-1.5-8-.5z"/><path d="M12 6v13.5"/></svg><span class="jr-badge" id="jrBadge" hidden></span></button>

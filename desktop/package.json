@@ -1,0 +1,29 @@
+{
+  "name": "glass-ark",
+  "productName": "Glass Ark",
+  "version": "1.4.0",
+  "description": "玻璃方舟 Glass Ark — a terrarium ecosystem that runs by itself",
+  "author": "MingoZZ",
+  "license": "MIT",
+  "main": "main.js",
+  "scripts": {
+    "prep": "node prep.js",
+    "start": "electron .",
+    "dist": "node prep.js && electron-builder --win --x64",
+    "dist:mac": "node prep.js && electron-builder --mac",
+    "dist:linux": "node prep.js && electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.mingozz.glassark",
+    "productName": "Glass Ark",
+    "files": ["main.js", "preload.js", "icon.png", "game/**/*"],
+    "directories": { "output": "dist" },
+    "win": { "target": [{ "target": "dir" }, { "target": "zip" }], "icon": "icon.png" },
+    "mac": { "target": "dmg", "icon": "icon.png", "category": "public.app-category.simulation-games" },
+    "linux": { "target": "AppImage", "icon": "icon.png", "category": "Game" }
+  }
+}

@@ -14,7 +14,7 @@ Photosynthesis, food chains, birth and death — all unfold before your eyes.
 <img alt="No build step" src="https://img.shields.io/badge/build-none-6aa84f">
 <img alt="Works offline" src="https://img.shields.io/badge/offline-yes-3d85c6">
 <img alt="Desktop and mobile" src="https://img.shields.io/badge/platform-desktop%20%7C%20mobile-f0b25a">
-<img alt="Version v1.3.0" src="https://img.shields.io/badge/version-v1.3.0-b8463a">
+<img alt="Version v1.4.0" src="https://img.shields.io/badge/version-v1.4.0-b8463a">
 </p>
 
 [**Play online**](https://mingozhou.github.io/glass-ark/) · [Quick start](#-quick-start) · [Changelog](CHANGELOG.md) · [Sponsor](#-sponsor) · [中文](README.md)
@@ -45,9 +45,20 @@ The entire game is a single HTML file plus a local copy of three.js: nothing to 
 </tr>
 </table>
 
-## ✨ What's new in v1.3.0 · Creative tank
+## ✨ What's new in v1.4.0 · Desktop mode
 
 > Full details in [CHANGELOG.md](CHANGELOG.md).
+
+- **Desktop build**: the game can now be packaged as a Windows desktop app that runs offline and keeps its saves on your machine ([build it yourself](#-desktop-build-make-your-own-exe))
+- **Desktop mode**: click the monitor icon at the top right of a tank and the game shrinks into a small frameless window in a corner of your screen. Every panel hides, the camera follows the action on its own, and the tank keeps running quietly while you work
+- Hover the small window for a top bar: drag, pin on top, size (S / M / L), opacity, back to the full window, save and quit
+- The small window and the full window share one save and save before switching; position and settings are remembered, and the system tray can switch too
+- A new app icon
+
+<p align="center"><img src="docs/screenshots/desktop-mode.jpg" alt="The desktop mode window" width="46%"> <img src="desktop/icon.png" alt="icon" width="22%"><br><sub><b>Desktop mode</b> · a small frameless window; the bar appears on hover</sub></p>
+
+<details>
+<summary><b>What was new in v1.3.0 · Creative tank</b></summary>
 
 - **Creative tank**: start from an empty tank. Press and drag to lay sand, gravel, soil, turf, mud, moss and leaf litter, raise hills, dig hollows and fill them with water, then place rocks and plants. What you lay is what grows. Everything is free while you build; open the tank and release animals when you're happy
 - **Water rebuilt**: clear in the shallows and greener with depth, with reflections, ripples, rain rings and caustics on the bed; in the creative tank, tap a hollow to fill it
@@ -67,6 +78,8 @@ The entire game is a single HTML file plus a local copy of three.js: nothing to 
 <td><img src="docs/screenshots/decor-edit.jpg" alt="A selected rock with the edit bar below"><br><sub><b>Decor editing</b> · drag, rotate, resize, copy; grass makes way underneath</sub></td>
 </tr>
 </table>
+
+</details>
 
 <details>
 <summary><b>What was new in v1.2.0</b></summary>
@@ -193,6 +206,27 @@ If a red banner appears at the top of the page, follow its instructions.
 
 <p align="center"><img src="docs/screenshots/home-shelf.jpg" alt="The six tanks on the home page" width="74%"> <img src="docs/screenshots/home-mobile.jpg" alt="The home page on a phone" width="22%"></p>
 
+## 🖥 Desktop build: make your own exe
+
+The desktop version lives in `desktop/` and is packaged with Electron. Install [Node.js](https://nodejs.org) first (LTS, 20 or newer).
+
+```bash
+bash build.sh        # in the repo root: only needed after changing code in src/, regenerates index.html
+cd desktop
+npm install          # first time only, downloads Electron and the packager
+npm start            # run without packaging
+npm run dist         # package for Windows
+```
+
+The result is in `desktop/dist/`:
+
+- `win-unpacked/Glass Ark.exe` runs with a double-click; keep the whole `win-unpacked` folder together
+- a zip with the same content sits next to it
+
+No local setup? Run **Actions → Build desktop (Windows) → Run workflow** in the GitHub repo and download `GlassArk-win` from the bottom of that run's page. Pushing a tag that starts with `v` builds it too.
+
+See [desktop/README.md](desktop/README.md) for desktop mode controls, files and font bundling.
+
 ## 🛠️ Technical highlights
 
 - **three.js r165** (vendored), ES Modules + importmap, no bundler
@@ -211,6 +245,7 @@ If a red banner appears at the top of the page, follow its instructions.
 .
 ├── index.html            # The built game
 ├── start.bat / start.sh  # One-click local server
+├── desktop/              # Desktop build (Electron): windows, tray, desktop mode; see desktop/README.md
 ├── build.sh              # Concatenates src/ into index.html
 ├── vendor/three/         # three.js r165 and the add-ons it uses (MIT), works offline
 ├── src/
@@ -245,7 +280,8 @@ After editing `src/`, run `./build.sh` to regenerate `index.html`. Every model, 
 - [ ] More species: bees, salamanders, octopus, sea turtles
 - [x] Free terrain sculpting (creative tank, v1.3.0)
 - [x] Chinese / English
-- [ ] Desktop mode and Steam release
+- [x] Desktop build and desktop mode (v1.4.0)
+- [ ] Steam release (achievements, cloud saves)
 
 ## 🙏 Acknowledgments
 

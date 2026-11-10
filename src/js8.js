@@ -261,7 +261,7 @@ if(!MODE.stream&&!OCEAN)$('#pumpBtn').style.display='none';
 let last=performance.now(),uiT=0,panelT=0,scoreT=0;
 function renderFrame(dt){const p=usePost();HDR_CLAMP.value=p?1:65504;HDR_ALPHA.value=p?GLASS_POST_ALPHA:1;if(p)composer.render(dt);else renderer.render(scene,camera);}
 let GLASS_POST_ALPHA=0.35;  // calibrated: mean brightness with post on matches rendering without post
-function frame(now){requestAnimationFrame(frame);if(window.__freeze){last=now;return;}const rdt=Math.min(0.05,(now-last)/1000);last=now;const gdt=rdt*env.speed;
+function frame(now){requestAnimationFrame(frame);if(window.__freeze){last=now;return;}if(FPSCAP&&now-last<1000/FPSCAP-3)return;const rdt=Math.min(0.05,(now-last)/1000);last=now;const gdt=rdt*env.speed;
   if(gdt>0){const n=Math.ceil(gdt/0.1),st=gdt/n;for(let i=0;i<n;i++)simStep(st);o2T+=gdt;if(o2T>3){o2T=0;O2H.push(env.o2);if(O2H.length>240)O2H.shift();}}
   updateVisuals(rdt,gdt);introTick(rdt);applyCam(rdt);directorTick();jTick(rdt);updateLabels();sndListener();
   renderFrame(rdt);

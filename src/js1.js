@@ -230,6 +230,7 @@ function runHome(){return new Promise(resolve=>{
   $$('#home [data-mode]').forEach(b=>{const k=b.dataset.mode;
     b.addEventListener('click',()=>{MK=k;MODE=MODES[k];OCEAN=!!MODE.ocean;$('#loading').classList.remove('gone');home.classList.add('gone');setTimeout(()=>{alive=false;home.remove();},900);resolve(k);});});
   let rk=null;try{rk=sessionStorage.getItem('ark-resume');sessionStorage.removeItem('ark-resume');}catch(e){}
+  try{const q=new URLSearchParams(location.search).get('resume');if(q)rk=q;}catch(e){}
   if(rk&&MODES[rk]){const btn=home.querySelector('[data-mode="'+rk+'"]');if(btn)btn.click();}
 });}
 await runHome();
